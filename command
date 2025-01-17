@@ -1,10 +1,21 @@
 # 1. 이미지 빌드
+docker-compose up --build
+이걸로 실행
+
 docker build -t bitble:v2 .
 
 # 2. 이미지 실행
-docker run -p 3000:3000 bitble:v1
+docker run -p 3000:3000 bitble:v2
 docker run -p 3000:3000 -v "$(pwd)":/app bitble:v1
-
+docker-compose up --build
+# 2-1. 윈도우 실행 안될떄
+PS C:\Users\jwpg\Documents\GitHub\bitble> docker run -it -v "${PWD}:/app" bitble:v2 /bin/sh                   t -v "${PWD}:/app" bitble:v2 /bin/sh
+>>
+# npx vite ---version 
+Need to install the following packages:
+vite@6.0.7
+Ok to proceed? (y)
+npm install
 # 1. Docker Hub 로그인
 docker login
 

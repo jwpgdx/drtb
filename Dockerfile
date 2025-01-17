@@ -16,5 +16,9 @@ COPY . .
 # 개발 환경 변수 설정
 ENV VITE_API_URL=http://host.docker.internal:3000
 
-# 개발 서버 실행
-CMD ["npm", "run", "dev"]
+# Vite 포트 설정
+ENV VITE_PORT=3000
+ENV CHOKIDAR_USEPOLLING=true
+
+# 개발 서버 실행 (포트 3000으로)
+CMD ["npm", "run", "dev", "--", "--port", "3000"]
