@@ -1,0 +1,24 @@
+# Node.js 18 이미지를 사용하여 빌드
+FROM node:18 AS build
+
+# 작업 디렉토리 설정
+WORKDIR /app
+
+# 의존성 설치
+COPY package*.json ./
+RUN npm install
+
+# 소스 코드 복사
+COPY . .
+
+# 앱 빌드 (프로덕션 빌드)
+RUN npm run build
+
+# Nginx를 사용할 경우
+FROM nginx:alpine
+
+# 빌드된 파일을 Nginx에 복사
+COPY --from=build /app/dist /usr/share/nginx/html
+
+# Nginx 서버 실행
+CMD ["nginx", "-g", "daemon off;"]
