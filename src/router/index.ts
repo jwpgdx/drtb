@@ -15,7 +15,8 @@ const routes = [
     beforeEnter: (to, from, next) => {
       const authStore = useAuthStore();
       if (!authStore.isAuthenticated) {
-        next("/login"); // 로그인되지 않으면 로그인 페이지로 이동
+        // 로그인되지 않으면 로그인 페이지로 이동, 현재 페이지 URL을 `redirect` 파라미터로 전달
+        next(`/login?redirect=${to.fullPath}`);
       } else {
         next();
       }
@@ -29,4 +30,3 @@ const router = createRouter({
 });
 
 export default router;
-

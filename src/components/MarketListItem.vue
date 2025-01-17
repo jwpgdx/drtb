@@ -10,8 +10,7 @@
 
       <!-- 퍼센트 변화 출력 -->
       <p v-if="percentageChange !== null">
-        {{ percentageChange > 0 ? "+" : percentageChange < 0 ? "-" : "" }}
-        {{ percentageChange.toFixed(2) }}%
+        {{ percentageChange >= 0 ? "+" : "" }}{{ percentageChange.toFixed(2) }}%
       </p>
     </div>
     <slot />
@@ -42,7 +41,9 @@ const percentageChange = computed(() => {
 
   if (prevClosingPrice === 0) return null; // 전일 종가가 0이면 계산 불가
 
-  return ((tradePrice - prevClosingPrice) / prevClosingPrice) * 100;
+  const change = ((tradePrice - prevClosingPrice) / prevClosingPrice) * 100;
+
+  return change; // 기호 없이 숫자만 반환
 });
 
 // 클릭 시 주문 페이지로 이동

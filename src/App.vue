@@ -1,12 +1,21 @@
 <script setup lang="ts">
+import { computed } from "vue";
+import { useRouter } from "vue-router";
+import Header from "@/components/Header.vue";
+
+const router = useRouter();
+const isLoginPage = computed(() => router.currentRoute.value.path === "/login");
+
+
+// 로그인 버튼 클릭 시 로그인 페이지로 이동
+const goToLogin = () => {
+  router.push("/login");
+};
 </script>
 
 <template>
   <div class="app min-h-screen bg-gray-50 text-gray-900">
-    <header class="p-4 bg-blue-500 text-white">
-      <h1 class="text-xl font-bold">My Tailwind App</h1>
-    </header>
-
+    <Header v-if="!isLoginPage" />
     <main class="p-4">
       <RouterView />
     </main>

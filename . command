@@ -49,7 +49,7 @@ git push
     bash
     복사
     편집
-    git commit -m "Refactor authentication service logic"
+    git commit -m "REFACTOR Market List to TypeScript"
     테스트 추가:
     
     bash
