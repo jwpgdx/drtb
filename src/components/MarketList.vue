@@ -1,68 +1,52 @@
 <template>
   <div>
-    <div class="fff2" v-if="visibleMarkets.length">
-      <h3>보이는 마켓들:</h3>
-      {{ visibleMarkets }}
-    </div>
-    <button
-      @click="createObserver"
-      class="bg-blue-500 text-white py-2 px-4 rounded"
-    >
-      옵저버 실행~
-    </button>
-    <button
-      @click="fetchPriceData()"
-      class="bg-blue-500 text-white py-2 px-4 rounded"
-    >
-      마켓 데이터 불러오기2
-    </button>
-    
-    <!-- 화면에 마켓 데이터 출력 -->
     <MarketListItem
-      v-for="item in markets"
-      :key="item.market"
-      :ref="`item-${item.market}`"
-      :data-id="item.market"
-      :market="item"
-      :isVisible="item.isVisible"
-      class="item"
+      v-for="market in markets"
+      :key="market.market"
+      :data-id="market.market"
+      :market="market"
+      class="market"
     >
-     {{ item }} {{ item.korean_name }} - 가격: {{ item.isVisible || "불러오는 중" }}
     </MarketListItem>
 
-    <!-- 에러 메시지 -->
     <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script>
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
-import { nextTick } from 'vue'; // nextTick을 가져옵니다.
-
 import MarketListItem from "@/components/MarketListItem.vue";
 
 export default {
+  // todo 에러 메세지 출력 시 404 적용 할 것.
   components: {
     MarketListItem, // 객체 형태로 등록
   },
   data() {
     return {
       observer: null, // IntersectionObserver 인스턴스
-      visibleMarkets: [], // 화면에 보이는 마켓들
-
+      visibleMarkets: [], // 화면에 보이는 마켓들을 저장
     };
   },
   mounted() {
     this.initApp();
-
+    this.startPriceUpdate(); // 가격 갱신 시작
   },
   beforeUnmount() {
     if (this.observer) {
       this.observer.disconnect();
     }
     if (this.intervalId) {
-      clearInterval(this.intervalId);
+      clearInterval(this.intervalId); // 컴포넌트 언마운트 시 interval 정리
     }
+  },
+  watch: {
+    visibleMarkets(newVisibleMarkets) {
+      // visibleMarkets가 업데이트되면 가격 정보 받아오기
+      if (newVisibleMarkets.length > 0) {
+        this.fetchPriceData(newVisibleMarkets);
+      }
+    },
   },
   computed: {
     markets() {
@@ -76,68 +60,64 @@ export default {
   },
   methods: {
     async initApp() {
-    // fetchMarketsData가 완료된 후 createObserver 실행
-    await this.fetchMarketsData();
-    this.createObserver();
-  },
+      await this.fetchMarketsData();
+      this.createObserver();
+    },
     async fetchMarketsData() {
       const marketStore = useMarketStore();
       await marketStore.fetchMarkets(); // Pinia store에서 데이터 가져오기
     },
-    fetchPriceData() {
-      const marketStore = useMarketStore();
-      marketStore.fetchPrice(['KRW-BTC', 'KRW-ETH']); 
+    startPriceUpdate() {
+      this.intervalId = setInterval(() => {
+        if (this.visibleMarkets.length > 0) {
+          this.fetchPriceData(this.visibleMarkets); // 보이는 마켓만 가격 갱신
+        }
+      }, 5000); // 5초마다 갱신
     },
-    
-    
 
+    fetchPriceData(markets) {
+      const marketStore = useMarketStore();
+      marketStore.fetchPrice(markets);
+    },
+    createObserver() {
+      const marketStore = useMarketStore();
 
+      this.observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const market = entry.target.getAttribute("data-id");
+            if (market) {
+              marketStore.updateVisibility(market, entry.isIntersecting);
 
+              // 화면에 보이게 되면 visibleMarkets에 추가
+              if (
+                entry.isIntersecting &&
+                !this.visibleMarkets.includes(market)
+              ) {
+                this.visibleMarkets.push(market);
+              }
 
+              // 화면에서 사라지면 visibleMarkets에서 제거
+              if (!entry.isIntersecting) {
+                this.visibleMarkets = this.visibleMarkets.filter(
+                  (item) => item !== market
+                );
+              }
+            }
+          });
+        },
+        { threshold: 0.5 }
+      );
 
-    async createObserver() {
-  console.log("Observer creation initiated.");
-  await this.$nextTick();
-
-  const marketStore = useMarketStore();
-
-  this.observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        const market = entry.target.getAttribute("data-id");
-        if (market) {
-          marketStore.updateVisibility(market, entry.isIntersecting);
+      this.markets.forEach((market) => {
+        const marketElement = document.querySelector(
+          `.market[data-id="${market.market}"]`
+        );
+        if (marketElement) {
+          this.observer.observe(marketElement);
         }
       });
     },
-    { threshold: 0.5 }
-  );
-
-  this.markets.forEach((item) => {
-    const itemElement = document.querySelector(
-      `.item[data-id="${item.market}"]`
-    );
-    if (itemElement) {
-      this.observer.observe(itemElement);
-    }
-  });
-
-  console.log("Observer created and observing items.");
-},
-
-
-
-
-
-
-
-
-
-
-
-
-
-
   },
 };
 </script>

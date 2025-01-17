@@ -26,3 +26,45 @@ git commit -m "메시지"
 # 3. 
 git push
 
+기능 추가:
+
+    bash
+    복사
+    편집
+    git commit -m "Add user profile page"
+    버그 수정:
+    
+    bash
+    복사
+    편집
+    git commit -m "Fix issue with login validation"
+    디자인 수정:
+    
+    bash
+    복사
+    편집
+    git commit -m "Update button styles on homepage"
+    코드 리팩토링:
+    
+    bash
+    복사
+    편집
+    git commit -m "Refactor authentication service logic"
+    테스트 추가:
+    
+    bash
+    복사
+    편집
+    git commit -m "Add unit tests for user model"
+    문서화:
+    
+    bash
+    복사
+    편집
+    git commit -m "Update README with new setup instructions"
+    기능 비활성화:
+    
+    bash
+    복사
+    편집
+    git commit -m "Disable feature X due to bugs"

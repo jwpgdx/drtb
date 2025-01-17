@@ -1,8 +1,6 @@
 <template>
   <div class="market">
-    <p>{{ market.korean_name }}</p>
-    <p v-if="isVisible">보이는 중</p>
-    <p v-else>보이지 않음</p>
+    <p>{{ market }}</p>
 
     <slot/>
   </div>
@@ -18,7 +16,7 @@ interface Market {
   market_warning: string;
 }
 
-const props = defineProps<{ market: Market; isVisible: boolean }>();
+const props = defineProps<{ market: Market; }>();
 
 // 가격 상태
 const targetPrice = ref<number | null>(null); // 목표 가격
@@ -45,30 +43,7 @@ const animatePrice = (newPrice: number) => {
   }, 50); // 50ms마다 업데이트
 };
 
-// 가격 정보를 가져오는 함수
-const fetchPrice = (market: string) => {
-  const randomPrice = generateRandomPrice();
-  return new Promise<number>((resolve) => {
-    setTimeout(() => resolve(randomPrice), 1000); // 1초 뒤에 가격 값 반환
-  });
-};
 
-// isVisible이 true일 때 가격 정보 가져오기
-watch(
-  () => props.isVisible,
-  async (newVal) => {
-    if (newVal) {
-      targetPrice.value = await fetchPrice(props.market.market);
-      if (targetPrice.value !== null) {
-        animatePrice(targetPrice.value); // 애니메이션 시작
-      }
-    } else {
-      targetPrice.value = null;
-      displayPrice.value = null; // 안 보이면 가격 초기화
-    }
-  },
-  { immediate: true } // 컴포넌트 초기화 시에도 실행
-);
 
 </script>
 

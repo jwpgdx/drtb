@@ -15,7 +15,6 @@ export const useMarketStore = defineStore('marketStore', {
   }),
   actions: {
     async fetchMarkets() {
-      console.log ('fetchMarkets!!!')
       try {
         const options = { method: "GET", headers: { accept: "application/json" } };
         const response = await fetch(
@@ -36,9 +35,7 @@ export const useMarketStore = defineStore('marketStore', {
             prev_closing_price: null,
             change: 'EVEN',
           }));
-          console.log ('data!!!', this.markets[0])
         } else {
-          console.log ('Error!!!')
           throw new Error('Invalid data format');
         }
       } catch (error) {
@@ -51,7 +48,6 @@ export const useMarketStore = defineStore('marketStore', {
       const targetMarket = this.markets.find((item) => item.market === market);
       if (targetMarket) {
         targetMarket.isVisible = isVisible;
-        console.log(`Market ${market} visibility updated: ${isVisible}`);
 
         // 가시성이 true일 때 가격 데이터를 가져옵니다.
         if (isVisible) {
@@ -64,7 +60,6 @@ export const useMarketStore = defineStore('marketStore', {
 
     
     async fetchPrice(markets) {
-      console.log ('가격정보 시스템 가동')
       try {
         // markets가 문자열이면 쉼표로 나누어 배열로 변환
         if (typeof markets === 'string') {
@@ -75,7 +70,6 @@ export const useMarketStore = defineStore('marketStore', {
         const marketCodes = markets.join(',');  // 배열을 쉼표로 구분된 문자열로 변환
         const response = await fetch(`https://api.bithumb.com/v1/ticker?markets=${marketCodes}`);
         const data = await response.json();
-        console.log ('가격정보', data)
 
         if (data) {
           this.setPrice(data);
@@ -86,9 +80,7 @@ export const useMarketStore = defineStore('marketStore', {
     },
     
 
-    setPrice(marketData) {
-      console.log('셋프라잍', marketData);
-    
+    setPrice(marketData) {    
       // marketData가 배열이므로 각 항목을 반복해서 처리
       marketData.forEach(data => {
         // markets 배열에서 해당 market을 찾아서 데이터 업데이트
