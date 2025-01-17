@@ -1,5 +1,5 @@
 <template>
-  <div class="market">
+  <div class="market" @click="goToOrderPage">
     <p>{{ market.korean_name }}</p>
     <p>{{ market.market }}</p>
 
@@ -19,7 +19,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, defineProps, computed } from "vue";
+import { defineProps, computed } from "vue";
+import { useRouter } from "vue-router"; // useRouter 훅을 임포트
 
 interface Market {
   market: string;
@@ -32,6 +33,7 @@ interface Market {
 }
 
 const props = defineProps<{ market: Market }>();
+const router = useRouter(); // router 인스턴스를 가져옴
 
 // 퍼센트 변화 계산
 const percentageChange = computed(() => {
@@ -42,6 +44,11 @@ const percentageChange = computed(() => {
 
   return ((tradePrice - prevClosingPrice) / prevClosingPrice) * 100;
 });
+
+// 클릭 시 주문 페이지로 이동
+const goToOrderPage = () => {
+  router.push(`/order/${props.market.market}`);
+};
 </script>
 
 <style scoped>
@@ -53,5 +60,10 @@ const percentageChange = computed(() => {
   justify-content: center;
   align-items: center;
   flex-direction: column;
+  cursor: pointer; /* 클릭 가능한 느낌을 주기 위해 포인터 커서 추가 */
+}
+
+.router-link-active {
+  font-weight: bold;
 }
 </style>
