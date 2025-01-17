@@ -15,11 +15,13 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router"; // router 사용
+import { useRouter, useRoute } from "vue-router";
+
 import { useAuthStore } from "@/stores/auth-store";
 
 const authStore = useAuthStore();
 const router = useRouter(); // router 인스턴스 가져오기
+const route = useRoute(); // 현재 라우트 정보 조회
 
 const accessKey = ref("");
 const secretKey = ref("");
@@ -29,9 +31,11 @@ const handleLogin = async () => {
   await authStore.fetchApiKeyList(accessKey.value, secretKey.value);
 
   if (authStore.isAuthenticated) {
-    // 로그인 성공 시, 홈 페이지로 이동
-    const redirectUrl = router.currentRoute.value.query.redirect || "/"; // redirect가 없으면 기본 홈 페이지로
-    router.push(redirectUrl as string);
+    // 쿼리에서 redirect 경로 가져오기
+    const redirectPath = route.query.redirect || "/";
+
+    // 로그인 성공 후 히스토리 스택을 대체
+    router.replace(redirectPath as string);
   }
 };
 </script>
