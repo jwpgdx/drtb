@@ -1,5 +1,5 @@
 # 1. 이미지 빌드
-docker build -t bitble:v1 .
+docker build -t bitble:v2 .
 
 # 2. 이미지 실행
 docker run -p 3000:3000 bitble:v1
@@ -9,10 +9,10 @@ docker run -p 3000:3000 -v "$(pwd)":/app bitble:v1
 docker login
 
 # 2. 이미지 태그 설정
-docker tag bitble:v1 jwpgdx/bitble:v1
+docker tag bitble:v2 jwpgdx/bitble:v2
 
 # 3. 이미지 업로드
-docker push jwpgdx/bitble:v1
+docker push jwpgdx/bitble:v2
 
 
 
