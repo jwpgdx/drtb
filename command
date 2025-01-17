@@ -28,14 +28,19 @@ docker push jwpgdx/bitble:v2
 
 
 Github
-# 1. 
+# 1. 변경된 파일들을 스테이징 영역에 추가
 git add .
 
-# 2. 
+# 2. 스테이징된 파일을 커밋하고 메시지를 추가
 git commit -m "메시지"
 
-# 3. 
+# 3. 로컬 변경 사항을 원격 리포지토리에 푸시
 git push
+
+
+# 4. 원격 리포지토리에서 최신 변경 사항을 로컬 리포지토리로 가져옴
+git pull origin main
+
 
 기능 추가:
 
