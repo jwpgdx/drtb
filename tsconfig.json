@@ -8,11 +8,17 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "allowJs": true,
-    "module": "ESNext",  // Change from "Node16" to "ESNext" for broader module support
+    "module": "Node16",  // Change to "Node16" for compatibility with "moduleResolution"
     "target": "ES2020",
-    "baseUrl": ".",
+    "baseUrl": ".", // Base directory for paths
     "paths": {
-      "@/*": ["./src/*"]
+      "@assets/*": ["./src/assets/*"],
+      "@components/*": ["./src/components/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@pages/*": ["./src/pages/*"],
+      "@router/*": ["./src/router/*"],
+      "@services/*": ["./src/services/*"],
+      "@stores/*": ["./src/stores/*"]
     },
     "typeRoots": ["./node_modules/@types", "./src"]
   }
