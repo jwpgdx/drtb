@@ -2,6 +2,7 @@
   "compilerOptions": {
     "esModuleInterop": true,
     "allowImportingTsExtensions": true,
+    "noEmit": true, // or "emitDeclarationOnly": true
     "moduleResolution": "node16",
     "module": "Node16",  // Node.js 16 이상에서 사용하는 ESM 방식
     "target": "ES2020",  // 최신 ES 기능을 사용하려면 2020 이상
