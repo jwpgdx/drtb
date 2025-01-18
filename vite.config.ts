@@ -48,6 +48,12 @@ export default defineConfig({
     },
   },
   optimizeDeps: {
-    include: ["vue", "vue-router"],
+    esbuildOptions: {
+      loader: {
+        '.ts': 'ts',
+        '.js': 'js',
+      }
+    },
+    include: ['vue', 'vue-router', 'radix-vue'],  // radix-vue 추가
   },
 });

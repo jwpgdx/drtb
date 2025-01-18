@@ -2,10 +2,13 @@
   "compilerOptions": {
     "allowImportingTsExtensions": true,
     "noEmit": true,
-    "moduleResolution": "node16",
+    "moduleResolution": "node",  // Keeps node-style module resolution
     "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
     "allowJs": true,
-    "module": "Node16",
+    "module": "ESNext",  // Change from "Node16" to "ESNext" for broader module support
     "target": "ES2020",
     "baseUrl": ".",
     "paths": {
