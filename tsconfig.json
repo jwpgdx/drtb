@@ -18,5 +18,9 @@
     "@stores/*": ["./src/stores/*"]
   },
   "typeRoots": ["./node_modules/@types", "./src/types"]
-}
+},
+"exclude": [
+    "node_modules",
+    "tailwind.config.js"  // 이 파일을 컴파일에서 제외
+  ]
 }
