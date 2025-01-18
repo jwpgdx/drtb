@@ -1,4 +1,4 @@
-import { defineStore } from "pinia";
+import { defineStore } from 'pinia'
 import axios from "axios";
 import CryptoJS from "crypto-js"; // HmacSHA512
 
