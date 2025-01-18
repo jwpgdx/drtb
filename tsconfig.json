@@ -5,6 +5,8 @@
   "resolveJsonModule": true,
   "allowSyntheticDefaultImports": true,
   "allowJs": true,
+  "moduleResolution": "node16",  // node16으로 변경
+
   "module": "ESNext",
   "target": "ES2020",
   "baseUrl": ".",
