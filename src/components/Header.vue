@@ -15,7 +15,7 @@
         @click="goToLogin"
         class="mr-2 bg-green-500 px-4 py-2 rounded"
       >
-        ㅇㅁㄴㅍㅍㅍ
+        ㅇㅁㄴ222ㅍㅍㅍ
       </button>
 
       <button

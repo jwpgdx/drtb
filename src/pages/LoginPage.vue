@@ -28,7 +28,7 @@ const secretKey = ref("");
 
 // 로그인 처리 함수
 const handleLogin = async () => {
-  await authStore.fetchApiKeyList(accessKey.value, secretKey.value);
+  await authStore.fetchAccountInfo(accessKey.value, secretKey.value);
 
   if (authStore.isAuthenticated) {
     // 쿼리에서 redirect 경로 가져오기
