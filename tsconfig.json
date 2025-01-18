@@ -5,8 +5,7 @@
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "moduleResolution": "node16",  // 여기서 이미 node16을 설정했으니까
-    "module": "node16",  // 이 줄도 추가해줘!
+    "moduleResolution": "bundler",
     "target": "ES2020",
     "baseUrl": ".",
     "paths": {
