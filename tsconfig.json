@@ -1,8 +1,11 @@
 {
   "compilerOptions": {
+    "esModuleInterop": true,
+    "moduleResolution": "node16",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "target": "ES2015"  // 추가된 부분!
   }
 }

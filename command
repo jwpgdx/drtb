@@ -36,7 +36,7 @@ git commit -m "메시지"
 
 # 3. 로컬 변경 사항을 원격 리포지토리에 푸시
 git push
-
+git push origin main
 
 # 4. 원격 리포지토리에서 최신 변경 사항을 로컬 리포지토리로 가져옴
 git pull origin main
