@@ -8,16 +8,9 @@ export default defineConfig({
   plugins: [vue()],
   resolve: {
     alias: {
-      "@": fileURLToPath(new URL("./src", import.meta.url)),
-      "@assets": fileURLToPath(new URL("./src/assets", import.meta.url)),
-      "@components": fileURLToPath(new URL("./src/components", import.meta.url)),
-      "@lib": fileURLToPath(new URL("./src/lib", import.meta.url)),
-      "@pages": fileURLToPath(new URL("./src/pages", import.meta.url)),
-      "@router": fileURLToPath(new URL("./src/router", import.meta.url)),
-      "@services": fileURLToPath(new URL("./src/services", import.meta.url)),
-      "@stores": fileURLToPath(new URL("./src/stores", import.meta.url)),
+      "@": fileURLToPath(new URL("./src", import.meta.url)), // ✅ @ -> src 매핑
     },
-    extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
+    extensions: [".js", ".json", ".jsx", ".mjs", ".ts", ".tsx", ".vue"],
   },
   css: {
     postcss: {
@@ -25,18 +18,18 @@ export default defineConfig({
     },
     preprocessorOptions: {
       scss: {
-        // additionalData: `@import "@/assets/styles/variables.scss";`,
+        // additionalData: `@import "@/assets/styles/variables.scss";`, // 전역 SCSS 변수 추가
       },
     },
   },
   server: {
     port: 3000,
-    host: "0.0.0.0",
+    host: "0.0.0.0", // 외부 접속을 허용하기 위해 0.0.0.0으로 설정
     hmr: {
       clientPort: 3000,
     },
     watch: {
-      usePolling: true,
+      usePolling: true, // Docker 환경에서 HMR 동작 안 할 경우 폴링 활성화
     },
   },
   build: {
@@ -53,32 +46,14 @@ export default defineConfig({
         },
       },
     },
-    commonjsOptions: {
-      esmExternals: true,
-    },
   },
   optimizeDeps: {
-    include: [
-      'vue',
-      'vue-router',
-      'pinia',
-      'radix-vue',
-      '@vueuse/core',
-      'axios',
-      'crypto-js'
-    ],
-    exclude: [],
     esbuildOptions: {
       loader: {
         '.ts': 'ts',
         '.js': 'js',
-      },
-      tsconfigRaw: {
-        compilerOptions: {
-          experimentalDecorators: true,
-          importsNotUsedAsValues: 'preserve',
-        },
-      },
+      }
     },
+    include: ['vue', 'vue-router'],
   },
 });
