@@ -25,10 +25,11 @@ interface Market {
   market: string;
   korean_name: string;
   english_name: string;
+  market_warning: string;
   isVisible: boolean;
-  trade_price: number; // 종가(현재가)
-  prev_closing_price: number; // 전일 종가(KST 0시 기준)
-  change: string; //EVEN : 보합, RISE : 상승, FALL : 하락
+  trade_price: number;  // 추가된 속성
+  prev_closing_price: number;  // 추가된 속성
+  change: number;  // 추가된 속성
 }
 
 const props = defineProps<{ market: Market }>();

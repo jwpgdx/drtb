@@ -5,7 +5,10 @@ interface Market {
   korean_name: string;
   english_name: string;
   market_warning: string;
-  isVisible: boolean;  // isVisible 속성 추가
+  isVisible: boolean;
+  trade_price: number;  // 추가된 속성
+  prev_closing_price: number;  // 추가된 속성
+  change: number;  // 추가된 속성
 }
 
 export const useMarketStore = defineStore('marketStore', {
@@ -96,19 +99,5 @@ export const useMarketStore = defineStore('marketStore', {
         }
       });
     },
-
-    // 화면에 보이는 마켓만 추가 (isVisible 제외)
-    addMarket(item: MarketItem) {
-      const existingMarket = this.visibleMarkets.find(m => m.market === item.market);
-      if (!existingMarket) {
-        this.visibleMarkets.push(item); // 이미 있으면 추가 안함
-      }
-    },
-
-    // 화면에서 사라진 마켓 제거
-    removeMarket(market: string) {
-      this.visibleMarkets = this.visibleMarkets.filter(item => item.market !== market);
-    },
-
   },
 });
