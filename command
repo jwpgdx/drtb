@@ -33,7 +33,10 @@ git add .
 
 # 2. 스테이징된 파일을 커밋하고 메시지를 추가
 git commit -m "메시지"
-git commit -m "Fix TypeScript configuration for module resolution"
+git commit -m "Fix: Multiple file updates and commit due to missed GitHub upload
+- Fixed issues with login state management logic
+- Improved API error handling
+- Added session timer logic"
 
 # 3. 로컬 변경 사항을 원격 리포지토리에 푸시
 git push

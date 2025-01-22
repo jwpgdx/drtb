@@ -178,7 +178,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import OrderAccount from "@/components/OrderAccount";
+import OrderAccount from "@/components/OrderAccount.vue";
 
 const props = defineProps({
   market: {

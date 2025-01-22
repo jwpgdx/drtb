@@ -79,7 +79,8 @@ const formatDate = (date: string) => {
 // 체결금액 계산 함수 (3자리마다 쉼표 추가)
 const calculateOrderAmount = (price: number, volume: number) => {
   const amount = price * volume;
-  return new Intl.NumberFormat("ko-KR").format(amount.toFixed(2)); // 3자리마다 쉼표 추가
+  const formattedAmount = (amount).toFixed(2);  // 'string' 타입이지만, 이제 이 문자열을 그대로 사용
+  return new Intl.NumberFormat("ko-KR").format(parseFloat(formattedAmount)); // 여기서 다시 숫자로 변환하여 사용
 };
 
 // 주문 상태 텍스트 변환

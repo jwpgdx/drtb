@@ -138,7 +138,6 @@ const cancelOrder = async (uuid: string) => {
       toast({
         title: "주문 취소 성공",
         description: `주문 ${uuid}이(가) 취소되었습니다.`,
-        variant: "success",
         action: h(
           ToastAction,
           {
