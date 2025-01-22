@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>Welcome to the Coin Market</h1>
     <MarketList />
   </div>
 </template>

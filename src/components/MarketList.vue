@@ -1,7 +1,15 @@
 <template>
   <div>
+    <!-- 필터 입력창 -->
+    <Input 
+      v-model="filterQuery" 
+      placeholder="검색어를 입력하세요" 
+      class="mb-4 w-full"
+    />
+
+    <!-- 마켓 리스트 -->
     <MarketListItem
-      v-for="market in markets"
+      v-for="market in filteredMarkets"
       :key="market.market"
       :data-id="market.market"
       :market="market"
@@ -9,14 +17,16 @@
     >
     </MarketListItem>
 
+    <!-- 에러 메시지 -->
     <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, watch } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from "vue";
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
 import MarketListItem from "@/components/MarketListItem.vue";
+import { Input } from "@/components/ui/input";
 
 // store 사용
 const marketStore = useMarketStore();
@@ -25,9 +35,27 @@ const marketStore = useMarketStore();
 const observer = ref<IntersectionObserver | null>(null);
 const visibleMarkets = ref<string[]>([]);
 
+// 필터 입력값
+const filterQuery = ref('');
+
 // computed
 const markets = computed(() => marketStore.markets);
 const errorMessage = computed(() => marketStore.errorMessage);
+
+// 필터링된 마켓 목록
+const filteredMarkets = computed(() => {
+  if (!filterQuery.value) {
+    return markets.value;
+  }
+  return markets.value.filter(market => {
+    const query = filterQuery.value.toLowerCase();
+    return (
+      market.market.toLowerCase().includes(query) ||
+      market.korean_name.toLowerCase().includes(query) ||
+      market.english_name.toLowerCase().includes(query)
+    );
+  });
+});
 
 // 화면에 보이는 마켓에 대해 가격 갱신
 watch(visibleMarkets, (newVisibleMarkets) => {
@@ -35,6 +63,14 @@ watch(visibleMarkets, (newVisibleMarkets) => {
     fetchPriceData(newVisibleMarkets);
   }
 });
+
+// 화면에 보이는 마켓의 변경을 감지하고 옵저버를 다시 설정
+watch(filteredMarkets, () => {
+  if (observer.value) {
+    observer.value.disconnect(); // 기존 옵저버 종료
+  }
+  createObserver(); // 새로운 옵저버 생성
+}, { immediate: true });
 
 // onMounted와 onBeforeUnmount로 생명 주기 메서드 처리
 onMounted(() => {
@@ -71,7 +107,7 @@ function startPriceUpdate() {
     if (visibleMarkets.value.length > 0) {
       fetchPriceData(visibleMarkets.value); // 보이는 마켓만 가격 갱신
     }
-  }, 5000); // 5초마다 갱신
+  }, 1000); // 5초마다 갱신
 }
 
 // 가격 데이터 가져오기
@@ -80,7 +116,15 @@ function fetchPriceData(markets: string[]) {
 }
 
 // IntersectionObserver 생성
-function createObserver() {
+async function createObserver() {
+  await nextTick(); // DOM 업데이트가 완료되면 옵저버를 설정
+
+  // 기존 옵저버가 있을 경우, 먼저 종료시킴
+  if (observer.value) {
+    observer.value.disconnect();
+  }
+
+  // 새로운 옵저버를 설정
   observer.value = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -105,7 +149,8 @@ function createObserver() {
     { threshold: 0.5 }
   );
 
-  markets.value.forEach((market) => {
+  // 새로운 filteredMarkets에 대해서만 옵저버를 설정
+  filteredMarkets.value.forEach((market) => {
     const marketElement = document.querySelector(
       `.market[data-id="${market.market}"]`
     );

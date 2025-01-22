@@ -12,6 +12,7 @@ const routes = [
     path: "/order/:market",
     name: "Order",
     component: OrderPage,
+
     beforeEnter: (to, from, next) => {
       const authStore = useAuthStore();
       if (!authStore.isAuthenticated) {
@@ -21,6 +22,7 @@ const routes = [
         next();
       }
     },
+    
   },
 ];
 

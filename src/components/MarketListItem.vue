@@ -1,71 +1,107 @@
 <template>
-  <div class="market" @click="goToOrderPage">
-    <p>{{ market.korean_name }}</p>
-    <p>{{ market.market }}</p>
+  <div
+    @click="goToOrderPage"
+    class="flex items-center p-4 border rounded-lg shadow-md cursor-pointer hover:bg-gray-100"
+  >
+    <i
+      :class="`cf cf-${market.market.replace('KRW-', '').toLowerCase() || 'btc'}`"
+      class="coin-icon mr-4"
+    ></i>
+    <div class="flex-1">
+      <p class="text-lg font-semibold">{{ market.korean_name }}</p>
+      <p class="text-sm text-gray-500">{{ market.market }}</p>
+    </div>
+    <div class="flex items-center">
+      <!-- 로딩 중일 때 돌아가는 애니메이션 -->
+      <svg
+        v-if="isLoading"
+        class="w-6 h-6 text-gray-500 animate-spin"
+        xmlns="http://www.w3.org/2000/svg"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <circle
+          cx="12"
+          cy="12"
+          r="10"
+          stroke-width="4"
+          class="opacity-25"
+        />
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M4 12a8 8 0 1116 0A8 8 0 014 12z"
+          class="opacity-75"
+        />
+      </svg>
 
-    <div :class="market.change">
-      <!-- EVEN, RISE, FALL -->
-
-      <p>{{ market.trade_price }}</p>
-
-      <!-- 퍼센트 변화 출력 -->
-      <p v-if="percentageChange !== null">
-        {{ percentageChange >= 0 ? "+" : "" }}{{ percentageChange.toFixed(2) }}%
+      <!-- trade_price가 있으면 세자리마다 쉼표 추가 -->
+      <p v-else class="text-xl font-bold mr-2">
+        {{ market.trade_price ? market.trade_price.toLocaleString() : '-' }}
+      </p>
+      
+      <p
+        :class="[
+          'text-sm font-semibold',
+          priceChangeClass
+        ]"
+      >
+        {{ market.priceChangePercent !== null ? market.priceChangePercent : '-' }}%
       </p>
     </div>
-    <slot />
   </div>
 </template>
 
 <script setup lang="ts">
-import { defineProps, computed } from "vue";
-import { useRouter } from "vue-router"; // useRouter 훅을 임포트
+import { defineProps, computed, ref, watchEffect } from "vue";
+import { useRouter } from "vue-router";
 
 interface Market {
   market: string;
   korean_name: string;
   english_name: string;
-  market_warning: string;
+  market_warning: string | undefined;
   isVisible: boolean;
-  trade_price: number;  // 추가된 속성
-  prev_closing_price: number;  // 추가된 속성
-  change: number;  // 추가된 속성
+  trade_price: number | null;
+  prev_closing_price: number;
+  change: string;
+  priceChangePercent: number | null;
 }
 
 const props = defineProps<{ market: Market }>();
-const router = useRouter(); // router 인스턴스를 가져옴
+const router = useRouter();
 
-// 퍼센트 변화 계산
-const percentageChange = computed(() => {
-  const tradePrice = props.market.trade_price;
-  const prevClosingPrice = props.market.prev_closing_price;
+// 로딩 상태 관리
+const isLoading = ref(true);
 
-  if (prevClosingPrice === 0) return null; // 전일 종가가 0이면 계산 불가
-
-  const change = ((tradePrice - prevClosingPrice) / prevClosingPrice) * 100;
-
-  return change; // 기호 없이 숫자만 반환
+// 데이터가 들어오면 로딩을 종료
+watchEffect(() => {
+  if (props.market.trade_price !== null && props.market.priceChangePercent !== null) {
+    isLoading.value = false;
+  }
 });
 
-// 클릭 시 주문 페이지로 이동
+// goToOrderPage function
 const goToOrderPage = () => {
   router.push(`/order/${props.market.market}`);
 };
+
+// Computed property for price change class
+const priceChangeClass = computed(() => {
+  switch (props.market.change) {
+    case "RISE":
+      return "text-blue-500"; // 상승
+    case "FALL":
+      return "text-red-500"; // 하락
+    default:
+      return "text-gray-500"; // 보합
+  }
+});
 </script>
 
 <style scoped>
-.market {
-  height: 120px;
-  border: 1px solid #ccc;
-  margin-bottom: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-  cursor: pointer; /* 클릭 가능한 느낌을 주기 위해 포인터 커서 추가 */
-}
-
-.router-link-active {
-  font-weight: bold;
+.coin-icon {
+  font-size: 2rem;
 }
 </style>
