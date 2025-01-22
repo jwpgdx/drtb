@@ -15,6 +15,7 @@ export const useOrderListStore = defineStore("orderListStore", {
 
   actions: {
     // 공통된 오더리스트 호출 함수
+    
     async fetchOrderListCommon(params = {}) {
       const authStore = useAuthStore();
       const accessKey = authStore.accessKey;
@@ -63,7 +64,7 @@ export const useOrderListStore = defineStore("orderListStore", {
     // 오더리스트 새로 불러오기
     async fetchOrderList(params = {}) {
       this.page = 1;
-      const updatedParams = { ...params, page: this.page };
+      const updatedParams = { ...params, page: this.page, limit: params.limit || 20 }; // 기본값 20
       console.log("fetchOrderList 함수 호출됨");
       const data = await this.fetchOrderListCommon(updatedParams);
       if (data) {
@@ -83,7 +84,7 @@ export const useOrderListStore = defineStore("orderListStore", {
       console.log("fetchMore 함수 호출됨");
 
       // fetchMore일 때만 this.page 값을 덮어쓰기
-      const updatedParams = { ...params, page: this.page };
+      const updatedParams = { ...params, page: this.page, limit: params.limit || 20 }; // 기본값 20
 
       const data = await this.fetchOrderListCommon(updatedParams);
       if (data) {
