@@ -1,15 +1,21 @@
 <template>
-  <header class="fixed top-0 left-0 right-0 p-4 bg-blue-500 text-white shadow-md z-50">
+  <header
+    class="fixed top-0 left-0 right-0 p-4 bg-blue-500 text-white shadow-md z-50"
+  >
     <div class="flex items-center justify-between">
       <!-- 이전으로 가기 버튼 -->
-      <move-left class="w-6 h-6 mr-2 cursor-pointer" v-if="!isMainPage" @click="goBack" />
+      <move-left
+        class="w-6 h-6 mr-2 cursor-pointer"
+        v-if="!isMainPage"
+        @click="goBack"
+      />
 
       <!-- 페이지별 헤더 내용 -->
       <div v-if="!isLoginPage" class="flex items-center space-x-4">
         <!-- OrderPage에서만 market 값 표시 -->
         <div v-if="isOrderPage" class="flex items-center space-x-2">
           <i
-            :class="`cf cf-${marketName.replace('KRW-', '').toLowerCase() || 'btc'}`"
+            :class="`cf cf-${getMarketSymbol(marketName)}`"
             class="coin-icon text-2xl"
           ></i>
           <h1 class="text-xl font-semibold">{{ marketName }}</h1>
@@ -23,7 +29,11 @@
           <Button v-if="!authStore.isAuthenticated" @click="goToLogin">
             로그인
           </Button>
-          <div v-if="authStore.isAuthenticated" class="text-sm" @click="extendSession">
+          <div
+            v-if="authStore.isAuthenticated"
+            class="text-sm"
+            @click="extendSession"
+          >
             남은 시간: <span class="font-bold">{{ formattedTime }}</span>
           </div>
           <!-- 로그인된 경우 드롭다운 메뉴 표시 -->
@@ -73,7 +83,6 @@
           </DropdownMenu>
 
           <!-- 타이머 표시 -->
-       
         </div>
       </div>
     </div>
@@ -124,9 +133,14 @@ const isMainPage = computed(() => router.currentRoute.value.path === "/");
 const isOrderPage = computed(() => router.currentRoute.value.name === "Order");
 
 // OrderPage일 경우 :market 값을 가져오기
-const marketName = computed(
-  () => router.currentRoute.value.params.market || ""
-);
+const marketName = computed(() => {
+  const market = router.currentRoute.value.params.market;
+  return Array.isArray(market) ? market[0] : market || "";
+});
+
+const getMarketSymbol = (market: string): string => {
+  return market.replace('KRW-', '').toLowerCase() || 'btc';
+};
 
 // 로그인 페이지로 이동
 const goToLogin = () => {
@@ -144,14 +158,14 @@ const logout = () => {
     description: "성공적으로 로그아웃되었습니다.",
     variant: "default",
     action: h(
-        ToastAction,
-        {
-          altText: "확인",
-        },
-        {
-          default: () => "확인", // 버튼 텍스트를 "확인"으로
-        }
-      ),
+      ToastAction,
+      {
+        altText: "확인",
+      },
+      {
+        default: () => "확인", // 버튼 텍스트를 "확인"으로
+      }
+    ),
   });
 };
 
@@ -170,7 +184,10 @@ const goBack = () => {
 const formattedTime = computed(() => {
   const minutes = Math.floor(authStore.remainingTime / 60);
   const seconds = authStore.remainingTime % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
+    2,
+    "0"
+  )}`;
 });
 
 // 세션 연장 처리
@@ -183,18 +200,17 @@ const extendSession = () => {
     description: "로그인 세션이 연장되었습니다.",
     variant: "default",
     action: h(
-        ToastAction,
-        {
-          altText: "확인",
-        },
-        {
-          default: () => "확인", // 버튼 텍스트를 "확인"으로
-        }
-      ),
+      ToastAction,
+      {
+        altText: "확인",
+      },
+      {
+        default: () => "확인", // 버튼 텍스트를 "확인"으로
+      }
+    ),
   });
 };
 </script>
-
 
 <style scoped>
 /* 헤더 스타일 */
