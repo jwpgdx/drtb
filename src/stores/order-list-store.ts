@@ -5,6 +5,12 @@ import axios from "axios";
 import { KJUR } from "jsrsasign";
 import { useAuthStore } from "@/stores/auth-store"; // authStore 가져오기
 
+interface OrderParams {
+  limit?: number;
+  page?: number;
+  [key: string]: any;
+}
+
 export const useOrderListStore = defineStore("orderListStore", {
   state: () => ({
     orderErrorMessage: null,
@@ -16,7 +22,7 @@ export const useOrderListStore = defineStore("orderListStore", {
   actions: {
     // 공통된 오더리스트 호출 함수
     
-    async fetchOrderListCommon(params = {}) {
+    async fetchOrderListCommon(params: OrderParams = {}) {
       const authStore = useAuthStore();
       const accessKey = authStore.accessKey;
       const secretKey = authStore.secretKey;
@@ -62,9 +68,9 @@ export const useOrderListStore = defineStore("orderListStore", {
     },
 
     // 오더리스트 새로 불러오기
-    async fetchOrderList(params = {}) {
+    async fetchOrderList(params: OrderParams = {}) {
       this.page = 1;
-      const updatedParams = { ...params, page: this.page, limit: params.limit || 20 }; // 기본값 20
+      const updatedParams = { ...params, page: this.page };
       console.log("fetchOrderList 함수 호출됨");
       const data = await this.fetchOrderListCommon(updatedParams);
       if (data) {
@@ -80,11 +86,11 @@ export const useOrderListStore = defineStore("orderListStore", {
     },
 
     // 오더리스트 추가로 불러오기
-    async fetchMore(params = {}) {
+    async fetchMore(params: OrderParams = {}) {
       console.log("fetchMore 함수 호출됨");
 
       // fetchMore일 때만 this.page 값을 덮어쓰기
-      const updatedParams = { ...params, page: this.page, limit: params.limit || 20 }; // 기본값 20
+      const updatedParams = { ...params, page: this.page };
 
       const data = await this.fetchOrderListCommon(updatedParams);
       if (data) {
