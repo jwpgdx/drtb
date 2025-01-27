@@ -2,14 +2,14 @@
 docker-compose up --build
 이걸로 실행
 
-docker build -t bitble:v2 .
+docker build -t drtb:v2 .
 
 # 2. 이미지 실행
-docker run -p 3000:3000 bitble:v2
-docker run -p 3000:3000 -v "$(pwd)":/app bitble:v1
+docker run -p 3000:3000 drtb:v2
+docker run -p 3000:3000 -v "$(pwd)":/app drtb:v1
 docker-compose up --build
 # 2-1. 윈도우 실행 안될떄
-PS C:\Users\jwpg\Documents\GitHub\bitble> docker run -it -v "${PWD}:/app" bitble:v2 /bin/sh                   t -v "${PWD}:/app" bitble:v2 /bin/sh
+PS C:\Users\jwpg\Documents\GitHub\drtb> docker run -it -v "${PWD}:/app" drtb:v2 /bin/sh                   t -v "${PWD}:/app" drtb:v2 /bin/sh
 >>
 # npx vite ---version 
 Need to install the following packages:
@@ -20,10 +20,10 @@ npm install
 docker login
 
 # 2. 이미지 태그 설정
-docker tag bitble:v2 jwpgdx/bitble:v2
+docker tag drtb:v2 jwpgdx/drtb:v2
 
 # 3. 이미지 업로드
-docker push jwpgdx/bitble:v2
+docker push jwpgdx/drtb:v2
 
 
 

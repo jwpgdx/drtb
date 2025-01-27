@@ -2,7 +2,7 @@
 
 <template>
   <div>
-    <OrderHeader />
+    <OrderHeader :filteredMarket="filteredMarket" />
     <Tabs default-value="order">
       <TabsList>
         <TabsTrigger value="order">
@@ -13,11 +13,11 @@
         >
       </TabsList>
       <TabsContent value="order">
-        <Order v-if="isAuthenticated" />
+        <Order :filteredMarket="filteredMarket" v-if="isAuthenticated" />
         <Auth404 v-else />
       </TabsContent>
       <TabsContent value="chart">
-        <Error404 />
+      <Error404/>
       </TabsContent>
     </Tabs>
   </div>
@@ -26,6 +26,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
+import { useAccountStore } from "@/stores/account-store"; // Pinia store 가져오기
 import { useOrderStore } from "@/stores/order-store"; // Pinia store 가져오기
 
 import { useAuthStore } from "@/stores/auth-store"; // Pinia store 가져오기
@@ -39,48 +40,53 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ChartCandlestick, HandCoins } from "lucide-vue-next";
 
 const marketStore = useMarketStore();
+const accountStore = useAccountStore();
 const orderStore = useOrderStore();
 
 const authStore = useAuthStore();
 
-// 라우터 설정
 const route = useRoute();
 const marketParam = computed(() => route.params.market as string);
 
+const markets = computed(() => marketStore.markets);
+const errorMessage = computed(() => marketStore.errorMessage);
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 
+const filteredMarket = computed(() => {
+  return markets.value.find((market) => market.market === marketParam.value);
+});
+const formattedTradePrice = computed(() => {
+  const price = filteredMarket.value?.trade_price;
+  return price ? price.toLocaleString("en-US") : "-"; // 값이 없으면 "-" 표시
+});
 // 인터벌 ID를 ref로 선언
 const intervalId = ref<NodeJS.Timeout | null>(null);
 
 async function authValidated() {
   // 마켓 데이터 가져오기
   if (marketParam.value) {
+    await accountStore.fetchAccountData(); // 계정 데이터 가져오기
+    accountStore.setMarketLocked(marketParam.value);
     orderStore.fetchOrderChance(marketParam.value);
   }
 }
 
 // 가격 갱신
 function startPriceUpdate() {
-  intervalId.value = setInterval(() => {
-    marketStore.fetchPriceForOrderMarket();
-  }, 1000); // 1초마다 갱신
+  if (marketParam.value) {
+    marketStore.fetchPrice([marketParam.value]);
+    intervalId.value = setInterval(() => {
+      marketStore.fetchPrice([marketParam.value]);
+    }, 1000); // 5초마다 갱신
+  }
 }
-const markets = computed(() => marketStore.markets);
-
 // 생명 주기
 onMounted(async () => {
-  if (markets.value.length === 0) {
-    await marketStore.fetchMarkets(); // 1. fetchMarkets
-  }
-  await marketStore.setOrderMarket(marketParam.value); // 2. setOrderMarket
-  await marketStore.fetchPriceForOrderMarket(); // 3. initOrderStore
-  await orderStore.initOrderStore();
-
+  await marketStore.fetchMarkets(); // 마켓 정보 가져오기
   if (isAuthenticated.value) {
     authValidated();
   }
-  // 가격 갱신 시작
-  startPriceUpdate();
+  startPriceUpdate(); // 가격 갱신 시작
 });
 
 onBeforeUnmount(() => {

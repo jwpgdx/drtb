@@ -1,7 +1,7 @@
 <template>
   <div
     @click="goToOrderPage"
-    class="flex items-center p-4 border rounded-lg shadow-md cursor-pointer hover:bg-gray-100"
+    class="flex items-center p-4 cursor-pointer hover:bg-gray-100"
   >
     <i
       :class="`cf cf-${market.market.replace('KRW-', '').toLowerCase() || 'btc'}`"
@@ -91,9 +91,9 @@ const goToOrderPage = () => {
 const priceChangeClass = computed(() => {
   switch (props.market.change) {
     case "RISE":
-      return "text-blue-500"; // 상승
+      return "text-red-500"; // 상승
     case "FALL":
-      return "text-red-500"; // 하락
+      return "text-blue-500"; // 하락
     default:
       return "text-gray-500"; // 보합
   }

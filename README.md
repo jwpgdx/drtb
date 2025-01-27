@@ -1,6 +1,6 @@
-# BITBLE
+# drtb
 
-**BITBLE** is a web platform built using Vue.js and Firebase, designed to provide real-time notifications and information about cryptocurrency airdrops on Bithumb. Additionally, it integrates Bithumb's API to facilitate trading operations seamlessly. The platform ensures security as Bithumb API keys and secrets are only used on the 🖥️ client-side, avoiding storage on servers.
+**drtb** is a web platform built using Vue.js and Firebase, designed to provide real-time notifications and information about cryptocurrency airdrops on Bithumb. Additionally, it integrates Bithumb's API to facilitate trading operations seamlessly. The platform ensures security as Bithumb API keys and secrets are only used on the 🖥️ client-side, avoiding storage on servers.
 
 ## Features
 
@@ -35,8 +35,8 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/jwpgdx/bitble.git
-   cd bitble
+   git clone https://github.com/jwpgdx/drtb.git
+   cd drtb
    ```
 
 2. Install dependencies:

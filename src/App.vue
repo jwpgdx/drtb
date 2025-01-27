@@ -1,26 +1,36 @@
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import { onBeforeMount } from "vue";
+import { useMarketStore } from "@/stores/market-store";
+
 import Header from "@/components/Header.vue";
-import Toaster from '@/components/ui/toast/Toaster.vue'
+import Toaster from "@/components/ui/toast/Toaster.vue";
 
-const router = useRouter();
+const marketStore = useMarketStore();
 
-
+onBeforeMount(() => {
+  marketStore.fetchMarkets();
+});
 </script>
 
 <template>
-  <div class="app min-h-screen ">
+  <div vaul-drawer-wrapper id="app" class="min-h-screen">
     <Toaster />
     <Header />
     <main class="p-4">
-      <RouterView />
+      <div class="router-view-wrapper">
+        <RouterView />
+      </div>
     </main>
-
-   
   </div>
 </template>
 
 <style scoped>
-.app {
+#app {
   background-color: #f7f7f7;
-}</style>
+}
+
+.router-view-wrapper {
+  max-width: 560px; /* 원하는 max-width 값 */
+  margin: 0 auto; /* 가운데 정렬 */
+}
+</style>

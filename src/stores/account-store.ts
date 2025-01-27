@@ -9,6 +9,10 @@ export const useAccountStore = defineStore("accountStore", {
     accountData: null,
     accountErrorMessage: null,
     accountStatus: null,
+    krwBalance: null, // Added to store formatted KRW balance
+    market: null,
+    marketLocked: null,
+ 
   }),
 
   actions: {
@@ -45,6 +49,7 @@ export const useAccountStore = defineStore("accountStore", {
         this.accountData = response.data;
         this.accountErrorMessage = null;
         this.accountStatus = response.status.toString();
+        this.formatKrwBalance(this.accountData);
       } catch (error) {
         console.error("Error:", error);
         this.accountData = null;
@@ -52,5 +57,58 @@ export const useAccountStore = defineStore("accountStore", {
         this.accountErrorMessage = error.response?.data || "Failed to fetch account data";
       }
     },
+    formatKrwBalance(accountData) {
+      try {
+        // Assuming accountData has a structure like this:  Adjust to your actual structure
+        const krwBalance = accountData.filter(item => item.currency === "KRW")
+          .map(item => parseFloat(item.balance))
+          .reduce((a, b) => a + b, 0);
+
+        if (isNaN(krwBalance)) {
+          this.krwBalance = "KRW balance not found or invalid";
+          return;
+        }
+
+        //Format the number with commas and no decimal places
+        const formattedBalance = krwBalance.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+        this.krwBalance = formattedBalance;
+
+
+      } catch (error) {
+        console.error("Error formatting KRW balance:", error);
+        this.krwBalance = "Error formatting KRW balance";
+      }
+    },
+    setMarketLocked(market) {
+      try {
+        if (!market || !market.includes("-")) {
+          throw new Error("Invalid market format");
+        }
+        const marketCurrency = market.split("-")[1];
+        const marketLocked = this.accountData
+          .filter(item => item.currency === marketCurrency)
+          .map(item => parseFloat(item.locked))
+          .reduce((a, b) => a + b, 0);
+
+        if (isNaN(marketLocked)) {
+          console.warn("Market locked value is NaN. Setting default.");
+          this.market = marketCurrency;
+          this.marketLocked = "0";
+          return;
+        }
+
+        this.market = marketCurrency;
+        this.marketLocked = marketLocked.toString();
+      } catch (error) {
+        console.error("Error formatting Market Locked:", error.message);
+        this.marketLocked = "Error formatting Market Locked";
+      }
+    },
+
+
+
+
+    
+
   },
 });

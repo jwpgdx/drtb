@@ -74,7 +74,7 @@ watch(filteredMarkets, () => {
 
 // onMounted와 onBeforeUnmount로 생명 주기 메서드 처리
 onMounted(() => {
-  initApp();
+  createObserver();
   startPriceUpdate(); // 가격 갱신 시작
 });
 
@@ -90,16 +90,6 @@ onBeforeUnmount(() => {
 // 인터벌 ID를 ref로 선언
 const intervalId = ref<NodeJS.Timeout | null>(null);
 
-// 앱 초기화
-async function initApp() {
-  await fetchMarketsData();
-  createObserver();
-}
-
-// 마켓 데이터 가져오기
-async function fetchMarketsData() {
-  await marketStore.fetchMarkets(); // Pinia store에서 데이터 가져오기
-}
 
 // 가격 갱신
 function startPriceUpdate() {
@@ -107,7 +97,7 @@ function startPriceUpdate() {
     if (visibleMarkets.value.length > 0) {
       fetchPriceData(visibleMarkets.value); // 보이는 마켓만 가격 갱신
     }
-  }, 1000); // 5초마다 갱신
+  }, 5000); // 5초마다 갱신
 }
 
 // 가격 데이터 가져오기
