@@ -66,7 +66,6 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Button } from "@/components/ui/Button";
 
 const isTempOrder = computed({
   get: () => orderStore.isTempOrder, // Store에서 결제창 상태를 가져옴

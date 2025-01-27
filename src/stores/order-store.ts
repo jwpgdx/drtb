@@ -238,7 +238,7 @@ export const useOrderStore = defineStore("orderStore", {
       this.activeTempOrderTab = value
       console.log('activeTempOrderTab', this.activeTempOrderTab)
     },
-    initOrderStore(value: string) {
+    initOrderStore(value: string = "bid") {
       this.orderRatio = null;
       if (!value) {
         console.warn("value 값이 제공되지 않았습니다. 기본값 'bid'로 설정됩니다.");
