@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "drtb",
     "public": "dist",
     "ignore": [
       "firebase.json",
