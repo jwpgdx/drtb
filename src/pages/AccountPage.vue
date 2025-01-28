@@ -67,7 +67,6 @@ async function authValidated() {
   if (marketParam.value) {
     await accountStore.fetchAccountData(); // 계정 데이터 가져오기
     accountStore.setMarketLocked(marketParam.value);
-    orderStore.fetchOrderChance(marketParam.value);
   }
 }
 

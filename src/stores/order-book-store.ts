@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { merge } from 'lodash';
 
-export const useOrderbookStore = defineStore('orderbookStore', {
+export const useOrderBookStore = defineStore('orderBookStore', {
   state: () => ({
     orderbook: {
       market: '',

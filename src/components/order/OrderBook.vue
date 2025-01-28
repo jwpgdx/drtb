@@ -15,9 +15,9 @@
   
   <script setup lang="ts">
   import { computed, onMounted, onBeforeUnmount } from 'vue';
-  import { useOrderbookStore } from '@/stores/order-book-store.vue';
+  import { useOrderBookStore } from '@/stores/order-book-store.vue';
   
-  const orderbookStore = useOrderbookStore();
+  const orderbookStore = useOrderBookStore();
   const market: string = 'BTC_KRW';  // 예시로 'BTC_KRW' 마켓 사용
   let intervalId: NodeJS.Timeout | null = null;  // setInterval의 반환 타입
   
