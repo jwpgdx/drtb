@@ -30,6 +30,8 @@ import {
 
 const orderStore = useOrderStore();
 
+const orderRatio = computed(() => orderStore.orderRatio);
+
 // 이벤트를 정의
 const ratio = computed({
   get: () => orderStore.orderRatio,

@@ -1,16 +1,15 @@
 <!-- @/components/order/OrderFormInput.vue -->
 
 <template>
-  <div>
-
-    
-    <div class="flex space-x-4" v-if="orderData.ord_type === 'limit'">
+   <div class="space-y-4">
+    <!-- 탭 버튼들 -->
+    <div class="flex space-x-4 border-b border-gray-300">
       <button
         :class="[
-          'py-2 px-4 cursor-pointer',
+          'py-2 px-4 cursor-pointer w-1/3 text-center',
           activeTempOrderTab === 'volume'
-            ? 'border-b-2 font-semibold'
-            : 'hover:bg-gray-200 rounded',
+            ? 'text-blue-600 font-semibold border-b-2 border-blue-600'
+            : 'hover:bg-gray-200 rounded'
         ]"
         @click="handleSetActiveTempOrderTab('volume')"
       >
@@ -18,10 +17,10 @@
       </button>
       <button
         :class="[
-          'py-2 px-4 cursor-pointer',
+          'py-2 px-4 cursor-pointer w-1/3 text-center',
           activeTempOrderTab === 'price'
-            ? 'border-b-2 font-semibold'
-            : 'hover:bg-gray-200 rounded',
+            ? 'text-blue-600 font-semibold border-b-2 border-blue-600'
+            : 'hover:bg-gray-200 rounded'
         ]"
         @click="handleSetActiveTempOrderTab('price')"
       >
@@ -29,10 +28,10 @@
       </button>
       <button
         :class="[
-          'py-2 px-4 cursor-pointer',
+          'py-2 px-4 cursor-pointer w-1/3 text-center',
           activeTempOrderTab === 'total'
-            ? 'border-b-2 font-semibold'
-            : 'hover:bg-gray-200 rounded',
+            ? 'text-blue-600 font-semibold border-b-2 border-blue-600'
+            : 'hover:bg-gray-200 rounded'
         ]"
         @click="handleSetActiveTempOrderTab('total')"
       >
@@ -40,79 +39,67 @@
       </button>
     </div>
 
+    <!-- 거래 정보 -->
+    <div class="bg-white p-4 rounded-md shadow-md">
+      <p class="text-gray-600 text-sm">거래 가격</p>
+      <p class="text-lg font-semibold">{{ formattedPrice }} (단위: {{ bidCurrency }})</p>
 
+      <p class="text-gray-600 text-sm mt-2">거래 수량</p>
+      <p class="text-lg font-semibold">{{ tempOrderData.volume }} (단위: {{ askCurrency }})</p>
 
-
-
-
-
-<!-- 거래 정보 -->
-
-
-    <div
-      v-if="orderData.side === 'bid'"
-    >
-    <p>보유 금액</p>
-    <p>{{ formattedBalance }} {{ orderChance.bid_account.currency }}</p>
-  </div>
-
-  <div
-      v-if="orderData.side === 'ask'"
-    >
-    <p>보유 코인</p>
-    <p>
-      {{ orderChance.ask_account.locked }} (단위:
-      {{ orderChance.ask_account.currency }})
-    </p>
-
+      <p class="text-gray-600 text-sm mt-2">총액</p>
+      <p class="text-lg font-semibold">{{ formattedTotal }} (단위: {{ bidCurrency }})</p>
     </div>
-   
-
-    <p>거래 가격</p>
-    <p>{{ formattedPrice }} (단위: {{ orderChance.bid_account.currency }})</p>
-    <p>거래 수량</p>
-    <p>
-      {{ tempOrderData.volume }} (단위: {{ orderChance.ask_account.currency }})
-    </p>
-    <p>총액</p>
-    <p>{{ formattedTotal }} (단위: {{ orderChance.bid_account.currency }})</p>
-
-
-
-
-
 
     <!-- 입력란 -->
+     
+    <div class="space-y-4 mt-4">
 
-<div v-if="activeTempOrderTab === 'volume'">
-  <p>거래 수량 입력</p>
-    <p>
-      {{ tempOrderData.volume }} (단위: {{ orderChance.ask_account.currency }})
-    </p>
-
-    <OrderRatio />
-</div>
-
-
-<div v-if="activeTempOrderTab === 'price'">
-  <p>거래 가격 입력</p>
-  <p>{{ formattedPrice }} (단위: {{ orderChance.bid_account.currency }})</p>
-</div>
+      <div v-if="activeTempOrderTab === 'volume'" class="grid items-start gap-4">
+        <Label>거래 수량 입력 (단위: {{ askCurrency }})</Label>
+        <div class="flex items-center gap-4">
+          <Input readonly v-model="tempOrderData.volume" />
+          <OrderRatio />
+        </div>
+      </div>
 
 
+      <div v-if="activeTempOrderTab === 'price'" class="grid items-start gap-4">
+        <Label>거래 가격 입력 (단위: {{ bidCurrency }})</Label>
+          <Input readonly v-model="formattedPrice" />
+  
+      </div>
 
-<div v-if="activeTempOrderTab === 'total'">
-  <p>총액 입력</p>
-  <p>{{ formattedTotal }} (단위: {{ orderChance.bid_account.currency }})</p>
-</div>
+      <div v-if="activeTempOrderTab === 'total'" class="grid items-start gap-4">
+        <Label>총액 입력 (단위: {{ bidCurrency }})</Label>
+        <div class="flex items-center gap-4">
+          <Input readonly v-model="formattedTotal" />
+          <OrderRatio />
+        </div>
+      </div>
 
 
- 
+    </div>
 
-    <NumericKeypad />
+    <!-- Numeric Keypad -->
+    <div class="mt-4">
+      <NumericKeypad />
+    </div>
 
-    <button @click="handleSetTempOrderData">초기화</button>
-    <button @click="handleApplyTempOrder">저장</button>
+    <!-- 버튼들 -->
+    <div class="flex gap-4">
+      <Button variant="outline" class="w-full"
+        @click="handleSetTempOrderData"
+      >
+        초기화
+      </Button>
+      <Button
+      class="w-full"
+        @click="handleApplyTempOrder"
+      >
+        확인
+      </Button>
+    </div>
   </div>
 </template>
 
@@ -121,13 +108,20 @@ import NumericKeypad from "@/components/NumericKeypad.vue";
 import { computed } from "vue";
 import { useOrderStore } from "@/stores/order-store";
 import { formatPrice, formatTotal } from "@/utils/format";
+import { useOrderChanceStore } from "@/stores/order-chance-store";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 import OrderRatio from "@/components/order/OrderRatio.vue";
+
+const orderChanceStore = useOrderChanceStore();
+const bidCurrency = computed(() => orderChanceStore.bidCurrency);
+const askCurrency = computed(() => orderChanceStore.askCurrency);
+
 const orderStore = useOrderStore();
 const tempOrderData = computed(() => orderStore.tempOrderData);
-const orderData = computed(() => orderStore.orderData);
 
-const orderChance = computed(() => orderStore.orderChance);
 const activeTempOrderTab = computed(() => orderStore.activeTempOrderTab);
 
 // 가격 초기화
@@ -145,9 +139,6 @@ function handleApplyTempOrder() {
 }
 
 // Computed properties
-const formattedBalance = computed(() =>
-formatTotal(orderChance.value.bid_account.balance)
-);
 const formattedPrice = computed(() => formatPrice(tempOrderData.value.price));
 const formattedTotal = computed(() => formatTotal(tempOrderData.value.total));
 </script>

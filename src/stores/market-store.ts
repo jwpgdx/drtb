@@ -1,22 +1,21 @@
 import { defineStore } from 'pinia';
-
-interface Market {
-  market: string;
-  korean_name: string;
-  english_name: string;
-  market_warning: string;
-  isVisible: boolean;
-  trade_price: number | null; // 추가된 속성
-  prev_closing_price: number | null; // 추가된 속성
-  change: string; // 추가된 속성
-  priceChangePercent: number | null; // 추가된 속성
-}
+import { merge } from "lodash";
 
 export const useMarketStore = defineStore('marketStore', {
   state: () => ({
-    markets: [] as Market[], // 시장 가격 리스트
-    errorMessage: '' as string, // 오류 메시지 상태 추가
-    orderMarket: null as Market, // null로 초기화
+    markets: [], 
+    errorMessage: '',
+    orderMarket: {
+      market: '',
+      korean_name: '',
+      english_name: '',
+      market_warning: '',
+      isVisible: false,
+      trade_price: 0, // 기본값 설정
+      prev_closing_price: 0, // 기본값 설정
+      change: 'EVEN',
+      priceChangePercent: 0,
+    },
   }),
   actions: {
     // * 마켓 목록 가져오기
@@ -102,7 +101,7 @@ export const useMarketStore = defineStore('marketStore', {
       try {
         const selectedMarket = this.markets.find((item) => item.market === market);
         if (selectedMarket) {
-          this.orderMarket = { ...selectedMarket }; // 마켓의 정보를 복사하여 저장
+          this.orderMarket = merge({}, this.orderMarket, selectedMarket); // merge로 기존 값을 업데이트
           console.log('setOrderMarket completed');
         } else {
           console.warn(`Market ${market} not found.`);

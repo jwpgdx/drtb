@@ -1,6 +1,5 @@
 <template>
   <div>
-    {{ orderData }}
 
 
    
@@ -22,7 +21,7 @@
     </div>
     <div class="mt-4">
       <div v-if="orderData.side === tabs[0].value">
-        <OrderAccount :orderMarket="orderMarket" :orderChance="orderChance" />
+        <OrderAccount :orderMarket="orderMarket" />
       </div>
       <div v-if="orderData.side === tabs[1].value || orderData.side === tabs[2].value">
         <OrderForm />
@@ -77,7 +76,6 @@ const isTempOrder = computed({
 });
 
 const orderStore = useOrderStore();
-const orderChance = computed(() => orderStore.orderChance);
 const marketStore = useMarketStore();
 
 const orderMarket = computed(() => marketStore.orderMarket);

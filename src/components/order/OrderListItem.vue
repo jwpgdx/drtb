@@ -27,7 +27,7 @@
     <!-- 체결 가격 -->
     <div class="flex justify-between items-center text-sm text-gray-600">
       <div class="font-medium text-gray-800">체결가격</div>
-      <div class="text-blue-500">{{ order.price }} KRW</div>
+      <div class="text-blue-500">{{ orderPrice }} KRW</div>
     </div>
 
     <!-- 체결 수량 -->
@@ -39,7 +39,7 @@
     <!-- 체결 금액 -->
     <div class="flex justify-between items-center text-sm text-gray-600">
       <div class="font-medium text-gray-800">체결금액</div>
-      <div class="font-semibold text-blue-500">{{ calculateOrderAmount(order.price, order.volume) }} KRW</div>
+      <div class="font-semibold text-blue-500">{{ orderAmount(order.price, order.volume) }} KRW</div>
     </div>
 
     <!-- 주문 유형 -->
@@ -54,7 +54,8 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps } from "vue";
+import { defineProps, computed } from "vue";
+import { formatPrice, formatTotal } from "@/utils/format";
 
 const props = defineProps({
   order: {
@@ -62,6 +63,7 @@ const props = defineProps({
     required: true,
   },
 });
+
 
 // 생성 날짜 포맷 함수
 const formatDate = (date: string) => {
@@ -76,12 +78,20 @@ const formatDate = (date: string) => {
   return new Date(date).toLocaleString("ko-KR", options);
 };
 
+
+const orderPrice = computed(() => formatPrice(props.order.price));
+
 // 체결금액 계산 함수 (3자리마다 쉼표 추가)
-const calculateOrderAmount = (price: number, volume: number) => {
+const orderAmount = (price: number, volume: number) => {
   const amount = price * volume;
-  const formattedAmount = (amount).toFixed(2);  // 'string' 타입이지만, 이제 이 문자열을 그대로 사용
-  return new Intl.NumberFormat("ko-KR").format(parseFloat(formattedAmount)); // 여기서 다시 숫자로 변환하여 사용
+  return formatPrice(amount); // 여기서 다시 숫자로 변환하여 사용
 };
+
+
+
+
+
+
 
 // 주문 상태 텍스트 변환
 const getOrderStateText = (state: string) => {

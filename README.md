@@ -1,78 +1,49 @@
-# drtb
+# DRTB (Drop the Bit)
 
-**drtb** is a web platform built using Vue.js and Firebase, designed to provide real-time notifications and information about cryptocurrency airdrops on Bithumb. Additionally, it integrates Bithumb's API to facilitate trading operations seamlessly. The platform ensures security as Bithumb API keys and secrets are only used on the 🖥️ client-side, avoiding storage on servers.
+**DRTB**는 빗썸 API와 통합된 암호화폐 거래 및 에어드랍 알림 도구입니다. 클라이언트 사이드에서 안전하게 거래할 수 있으며, 에어드랍에 대한 알림 기능을 제공하고 자동화된 거래 기능으로 쉽게 참여할 수 있습니다.
 
-## Features
+## Key Features
 
-### 1.** Airdrop Notifications**
-- Real-time alerts for new and ongoing 💸 cryptocurrency airdrops on Bithumb.
-- Comprehensive details about each airdrop, including eligibility, duration, and rewards.
+### 1. **Bithumb API Trading**
+   - Trade securely using the Bithumb API with active and secret keys.
+   - All data is stored client-side, ensuring security.
 
-### 2.** Trading Integration**
-- Secure integration with the 🏦 Bithumb API for trading cryptocurrencies.
-- Features include:
-  - Viewing market data.
-  - Placing buy/sell orders.
-  - Checking account balances.
+### 2. **Airdrop Notifications**
+   - Real-time alerts for Bithumb airdrops. Never miss an airdrop opportunity.
 
-### 3.** User-Friendly Design**
-- Intuitive interface for monitoring airdrop updates and trading activity.
-- Responsive layout optimized for both 🖥️ desktop and mobile devices.
+### 3. **One-Click Airdrop Trading**
+   - Automatically buy and sell airdrop-related assets with a single click, just like attendance check-ins.
 
-## Technology Stack
+## Installation Guide
 
-- **Frontend**: Vue.js with Tailwind CSS for a modern, responsive UI.
-- **Backend**: Firebase for authentication and real-time updates.
-- **API Integration**: Bithumb API for market data and trading.
-- **Build Tools**: ⚡ Vite for fast builds and TypeScript for type safety.
-- **Additional Libraries**: 
-  - `axios` for HTTP requests.
-  - `pinia` for state management.
-  - `lucide-vue-next` for icons.
-  - `uuid` for unique identifiers.
+Follow the instructions to set up and run DRTB:
 
-## Setup Instructions
+### Prerequisites
+- Node.js (version 18+)
+- npm (version 8+)
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/jwpgdx/drtb.git
-   cd drtb
-   ```
+### 1. Clone the repository
+```bash
+git clone https://github.com/your-username/drtb.git
+cd drtb
+```
 
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
+### 2. Install dependencies
+```bash
+npm install
+```
 
-3. 🛠️ Configure environment variables:
-   - Create a `.env` file in the root directory.
-   - Add your Firebase configuration and any other required keys:
-     ```env
-     VITE_FIREBASE_API_KEY=your_firebase_api_key
-     ```
+### 3. Start the development server
+```bash
+npm run dev
+```
 
-   - **ℹ️ Note**: The Bithumb API key and secret are used only on the 🖥️ client-side for enhanced 🔒 security and are not stored on 🖧 servers.
+## Technologies Used
 
-4. ▶️ Run the development server:
-   ```bash
-   npm run dev
-   ```
+- **Vue 3**, **Pinia**, **TailwindCSS**, **Firebase**, **Axios**, **VeeValidate**, etc.
 
-5. Build for production:
-   ```bash
-   npm run build
-   ```
+## Contact
 
-6. 🔍 Preview the production build:
-   ```bash
-   npm run preview
-   ```
+For more information, feel free to reach out to me at: [jwpgdx@gmail.com](mailto:jwpgdx@gmail.com)
 
-## License
-
-This project is licensed under the MIT License. See the LICENSE file for details.
-
----
-
-For questions or contributions, feel free to open an issue or submit a pull request.
 

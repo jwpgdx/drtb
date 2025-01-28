@@ -27,6 +27,7 @@
 import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
 import { useOrderStore } from "@/stores/order-store"; // Pinia store 가져오기
+import { useOrderChanceStore } from "@/stores/order-chance-store"; // Pinia store 가져오기
 
 import { useAuthStore } from "@/stores/auth-store"; // Pinia store 가져오기
 import { useRoute } from "vue-router"; // vue-router의 useRoute 훅을 가져옴
@@ -40,6 +41,8 @@ import { ChartCandlestick, HandCoins } from "lucide-vue-next";
 
 const marketStore = useMarketStore();
 const orderStore = useOrderStore();
+const orderChanceStore = useOrderChanceStore();
+
 
 const authStore = useAuthStore();
 
@@ -55,7 +58,7 @@ const intervalId = ref<NodeJS.Timeout | null>(null);
 async function authValidated() {
   // 마켓 데이터 가져오기
   if (marketParam.value) {
-    orderStore.fetchOrderChance(marketParam.value);
+    orderChanceStore.fetchOrderChance(marketParam.value);
   }
 }
 
