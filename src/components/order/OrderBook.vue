@@ -15,7 +15,7 @@
   
   <script setup lang="ts">
   import { computed, onMounted, onBeforeUnmount } from 'vue';
-  import { useOrderBookStore } from '@/stores/order-book-store.vue';
+  import { useOrderBookStore } from '@/stores/order-book-store'; 
   
   const orderbookStore = useOrderBookStore();
   const market: string = 'BTC_KRW';  // 예시로 'BTC_KRW' 마켓 사용
