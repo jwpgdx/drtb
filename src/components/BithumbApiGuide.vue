@@ -49,7 +49,7 @@
               <strong>✅ 자산조회</strong> <strong>✅ 주문조회</strong> <strong>✅ 주문하기</strong>
             </p>
             <img
-                src="https://i.pinimg.com/736x/d6/95/18/d695180a9cdb8ec573b1e7c5b8ee859c.jpg"
+                src="https://drtb.web.app/images/BithumbApiGuide-2.png"
                 alt="API Key 발급 데모 이미지"
                 class="w-full h-auto"
               />
