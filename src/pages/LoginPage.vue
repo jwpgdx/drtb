@@ -47,9 +47,11 @@
 
     <Button size="lg" @click="handleLogin">LOGIN</Button>
 
-    <Button class="text-sm font-medium underline" variant="link">
-      <CircleHelp class="w-3 h-3" />Have an invite link?
+    <Button class="text-sm font-medium underline" variant="link" @click="openGuide">
+      <CircleHelp class="w-3 h-3" />빗썸 API 사용을 위한 API Key 발급방법
     </Button>
+
+    <BithumbApiGuide v-model:open="isGuideOpen" />
 
   </div>
 </template>
@@ -67,6 +69,7 @@ import { CircleHelp } from "lucide-vue-next";
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { h } from "vue";
+import BithumbApiGuide from "@/components/BithumbApiGuide.vue"; // 컴포넌트 import
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -74,6 +77,12 @@ const route = useRoute();
 
 const accessKey = ref("");
 const secretKey = ref("");
+
+const isGuideOpen = ref(false);
+
+const openGuide = () => {
+  isGuideOpen.value = true;
+};
 
 const { toast } = useToast();
 
