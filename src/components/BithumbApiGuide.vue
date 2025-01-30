@@ -45,14 +45,15 @@
           <div class="space-y-2">
             <h3 class="text-lg font-semibold">3. API 접근 권한 설정</h3>
             <p>
-              API 2.0을 선택 한 후, API 활성 항목을 다음과 같이 설정 합니다.<br>
-              <strong>✅ 자산조회</strong> <strong>✅ 주문조회</strong> <strong>✅ 주문하기</strong>
+              API 2.0을 선택 한 후, API 활성 항목을 다음과 같이 설정 합니다.<br />
+              <strong>✅ 자산조회</strong> <strong>✅ 주문조회</strong>
+              <strong>✅ 주문하기</strong>
             </p>
             <img
-                src="https://drtb.web.app/images/BithumbApiGuide-2.png"
-                alt="API Key 발급 데모 이미지"
-                class="w-full h-auto"
-              />
+              src="https://drtb.web.app/images/BithumbApiGuide-2.png"
+              alt="API Key 발급 데모 이미지"
+              class="w-full h-auto"
+            />
           </div>
         </TabsContent>
 
@@ -66,13 +67,9 @@
               API Key를 생성하고, <strong>Access Key</strong>와
               <strong>Secret Key</strong>를 복사해 둡니다.
             </p>
-            <div class="mt-4">
-              
-            </div>
+            <div class="mt-4"></div>
           </div>
         </TabsContent>
-
-        
 
         <!-- Step 4: IP 주소 등록 -->
         <TabsContent value="4">
@@ -92,6 +89,22 @@
             <div v-else class="bg-gray-100 p-2 rounded text-sm font-medium">
               현재 접속 중인 IP:
               <span class="text-blue-600">{{ currentIP }}</span>
+            </div>
+
+            <!-- 네이버 IP 확인 바로가기 -->
+            <div class="mt-4 text-center">
+              <div class="flex items-center justify-center space-x-2">
+                <hr class="flex-grow border-t border-gray-300" />
+                <p class="text-sm text-gray-600">또는</p>
+                <hr class="flex-grow border-t border-gray-300" />
+              </div>
+              <Button
+                class="text-sm font-medium underline mt-2"
+                variant="link"
+                @click="openNaverIPCheck"
+              >
+                네이버에서 내 IP 주소 확인하기
+              </Button>
             </div>
 
             <ul class="list-disc pl-5 space-y-1 text-sm text-gray-600 mt-2">
@@ -180,5 +193,12 @@ const nextStep = () => {
   } else {
     step.value = (parseInt(step.value) + 1).toString();
   }
+};
+
+const openNaverIPCheck = () => {
+  window.open(
+    'https://search.naver.com/search.naver?where=nexearch&sm=top_sly.hst&fbm=0&acr=1&acq=%EB%82%B4+%EC%95%84%EC%9D%B4%ED%94%BC+&qdt=0&ie=utf8&query=%EB%82%B4+%EC%95%84%EC%9D%B4%ED%94%BC+%EC%A3%BC%EC%86%8C+%ED%99%95%EC%9D%B8',
+    '_blank'
+  );
 };
 </script>
