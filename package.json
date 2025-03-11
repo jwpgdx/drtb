@@ -17,6 +17,8 @@
     "clsx": "^2.0.0",
     "crypto-js": "^4.2.0",
     "firebase": "^11.2.0",
+    "firebase-admin": "^13.2.0",
+    "firebase-functions": "^6.3.2",
     "jsrsasign": "^11.1.0",
     "lodash": "^4.17.21",
     "lottie-web": "^5.12.2",
