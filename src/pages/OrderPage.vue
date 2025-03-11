@@ -13,8 +13,7 @@
         >
       </TabsList>
       <TabsContent value="order">
-        <Order v-if="isAuthenticated" />
-        <Auth404 v-else />
+        <Order />
       </TabsContent>
       <TabsContent value="chart">
         <Error404 />
@@ -32,7 +31,6 @@ import { useOrderChanceStore } from "@/stores/order-chance-store"; // Pinia stor
 import { useAuthStore } from "@/stores/auth-store"; // Pinia store 가져오기
 import { useRoute } from "vue-router"; // vue-router의 useRoute 훅을 가져옴
 import OrderHeader from "@/components/order/OrderHeader.vue";
-import Auth404 from "@/components/Auth404.vue";
 import Order from "@/components/order/Order.vue";
 import Error404 from "@/components/Error404.vue";
 
@@ -43,14 +41,10 @@ const marketStore = useMarketStore();
 const orderStore = useOrderStore();
 const orderChanceStore = useOrderChanceStore();
 
-
-const authStore = useAuthStore();
-
 // 라우터 설정
 const route = useRoute();
 const marketParam = computed(() => route.params.market as string);
 
-const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 // 인터벌 ID를 ref로 선언
 const intervalId = ref<NodeJS.Timeout | null>(null);
@@ -78,11 +72,7 @@ onMounted(async () => {
   await marketStore.setOrderMarket(marketParam.value); // 2. setOrderMarket
   await marketStore.fetchPriceForOrderMarket(); // 3. initOrderStore
   await orderStore.initOrderStore();
-
-  if (isAuthenticated.value) {
-    authValidated();
-  }
-  // 가격 갱신 시작
+  authValidated();
   startPriceUpdate();
 });
 

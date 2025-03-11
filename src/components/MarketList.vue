@@ -1,11 +1,12 @@
 <template>
   <div>
     <!-- 필터 입력창 -->
-    <Input 
-      v-model="filterQuery" 
-      placeholder="검색어를 입력하세요" 
-      class="mb-4 w-full"
-    />
+    <div class="relative w-full items-center mb-4">
+    <Input v-model="filterQuery"  id="search" type="text" placeholder="Search..." class="pl-10" />
+    <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+      <Search class="size-6 text-muted-foreground" />
+    </span>
+  </div>
 
     <!-- 마켓 리스트 -->
     <MarketListItem
@@ -27,6 +28,7 @@ import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from "vue"
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
 import MarketListItem from "@/components/MarketListItem.vue";
 import { Input } from "@/components/ui/input";
+import { Search } from "lucide-vue-next";
 
 // store 사용
 const marketStore = useMarketStore();

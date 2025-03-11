@@ -19,11 +19,20 @@ npm install
 # 1. Docker Hub 로그인
 docker login
 
+
 # 2. 이미지 태그 설정
 docker tag drtb:v2 jwpgdx/drtb:v2
 
 # 3. 이미지 업로드
 docker push jwpgdx/drtb:v2
+
+
+# 파이어베이스 functions 관련 
+npm run lint -- --fix 
+<- cd functions 폴더로 이동하고 검사
+firebase deploy --only functions 
+<- root에서 실행.
+firebase deploy --only functions --debug
 
 
 

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",                // Firebase Functions는 CommonJS 모듈을 사용합니다.
+    "esModuleInterop": true,             // ES6 모듈과 CommonJS 모듈을 혼용할 수 있도록 허용
+    "moduleResolution": "node",          // 노드 환경에서 모듈을 찾는 방식을 설정
+    "noImplicitReturns": true,           // 반환 값이 명시되어 있지 않으면 오류를 발생시킵니다.
+    "noUnusedLocals": true,              // 사용하지 않는 로컬 변수는 오류를 발생시킵니다.
+    "outDir": "lib",                     // 컴파일된 파일이 저장될 디렉토리
+    "sourceMap": true,                   // 디버깅을 위한 소스맵 생성
+    "strict": true,                      // 엄격한 타입 검사
+    "target": "es2017"                   // ES2017로 트랜스파일링
+  },
+  "compileOnSave": true,                 // 파일을 저장할 때마다 자동으로 컴파일합니다.
+  "include": [
+    "src"                                // 컴파일할 소스 코드가 위치한 디렉토리
+  ]
+}

@@ -1,9 +1,5 @@
 <template>
   <div>
-
-
-   
-
     <div class="flex border-b">
       <button
         v-for="(tab, index) in tabs"
@@ -19,14 +15,25 @@
         {{ tab.label }}
       </button>
     </div>
-    <div class="mt-4">
-      <div v-if="orderData.side === tabs[0].value">
-        <OrderAccount :orderMarket="orderMarket" />
-      </div>
-      <div v-if="orderData.side === tabs[1].value || orderData.side === tabs[2].value">
-        <OrderForm />
-      </div>
-      <OrderList v-if="orderData.side === tabs[3].value" />
+    <div
+      v-if="
+        orderData.side === tabs[0].value || orderData.side === tabs[3].value
+      "
+    >
+      <OrderAccount
+        v-if="orderData.side === tabs[0].value && isAuthenticated"
+        :orderMarket="orderMarket"
+      />
+      <OrderList v-if="orderData.side === tabs[3].value && isAuthenticated" />
+      <Auth404 v-if="!isAuthenticated" />
+    </div>
+
+    <div
+      v-if="
+        orderData.side === tabs[1].value || orderData.side === tabs[2].value
+      "
+    >
+      <OrderForm />
     </div>
 
     <Drawer v-model:open="isTempOrder">
@@ -40,8 +47,6 @@
         </div>
       </DrawerContent>
     </Drawer>
-
-
   </div>
 </template>
 
@@ -49,11 +54,13 @@
 import { ref, onMounted, computed } from "vue";
 import { useOrderStore } from "@/stores/order-store";
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
+import { useAuthStore } from "@/stores/auth-store"; // Pinia store 가져오기
 
-import OrderAccount from "@/components/order/OrderAccount.vue";
+import OrderAccount from "./OrderAccount.vue";
 import OrderList from "@/components/order/OrderList.vue";
 import OrderForm from "@/components/order/OrderForm.vue";
 import OrderFormTemp from "@/components/order/OrderFormTemp.vue";
+import Auth404 from "@/components/Auth404.vue";
 
 import {
   Drawer,
@@ -70,16 +77,18 @@ const isTempOrder = computed({
   get: () => orderStore.isTempOrder, // Store에서 결제창 상태를 가져옴
   set: (value) => {
     if (!value) {
-      orderStore.closeTempOrder();  // 값이 false일 경우 closeTempOrder 호출
+      orderStore.closeTempOrder(); // 값이 false일 경우 closeTempOrder 호출
     }
   },
 });
 
 const orderStore = useOrderStore();
 const marketStore = useMarketStore();
+const authStore = useAuthStore();
 
 const orderMarket = computed(() => marketStore.orderMarket);
 const orderData = computed(() => orderStore.orderData);
+const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 const submitOrder = () => {
   // orderStore.createOrder(orderData.value);
@@ -92,7 +101,7 @@ const tabs = [
   { value: "orderList", label: "거래내역" },
 ];
 function handleOrderData(value) {
-  console.log ('handleOrderData',value)
-  orderStore.initOrderStore(value)
+  console.log("handleOrderData", value);
+  orderStore.initOrderStore(value);
 }
 </script>

@@ -14,28 +14,21 @@
       <div v-if="!isLoginPage" class="flex items-center space-x-4">
         <!-- OrderPage에서만 market 값 표시 -->
         <div v-if="isOrderPage" class="flex items-center space-x-2">
-          <i
-            :class="`cf cf-${getMarketSymbol(marketName)}`"
-            class="coin-icon text-2xl"
-          ></i>
+          <Coin :market="marketName" class="w-8 h-8 mr-4" />
           <h1 class="text-xl font-semibold">{{ marketName }}</h1>
         </div>
         <div v-else>
           <h1 class="text-xl font-semibold">DRTB Beta</h1>
         </div>
+        <ApiKey v-if="authStore.isAuthenticated" />
 
         <!-- 로그인/로그아웃 버튼 -->
         <div class="flex space-x-2">
           <Button v-if="!authStore.isAuthenticated" @click="goToLogin">
             로그인
           </Button>
-          <div
-            v-if="authStore.isAuthenticated"
-            class="text-sm"
-            @click="extendSession"
-          >
-            남은 시간: <span class="font-bold">{{ formattedTime }}</span>
-          </div>
+
+
           <!-- 로그인된 경우 드롭다운 메뉴 표시 -->
           <DropdownMenu v-if="authStore.isAuthenticated">
             <DropdownMenuTrigger as-child>
@@ -47,15 +40,21 @@
               <DropdownMenuLabel>My Account</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuGroup>
-                <DropdownMenuItem>
+                <DropdownMenuItem @click="goToDashboard">
                   <User class="mr-2 h-4 w-4" />
                   <span>내정보</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem @click="extendSession">
+                <DropdownMenuItem>
                   <TimerReset class="mr-2 h-4 w-4" />
                   <span>로그인 연장</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem>
+                <DropdownMenuItem @click="goToApikey">
+                  <KeyRound class="mr-2 h-4 w-4" />
+                  <span>API키 관리</span>
+                </DropdownMenuItem>
+
+               
+                <DropdownMenuItem @click="goToAssets">
                   <Coins class="mr-2 h-4 w-4" />
                   <span>자산현황</span>
                 </DropdownMenuItem>
@@ -116,12 +115,14 @@ import {
   LifeBuoy,
   LogOut,
   Settings,
-  User,
+  User,KeyRound
 } from "lucide-vue-next";
 
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { h } from "vue";
+import ApiKey from "./ApiKey.vue";
+import Coin from "@/components/icons/Coin.vue"; // MD5 해시 생성용 라이브러리
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -131,6 +132,9 @@ const { toast } = useToast();
 const isLoginPage = computed(() => router.currentRoute.value.path === "/login");
 const isMainPage = computed(() => router.currentRoute.value.path === "/");
 const isOrderPage = computed(() => router.currentRoute.value.name === "Order");
+const isAssetsPage = computed(
+  () => router.currentRoute.value.name === "Assets"
+);
 
 // OrderPage일 경우 :market 값을 가져오기
 const marketName = computed(() => {
@@ -139,12 +143,23 @@ const marketName = computed(() => {
 });
 
 const getMarketSymbol = (market: string): string => {
-  return market.replace('KRW-', '').toLowerCase() || 'btc';
+  return market.replace("KRW-", "").toLowerCase() || "btc";
 };
 
 // 로그인 페이지로 이동
 const goToLogin = () => {
-  router.push("/login");
+  router.push({ name: "Login" });
+};
+// 자산 현황 페이지로 이동
+const goToAssets = () => {
+  router.push({ name: "Assets" });
+};
+// 대시보드 페이지로 이동
+const goToDashboard = () => {
+  router.push({ name: "Dashboard" });
+};
+const goToApikey = () => {
+  router.push({ name: "Apikey" });
 };
 
 // 로그아웃 처리 함수
@@ -179,45 +194,9 @@ const goBack = () => {
     router.back();
   }
 };
-
-// 남은 시간을 "MM:SS" 형식으로 변환
-const formattedTime = computed(() => {
-  const minutes = Math.floor(authStore.remainingTime / 60);
-  const seconds = authStore.remainingTime % 60;
-  return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(
-    2,
-    "0"
-  )}`;
-});
-
-// 세션 연장 처리
-const extendSession = () => {
-  authStore.extendSession();
-
-  // 세션 연장 성공 토스트 메시지
-  toast({
-    title: "Session extended",
-    description: "로그인 세션이 연장되었습니다.",
-    variant: "default",
-    action: h(
-      ToastAction,
-      {
-        altText: "확인",
-      },
-      {
-        default: () => "확인", // 버튼 텍스트를 "확인"으로
-      }
-    ),
-  });
-};
 </script>
 
 <style scoped>
-/* 헤더 스타일 */
-.coin-icon {
-  font-size: 2rem;
-}
-
 /* 본문 내용이 헤더에 가리지 않도록 padding 추가 */
 main {
   padding-top: 4rem; /* 헤더 높이만큼 여백 추가 */

@@ -1,5 +1,6 @@
 {
   "$schema": "https://shadcn-vue.com/schema.json",
+  "components": {},
   "style": "default",
   "typescript": true,
   "tsConfigPath": "./tsconfig.json",

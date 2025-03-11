@@ -8,128 +8,64 @@
       />
       <div class="flex flex-col gap-y-1.5 text-center">
         <h2 class="text-5xl leading-tight font-semibold tracking-tight">
-          Sign in with Bithumb
+          Sign in with Google
         </h2>
         <p class="text-sm text-muted-foreground">
-          <span @click="openBithumbApi" class="underline text-orange-600"
-            >빗썸 API</span
-          >
-          액세스 키와 시크릿 키를 입력해주세요
+          구글 계정으로 로그인해 주세요.
         </p>
       </div>
     </div>
 
     <div class="grid gap-4 py-4">
-      <div class="grid grid-cols-4 items-center gap-4">
-        <Label class="text-right">Access Key</Label>
-        <div class="flex items-center justify-end w-full col-span-3 gap-2">
-          <Input
-            class="font-mono"
-            id="accessKey"
-            placeholder="Enter Access Key"
-            v-model="accessKey"
-          />
-        </div>
-      </div>
-
-      <div class="grid grid-cols-4 items-center gap-4">
-        <Label class="text-right">Secret Key</Label>
-        <div class="flex items-center justify-end w-full col-span-3 gap-2">
-          <Input
-            class="font-mono"
-            id="secretKey"
-            placeholder="Enter Secret Key"
-            v-model="secretKey"
-          />
-        </div>
-      </div>
+      <Button size="lg" @click="handleGoogleLogin">Google Login</Button>
     </div>
-
-    <Button size="lg" @click="handleLogin">LOGIN</Button>
-
-    <Button class="text-sm font-medium underline" variant="link" @click="openGuide">
-      <CircleHelp class="w-3 h-3" />빗썸 API 사용을 위한 API Key 발급방법
-    </Button>
-
-    <BithumbApiGuide v-model:open="isGuideOpen" />
-
   </div>
 </template>
-<script lang="ts" setup>
-import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
 
+<script lang="ts" setup>
+import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
-
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { CircleHelp } from "lucide-vue-next";
-
-import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { h } from "vue";
-import BithumbApiGuide from "@/components/BithumbApiGuide.vue"; // 컴포넌트 import
+import ToastAction from "@/components/ui/toast/ToastAction.vue";
+import { useApiStore } from "@/stores/api-store";
 
-const authStore = useAuthStore();
+// Store와 router 가져오기
 const router = useRouter();
-const route = useRoute();
-
-const accessKey = ref("");
-const secretKey = ref("");
-
-const isGuideOpen = ref(false);
-
-const openGuide = () => {
-  isGuideOpen.value = true;
-};
+const authStore = useAuthStore();
+const apiStore = useApiStore();
 
 const { toast } = useToast();
 
-const handleLogin = async () => {
-  await authStore.fetchApiKeyList(accessKey.value, secretKey.value);
-  if (authStore.isAuthenticated) {
-    const redirectPath = route.query.redirect || "/";
-    router.replace(redirectPath as string);
+// Google 로그인 처리
+const handleGoogleLogin = async () => {
+  try {
+    const userCredential = await authStore.loginWithGoogle();
+    const user = userCredential.user;
+    console.log('user', user);
+    apiStore.fetchApiKeyStatus();
 
-    // 로그인 성공 토스트 메시지
+    // URL에 쿼리 스트링으로 ?redirect=/order/KRW-BTC 이런식으로 있잖아?
+    // 그 값을 가져와서, 없으면 기본값 '/'로 리다이렉트~
+    const redirect = router.currentRoute.value.query.redirect || '/';
+    router.push(redirect as string);
+
     toast({
-      title: "Login Successful",
-      description: "계정에 성공적으로 로그인했습니다.",
-      variant: "default", // 기본 스타일
-      action: h(
-        ToastAction,
-        {
-          altText: "확인",
-        },
-        {
-          default: () => "확인", // 버튼 텍스트를 "확인"으로
-        }
-      ),
+      title: user.email,
+      description: "구글 계정으로 성공적으로 로그인했습니다.",
+      variant: "default",
+      action: h(ToastAction, { altText: "확인" }, { default: () => "확인" }),
     });
-  } else {
-    // 로그인 실패 토스트 메시지
+  } catch (error) {
+    console.log("Google login error:", error);
     toast({
-      title: "Error",
-      description: authStore.errorMessage || "Unknown error occurred.",
-      variant: "destructive", // 에러 스타일
-      action: h(
-        ToastAction,
-        {
-          altText: "Try again",
-        },
-        {
-          default: () => "Try again",
-        }
-      ),
+      title: "Login Failed",
+      description: "로그인에 실패했습니다. 다시 시도해 주세요.",
+      variant: "destructive",
+      action: h(ToastAction, { altText: "Try again" }, { default: () => "Try again" }),
     });
   }
 };
 
-const openBithumbApi = () => {
-  window.open(
-    "https://www.bithumb.com/react/api-support/management-api",
-    "_blank"
-  );
-};
 </script>

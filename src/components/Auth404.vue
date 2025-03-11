@@ -18,7 +18,7 @@
         @click="goToLogin"
         class="mt-6"
       >
-        <Lock class="w-5 h-5 mr-2" />
+        <Lock />
         로그인 하러 가기
       </Button>
       </div>

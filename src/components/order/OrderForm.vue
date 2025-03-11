@@ -1,7 +1,7 @@
 <template>
   <div class="max-w-4xl mx-auto p-6 space-y-6 bg-white rounded-lg shadow-lg">
     <!-- 주문 종류 -->
-     <!--
+    <!--
     <div class="bg-gray-100 p-4 rounded-lg">
       <h2 class="text-xl font-semibold mb-4">주문 종류</h2>
       <RadioGroup v-model="orderData.ord_type">
@@ -19,97 +19,102 @@
     </div>
 -->
 
-<!-- 지갑 정보 -->
-<div class="bg-gray-50 p-4 rounded-lg">
-
-  <p v-if="isBid" class="text-xl font-semibold text-gray-600">
-        보유 금액: {{ formattedBidBalance }} (단위: {{ bidCurrency }})
+    <!-- 지갑 정보 -->
+    <div class="flex items-center bg-gray-50 p-4 rounded-lg">
+      <p v-if="isBid" class="text-xl font-semibold text-gray-600">
+        주문가능 {{ formattedBidBalance }} (단위: {{ bidCurrency }})
       </p>
       <p v-if="isAsk" class="text-xl font-semibold text-gray-600">
-        보유 코인: {{ askBalance }} (단위:
-        {{ askCurrency }})
+        주문가능 {{ askBalance }} (단위: {{ askCurrency }})
       </p>
-      <Button @click="handleFetchOrderChance">보유량 새로고침</Button>
-
-</div>
-    
-  
-
-    
-
-
-
-
+      <Button variant="ghost" @click="handleFetchOrderChance" :disabled="isLoading">
+        <RefreshCw :class="{ 'animate-spin': isLoading }" />
+      </Button>
+    </div>
 
     <!-- 거래 정보 -->
-      <div v-if="isLimit" class="grid items-start gap-4">
-        <div class="grid gap-2" >
-          <Label>거래 수량</Label>
-          <div class="flex gap-4">
-            <Input readonly v-model="orderData.volume" @click="handleOpenTempOrder('volume')" />
-            <OrderRatio />
-          </div>
-        </div>
-
-
-        <div class="grid gap-2" >
-          <Label>거래 가격</Label>
-          <div class="flex gap-4">
-            <Input readonly v-model="formattedPrice" @click="handleOpenTempOrder('price')" />
-            <Button @click="handleSetOrderDataTradePrice()">현재가 갱신</Button>
-          </div>
-        </div>
-
-   
-
-
-
-
-
-        <div class="grid gap-2" >
-          <Label>총액 (단위: {{ bidCurrency }})</Label>
-          <Input readonly v-model="formattedTotal" @click="handleOpenTempOrder('total')" />
+    <div v-if="isLimit" class="grid items-start gap-4">
+      <div class="grid gap-2">
+        <Label>거래 수량</Label>
+        <div class="flex gap-4">
+          <Input
+            readonly
+            v-model="orderData.volume"
+            @click="handleOpenTempOrder('volume')"
+          />
+          <OrderRatio />
         </div>
       </div>
 
- <!-- 거래 정보 -->
-
- <div v-if="isPrice && isBid" class="grid items-start gap-4">
-        <div class="grid gap-2" >
-          <Label>총액 (단위: {{ bidCurrency }})</Label>
-          <div class="flex gap-4">
-          <Input readonly v-model="formattedTotal" @click="handleOpenTempOrder('total')" />
-          <OrderRatio />
-          </div>
-        </div>
-
-        <div class="grid gap-2">
-          <Label>예상 수량</Label>
-          <p class="text-xl font-semibold">
-        {{ orderData.volume }} (단위: {{ askCurrency }})
-      </p>
-          </div>
-    </div> 
-
- 
-    <div  v-if="isPrice && isAsk" class="grid items-start gap-4">
       <div class="grid gap-2">
-          <Label>거래 수량</Label>
-          <div class="flex gap-4">
-            <Input readonly v-model="orderData.volume"  @click="handleOpenTempOrder('volume')"/>
-            <OrderRatio />
-          </div>
+        <Label>거래 가격</Label>
+        <div class="flex gap-4">
+          <Input
+            readonly
+            v-model="formattedPrice"
+            @click="handleOpenTempOrder('price')"
+          />
+          <Button @click="handleSetOrderDataTradePrice()">현재가 갱신</Button>
         </div>
+      </div>
 
-        <div class="grid gap-2">
-          <Label>예상 금액</Label>
-          <p class="text-xl font-semibold">
-        {{ formattedTotal }} (단위: {{ bidCurrency }})
-      </p>
-          </div>
-    </div> 
+      <div class="grid gap-2">
+        <Label>총액 (단위: {{ bidCurrency }})</Label>
+        <Input
+          readonly
+          v-model="formattedTotal"
+          @click="handleOpenTempOrder('total')"
+        />
+      </div>
+    </div>
+
+    <!-- 거래 정보 -->
+
+    <div v-if="isPrice && isBid" class="grid items-start gap-4">
+      <div class="grid gap-2">
+        <Label>총액 (단위: {{ bidCurrency }})</Label>
+        <div class="flex gap-4">
+          <Input
+            readonly
+            v-model="formattedTotal"
+            @click="handleOpenTempOrder('total')"
+          />
+          <OrderRatio />
+        </div>
+      </div>
+
+      <div class="grid gap-2">
+        <Label>예상 수량</Label>
+        <p class="text-xl font-semibold">
+          {{ orderData.volume }} (단위: {{ askCurrency }})
+        </p>
+      </div>
+    </div>
+
+    <div v-if="isPrice && isAsk" class="grid items-start gap-4">
+      <div class="grid gap-2">
+        <Label>거래 수량</Label>
+        <div class="flex gap-4">
+          <Input
+            readonly
+            v-model="orderData.volume"
+            @click="handleOpenTempOrder('volume')"
+          />
+          <OrderRatio />
+        </div>
+      </div>
+
+      <div class="grid gap-2">
+        <Label>예상 금액</Label>
+        <p class="text-xl font-semibold">
+          {{ formattedTotal }} (단위: {{ bidCurrency }})
+        </p>
+      </div>
+    </div>
 
 
+
+<div class="flex flex-col gap-4" v-if="isAuthenticated">
     <div class="flex gap-4">
       <Button variant="outline" class="w-full" @click="handleSetOrderData">
         초기화
@@ -127,10 +132,20 @@
       </Button>
     </div>
     <Button class="w-full" @click="handleCurrentPriceTrade">
-        현재가 {{ isBid ? "전액 매수" : "전량 매도" }}
-      </Button>
+      현재가 {{ isBid ? "전액 매수" : "전량 매도" }}
+    </Button>
     <!-- 주문 버튼 -->
-    
+
+  </div>
+
+<div v-else>
+  <Button class="w-full" @click="goToLogin">
+    <Lock />
+    로그인 하러 가기
+    </Button>
+  </div>
+
+
 
     <Drawer v-if="drawer" v-model:open="drawer">
       <DrawerContent>
@@ -143,10 +158,7 @@
             <p>{{ orderData.ord_type === "limit" ? "지정가" : "시장가" }}</p>
             <p>거래 가격: {{ formattedPrice }}</p>
             <p>거래 수량: {{ orderData.volume }}</p>
-            <p>
-              주문 금액: {{ formattedTotal }} (단위:
-              {{ bidCurrency }})
-            </p>
+            <p>주문 금액: {{ formattedTotal }} (단위: {{ bidCurrency }})</p>
           </div>
         </div>
         <DrawerFooter>
@@ -165,8 +177,6 @@
         </DrawerFooter>
       </DrawerContent>
     </Drawer>
-
- 
   </div>
 </template>
 
@@ -178,6 +188,8 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useOrderStore } from "@/stores/order-store";
 import { useOrderChanceStore } from "@/stores/order-chance-store";
+import { useAuthStore } from "@/stores/auth-store"; // Pinia store 가져오기
+import { RefreshCw, Lock} from "lucide-vue-next";
 
 import { formatPrice, formatTotal } from "@/utils/format";
 import {
@@ -190,7 +202,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { useRoute } from "vue-router"; // vue-router의 useRoute 훅을 가져옴
+import { useRouter, useRoute } from "vue-router";
 
 import OrderRatio from "@/components/order/OrderRatio.vue";
 import { ToastAction } from "@/components/ui/toast";
@@ -200,12 +212,15 @@ const { toast } = useToast();
 
 const orderStore = useOrderStore();
 const orderChanceStore = useOrderChanceStore();
+const authStore = useAuthStore();
 
+const isAuthenticated = computed(() => authStore.isAuthenticated);
 const orderData = computed(() => orderStore.orderData);
 const bidBalance = computed(() => orderChanceStore.bidBalance);
 const bidCurrency = computed(() => orderChanceStore.bidCurrency);
 const askBalance = computed(() => orderChanceStore.askBalance);
 const askCurrency = computed(() => orderChanceStore.askCurrency);
+const isLoading = computed(() => orderChanceStore.isLoading);
 
 // 조건 계산
 const isBid = computed(() => orderData.value.side === "bid");
@@ -221,28 +236,26 @@ const handleOpenTempOrder = (value: string) => {
 function handleSetOrderData() {
   orderStore.setOrderData();
 }
+const router = useRouter();
 const route = useRoute();
 const marketParam = computed(() => route.params.market as string);
 // 보유 자본 새로고침
 
 const handleFetchOrderChance = () => {
   orderChanceStore.fetchOrderChance(marketParam.value);
-}
+};
 const handleSetOrderDataTradePrice = () => {
   orderStore.setOrderDataTradePrice();
-}
+};
 
 const handleCurrentPriceTrade = () => {
   orderStore.setOrderDataTradePrice();
-  orderStore.setRatioChange('1');
+  orderStore.setRatioChange("1");
   openDrawer(); // 화살표 함수에서도 호출 가능
 };
 
-
 // 포맷팅 계산
-const formattedBidBalance = computed(() =>
-  formatTotal(bidBalance.value)
-);
+const formattedBidBalance = computed(() => formatTotal(bidBalance.value));
 const formattedPrice = computed(() => formatPrice(orderData.value.price));
 const formattedTotal = computed(() => formatTotal(orderData.value.total));
 
@@ -274,7 +287,6 @@ const closeDrawer = () => {
   document.body.style.pointerEvents = "auto";
 };
 
-
 const orderSuccess = ref(false);
 const successMessage = ref("");
 const errorMessage = ref("");
@@ -282,11 +294,14 @@ const errorMessage = ref("");
 const handleCreateOrder = () => {
   closeDrawer();
   orderStore.createOrder().then(() => {
+    // 주문 성공 여부와 상관없이 잔고 새로고침 실행
+    handleFetchOrderChance();
+
     if (orderStore.orderErrorMessage) {
       toast({
         title: "주문 실패",
         description: orderStore.orderErrorMessage,
-        variant: "destructive", // 실패 메시지 스타일
+        variant: "destructive",
       });
     } else {
       toast({
@@ -297,4 +312,9 @@ const handleCreateOrder = () => {
   });
 };
 
+
+
+const goToLogin = () => {
+    router.replace(`/login?redirect=${route.fullPath}`);
+  };
 </script>

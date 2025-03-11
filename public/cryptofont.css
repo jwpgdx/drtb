@@ -1,6 +1,6 @@
 @font-face {
   font-family: 'cryptofont';
-  src: url('https://drtb.web.app/webfonts/cryptofont.woff') format('woff');
+  src: url('/webfonts/cryptofont.woff') format('woff');
   font-weight: normal;
   font-style: normal;
   font-display: block;

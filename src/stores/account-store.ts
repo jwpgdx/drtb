@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { KJUR } from "jsrsasign";
 import { useAuthStore } from "@/stores/auth-store"; // authStore 가져오기
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 export const useAccountStore = defineStore("accountStore", {
   state: () => ({
@@ -12,51 +13,99 @@ export const useAccountStore = defineStore("accountStore", {
     krwBalance: null, // Added to store formatted KRW balance
     market: null,
     marketLocked: null,
- 
+    isLoading: false // 명시적으로 state에 추가
+
   }),
 
   actions: {
+
+
+
+
+
+
     async fetchAccountData() {
-      const authStore = useAuthStore(); // authStore 인스턴스 가져오기
-
-      const accessKey = authStore.accessKey;
-      const secretKey = authStore.secretKey;
-
-      if (!accessKey || !secretKey) {
-        this.accountErrorMessage = "Access Key와 Secret Key가 설정되지 않았습니다.";
+      this.isLoading = true;
+      console.log('[DEBUG] fetchAccountData 시작! 계정 정보 가져오기~');
+      const authStore = useAuthStore();
+      const uid = authStore.user.uid;
+      
+      if (!uid) {
+        console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
+        this.accountErrorMessage = "등록되지 않은 uid!";
         return;
       }
-
-      const apiUrl = "https://api.bithumb.com";
-
-      const payload = {
-        access_key: accessKey,
-        nonce: uuidv4(),
-        timestamp: Date.now(),
-      };
-
-      const header = { alg: "HS256", typ: "JWT" };
-      const jwtToken = KJUR.jws.JWS.sign("HS256", header, payload, secretKey);
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      };
-
+      console.log('[DEBUG] UID 확인됨:', uid);
+    
       try {
-        const response = await axios.get(`${apiUrl}/v1/accounts`, config);
-        this.accountData = response.data;
-        this.accountErrorMessage = null;
-        this.accountStatus = response.status.toString();
-        this.formatKrwBalance(this.accountData);
-      } catch (error) {
-        console.error("Error:", error);
+        const functions = getFunctions();
+        // 타입 정의를 통해 반환값의 구조를 명시적으로 지정
+        const createAuthHeaderFromDbCall = httpsCallable<
+          { queryString?: string | null },
+          { authorization: string }
+        >(functions, 'createAuthHeaderFromDb');
+        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
+    
+        // 계정 조회를 위한 queryString 없이 호출
+        const authResult = await createAuthHeaderFromDbCall({
+          queryString: null
+        });
+        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
+    
+        // 생성된 인증 헤더로 계정 정보 조회
+        const config = {
+          headers: {
+            Authorization: authResult.data.authorization
+          }
+        };
+        const apiUrl = "https://api.bithumb.com/v1/accounts";
+    
+        try {
+          console.log('[DEBUG] Bithumb API 계정 정보 호출 전..');
+          const response = await axios.get(apiUrl, config);
+          console.log('[DEBUG] 계정 정보 조회 성공! 응답 데이터:', response.data);
+    
+          // 계정 정보 조회 성공
+          this.accountData = response.data;
+          this.accountErrorMessage = null;
+          this.accountStatus = response.status.toString();
+          this.formatKrwBalance(this.accountData);
+          this.isLoading = false;
+    
+        } catch (error: any) {
+          console.error('[ERROR] Bithumb API 계정 조회 중 오류 발생:', error);
+          // 계정 정보 조회 실패
+          this.isLoading = false;
+          this.accountData = null;
+          this.accountStatus = error.response?.status.toString() || "No response";
+    
+          // 오류 유형에 따른 세부 메시지 처리
+          if (error.response) {
+            console.error('[ERROR] 응답에서 에러 확인, 상태 코드:', error.response.status);
+            switch (error.response.status) {
+              case 401:
+                this.accountErrorMessage = "API 키 인증에 실패했습니다. 키를 다시 확인해주세요.";
+                break;
+              case 403:
+                this.accountErrorMessage = "접근 권한이 없습니다. API 키 설정을 확인해주세요.";
+                break;
+              default:
+                this.accountErrorMessage = "계정 정보 조회 중 오류가 발생했습니다.";
+            }
+          } else {
+            console.error('[ERROR] 응답 자체 없음! 네트워크 문제인가?:', error);
+            this.accountErrorMessage = "네트워크 오류 또는 서버 연결에 실패했습니다.";
+          }
+        }
+      } catch (error: any) {
+        // 인증 헤더 생성 실패
+        console.error('[ERROR] 인증 헤더 생성 과정에서 대참사 발생:', error);
+        this.isLoading = false;
         this.accountData = null;
-        this.accountStatus = error.response?.status.toString() || "No response";
-        this.accountErrorMessage = error.response?.data || "Failed to fetch account data";
+        this.accountErrorMessage = "계정 정보를 확인할 수 없습니다.";
       }
     },
+
     formatKrwBalance(accountData) {
       try {
         // Assuming accountData has a structure like this:  Adjust to your actual structure

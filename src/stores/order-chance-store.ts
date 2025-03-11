@@ -1,9 +1,8 @@
 import { defineStore } from "pinia";
 import { v4 as uuidv4 } from "uuid";
-import CryptoJS from "crypto-js";
 import axios from "axios";
-import { KJUR } from "jsrsasign";
 import { useAuthStore } from "@/stores/auth-store"; // authStore 가져오기
+import { getFunctions, httpsCallable } from "firebase/functions";
 import { merge } from "lodash";
 
 export const useOrderChanceStore = defineStore("orderChanceStore", {
@@ -54,55 +53,95 @@ export const useOrderChanceStore = defineStore("orderChanceStore", {
     askBalance: "0", // 기본값 설정
     askCurrency: "BTC", // 기본값 설정
     askAvgBuyPrice: "0",
+    isLoading: false, // 로딩 상태 추가
   }),
 
   actions: {
     async fetchOrderChance(market) {
+      this.isLoading = true;
+      console.log(`[DEBUG] fetchOrderChance 시작! 마켓: ${market}`);
       const authStore = useAuthStore();
-      const accessKey = authStore.accessKey;
-      const secretKey = authStore.secretKey;
-
-      if (!accessKey || !secretKey) {
-        this.orderChanceErrorMessage = "Access Key와 Secret Key가 설정되지 않았습니다.";
+      const uid = authStore.user.uid;
+      
+      if (!uid) {
+        console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
+        this.orderChanceErrorMessage = "등록되지 않은 uid!";
+        this.isLoading = false;
         return;
       }
-
-      const apiUrl = "https://api.bithumb.com";
-      const query = `market=${market}`;
-
-      // crypto-js를 사용하여 SHA512 해시 생성
-      const queryHash = CryptoJS.SHA512(query).toString(CryptoJS.enc.Hex);
-
-      const payload = {
-        access_key: accessKey,
-        nonce: uuidv4(),
-        timestamp: Date.now(),
-        query_hash: queryHash,
-        query_hash_alg: "SHA512",
-      };
-
-      const jwtToken = KJUR.jws.JWS.sign("HS256", { alg: "HS256", typ: "JWT" }, payload, secretKey);
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      };
-
-
+      console.log('[DEBUG] UID 확인됨:', uid);
+    
       try {
-        const response = await axios.get(`${apiUrl}/v1/orders/chance?${query}`, config);
-        // merge로 API 데이터와 기본값을 병합
-        this.orderChance = merge(this.orderChance, response.data);
-        this.bidBalance = this.orderChance.bid_account.balance; // balance 저장
-        this.bidCurrency = this.orderChance.bid_account.currency; // currency 저장
-        this.askBalance = this.orderChance.ask_account.balance; // balance 저장
-        this.askCurrency = this.orderChance.ask_account.currency; // currency 저장
-        this.askAvgBuyPrice = this.orderChance.ask_account.avg_buy_price; // 평균 구매 가격 저장
-        this.orderChanceErrorMessage = null;
-        console.log('asasa', this.orderChance);
+        const functions = getFunctions();
+        // 타입 정의를 통해 반환값의 구조를 명시적으로 지정
+        const createAuthHeaderFromDbCall = httpsCallable<
+          { queryString?: string | null },
+          { authorization: string }
+        >(functions, 'createAuthHeaderFromDb');
+        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
+    
+        // 마켓 정보 포함하여 queryString 구성
+        const queryString = `market=${market}`;
+        const authResult = await createAuthHeaderFromDbCall({
+          queryString: queryString
+        });
+        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
+    
+        // 생성된 인증 헤더로 주문 기회 조회
+        const config = {
+          headers: {
+            Authorization: authResult.data.authorization
+          }
+        };
+        const apiUrl = `https://api.bithumb.com/v1/orders/chance?${queryString}`;
+    
+        try {
+          console.log('[DEBUG] Bithumb API 주문 기회 정보 호출 전..');
+          const response = await axios.get(apiUrl, config);
+          console.log('[DEBUG] 주문 기회 정보 조회 성공! 응답 데이터:', response.data);
+    
+          // 기존 orderChance와 응답 데이터 병합
+          this.orderChance = merge(this.orderChance, response.data);
+          this.bidBalance = this.orderChance.bid_account.balance;
+          this.bidCurrency = this.orderChance.bid_account.currency;
+          this.askBalance = this.orderChance.ask_account.balance;
+          this.askCurrency = this.orderChance.ask_account.currency;
+          this.askAvgBuyPrice = this.orderChance.ask_account.avg_buy_price;
+          this.orderChanceErrorMessage = null;
+          this.isLoading = false;
+          console.log('[DEBUG] 최종 orderChance 데이터:', this.orderChance);
+    
+        } catch (error) {
+          console.error('[ERROR] Bithumb API 주문 기회 조회 중 오류 발생:', error);
+          // 주문 기회 정보 조회 실패
+          this.isLoading = false;
+    
+          // 오류 유형에 따른 세부 메시지 처리
+          if (error.response) {
+            console.error('[ERROR] 응답에서 에러 확인, 상태 코드:', error.response.status);
+            switch (error.response.status) {
+              case 401:
+                this.orderChanceErrorMessage = "API 키 인증에 실패했습니다. 키를 다시 확인해주세요.";
+                break;
+              case 403:
+                this.orderChanceErrorMessage = "접근 권한이 없습니다. API 키 설정을 확인해주세요.";
+                break;
+              case 400:
+                this.orderChanceErrorMessage = "잘못된 요청입니다. 마켓 ID를 확인해주세요.";
+                break;
+              default:
+                this.orderChanceErrorMessage = "주문 기회 정보 조회 중 오류가 발생했습니다.";
+            }
+          } else {
+            console.error('[ERROR] 응답 자체 없음! 네트워크 문제인가?:', error);
+            this.orderChanceErrorMessage = "네트워크 오류 또는 서버 연결에 실패했습니다.";
+          }
+        }
       } catch (error) {
-        this.orderChanceErrorMessage = error.response?.data || error.message || "Failed to fetch order chance data";
+        // 인증 헤더 생성 실패
+        console.error('[ERROR] 인증 헤더 생성 과정에서 대참사 발생:', error);
+        this.isLoading = false;
+        this.orderChanceErrorMessage = "주문 기회 정보를 확인할 수 없습니다.";
       }
     },
   },

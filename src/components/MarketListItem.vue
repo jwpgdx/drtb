@@ -3,10 +3,9 @@
     @click="goToOrderPage"
     class="flex items-center p-4 cursor-pointer hover:bg-gray-100"
   >
-    <i
-      :class="`cf cf-${market.market.replace('KRW-', '').toLowerCase() || 'btc'}`"
-      class="coin-icon mr-4"
-    ></i>
+    <!-- market.isVisible일 때만 이미지 로드 -->
+    <Coin :market="market.market" class="w-8 h-8 mr-4" />
+
     <div class="flex-1">
       <p class="text-lg font-semibold">{{ market.korean_name }}</p>
       <p class="text-sm text-gray-500">{{ market.market }}</p>
@@ -21,19 +20,8 @@
         viewBox="0 0 24 24"
         stroke="currentColor"
       >
-        <circle
-          cx="12"
-          cy="12"
-          r="10"
-          stroke-width="4"
-          class="opacity-25"
-        />
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          d="M4 12a8 8 0 1116 0A8 8 0 014 12z"
-          class="opacity-75"
-        />
+        <circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25" />
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 1116 0A8 8 0 014 12z" class="opacity-75" />
       </svg>
 
       <!-- trade_price가 있으면 세자리마다 쉼표 추가 -->
@@ -56,6 +44,7 @@
 <script setup lang="ts">
 import { defineProps, computed, ref, watchEffect } from "vue";
 import { useRouter } from "vue-router";
+import Coin from "@/components/icons/Coin.vue"; // MD5 해시 생성용 라이브러리
 
 interface Market {
   market: string;
@@ -75,27 +64,27 @@ const router = useRouter();
 // 로딩 상태 관리
 const isLoading = ref(true);
 
-// 데이터가 들어오면 로딩을 종료
+// 데이터가 들어오면 로딩 종료
 watchEffect(() => {
   if (props.market.trade_price !== null && props.market.priceChangePercent !== null) {
     isLoading.value = false;
   }
 });
 
-// goToOrderPage function
+// 주문 페이지 이동
 const goToOrderPage = () => {
   router.push(`/order/${props.market.market}`);
 };
 
-// Computed property for price change class
+// 가격 변동 스타일
 const priceChangeClass = computed(() => {
   switch (props.market.change) {
     case "RISE":
-      return "text-red-500"; // 상승
+      return "text-red-500";
     case "FALL":
-      return "text-blue-500"; // 하락
+      return "text-blue-500";
     default:
-      return "text-gray-500"; // 보합
+      return "text-gray-500";
   }
 });
 </script>

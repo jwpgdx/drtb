@@ -5,7 +5,7 @@
     <div
       class="flex justify-between mb-2"
     >
-      <span class="font-medium">보유 금액</span>
+      <span class="font-medium">보유 22금액</span>
       <span>{{ formattedBidBalance }}
         {{ bidCurrency }}</span
       >

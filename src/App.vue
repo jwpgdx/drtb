@@ -2,7 +2,7 @@
 import { onBeforeMount } from "vue";
 import { useMarketStore } from "@/stores/market-store";
 
-import Header from "@/components/Header.vue";
+import Header from "@/components/header/Header.vue";
 import Toaster from "@/components/ui/toast/Toaster.vue";
 
 const marketStore = useMarketStore();

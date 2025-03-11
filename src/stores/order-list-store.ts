@@ -1,9 +1,7 @@
 import { defineStore } from "pinia";
-import { v4 as uuidv4 } from "uuid";
-import CryptoJS from "crypto-js";
 import axios from "axios";
-import { KJUR } from "jsrsasign";
 import { useAuthStore } from "@/stores/auth-store"; // authStore 가져오기
+import { getFunctions, httpsCallable } from "firebase/functions";
 
 interface OrderParams {
   limit?: number;
@@ -17,52 +15,91 @@ export const useOrderListStore = defineStore("orderListStore", {
     orderList: [],
     isLastPage: false,
     page: 1,
+    isLoading: false,
   }),
 
   actions: {
     // 공통된 오더리스트 호출 함수
-    
     async fetchOrderListCommon(params: OrderParams = {}) {
+      this.isLoading = true;
+      console.log('[DEBUG] fetchOrderListCommon 시작! 파라미터:', params);
       const authStore = useAuthStore();
-      const accessKey = authStore.accessKey;
-      const secretKey = authStore.secretKey;
-
-      if (!accessKey || !secretKey) {
-        this.orderErrorMessage = "Access Key와 Secret Key가 설정되지 않았습니다.";
-        return false; // 실패 시 false 리턴
+      const uid = authStore.user.uid;
+      
+      if (!uid) {
+        console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
+        this.orderErrorMessage = "등록되지 않은 uid!";
+        this.isLoading = false;
+        return false;
       }
-
-      const apiUrl = "https://api.bithumb.com/v1/orders";
-      const query = new URLSearchParams(params).toString();
-      const queryHash = CryptoJS.SHA512(query).toString(CryptoJS.enc.Hex);
-
-      const payload = {
-        access_key: accessKey,
-        nonce: uuidv4(),
-        timestamp: Date.now(),
-        query_hash: queryHash,
-        query_hash_alg: "SHA512",
-      };
-
-      const header = { alg: "HS256", typ: "JWT" };
-      const jwtToken = KJUR.jws.JWS.sign("HS256", header, payload, secretKey);
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      };
-
+      console.log('[DEBUG] UID 확인됨:', uid);
+      
       try {
-        const response = await axios.get(`${apiUrl}?${query}`, config);
-        return response.data; // 성공 시 받아온 데이터 리턴
-      } catch (error) {
-        console.error("Error:", error);
-        if (error.response) {
-          console.error("Error Response Status:", error.response.status);
-          console.error("Error Response Data:", error.response.data);
+        const functions = getFunctions();
+        // 타입 정의를 통해 반환값의 구조를 명시적으로 지정
+        const createAuthHeaderFromDbCall = httpsCallable<
+          { queryString?: string | null },
+          { authorization: string }
+        >(functions, 'createAuthHeaderFromDb');
+        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
+        
+        // 파라미터를 queryString으로 변환
+        const query = new URLSearchParams(params).toString();
+        
+        // queryString 포함하여 호출
+        const authResult = await createAuthHeaderFromDbCall({
+          queryString: query
+        });
+        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
+        
+        // 생성된 인증 헤더로 주문 목록 조회
+        const config = {
+          headers: {
+            Authorization: authResult.data.authorization
+          }
+        };
+        const apiUrl = `https://api.bithumb.com/v1/orders?${query}`;
+        
+        try {
+          console.log('[DEBUG] Bithumb API 주문 목록 호출 전..');
+          const response = await axios.get(apiUrl, config);
+          console.log('[DEBUG] 주문 목록 조회 성공! 응답 데이터:', response.data);
+          this.isLoading = false;
+          return response.data; // 성공 시 받아온 데이터 리턴
+          
+        } catch (error: any) {
+          console.error('[ERROR] Bithumb API 주문 목록 조회 중 오류 발생:', error);
+          
+          // 오류 유형에 따른 세부 메시지 처리
+          if (error.response) {
+            console.error('[ERROR] 응답에서 에러 확인, 상태 코드:', error.response.status);
+            switch (error.response.status) {
+              case 401:
+                this.orderErrorMessage = "API 키 인증에 실패했습니다. 키를 다시 확인해주세요.";
+                break;
+              case 403:
+                this.orderErrorMessage = "접근 권한이 없습니다. API 키 설정을 확인해주세요.";
+                break;
+              case 400:
+                this.orderErrorMessage = "잘못된 요청입니다. 파라미터를 확인해주세요.";
+                break;
+              default:
+                this.orderErrorMessage = "주문 목록 조회 중 오류가 발생했습니다.";
+            }
+          } else {
+            console.error('[ERROR] 응답 자체 없음! 네트워크 문제인가?:', error);
+            this.orderErrorMessage = "네트워크 오류 또는 서버 연결에 실패했습니다.";
+          }
+          
+          this.isLoading = false;
+          return false; // 실패 시 false 리턴
         }
-        this.orderErrorMessage = error.response?.data || "Failed to fetch order list";
+        
+      } catch (error: any) {
+        // 인증 헤더 생성 실패
+        console.error('[ERROR] 인증 헤더 생성 과정에서 대참사 발생:', error);
+        this.orderErrorMessage = "주문 목록을 확인할 수 없습니다.";
+        this.isLoading = false;
         return false; // 실패 시 false 리턴
       }
     },
@@ -71,14 +108,14 @@ export const useOrderListStore = defineStore("orderListStore", {
     async fetchOrderList(params: OrderParams = {}) {
       this.page = 1;
       const updatedParams = { ...params, page: this.page };
-      console.log("fetchOrderList 함수 호출됨");
+      console.log("[DEBUG] fetchOrderList 함수 호출됨");
       const data = await this.fetchOrderListCommon(updatedParams);
       if (data) {
         this.orderList = data;
         this.orderErrorMessage = null;
         this.page += 1;
-        if(data.length < params.limit) {
-          this.isLastPage = true
+        if(data.length < (params.limit || 100)) {
+          this.isLastPage = true;
         } else {
           this.isLastPage = false;
         }
@@ -87,7 +124,7 @@ export const useOrderListStore = defineStore("orderListStore", {
 
     // 오더리스트 추가로 불러오기
     async fetchMore(params: OrderParams = {}) {
-      console.log("fetchMore 함수 호출됨");
+      console.log("[DEBUG] fetchMore 함수 호출됨, 현재 페이지:", this.page);
 
       // fetchMore일 때만 this.page 값을 덮어쓰기
       const updatedParams = { ...params, page: this.page };
@@ -102,67 +139,100 @@ export const useOrderListStore = defineStore("orderListStore", {
         this.page += 1;
         // 마지막 페이지 여부 확인
          
-        if(data.length < params.limit || data.length === 0 ) {
-          this.isLastPage = true
+        if(data.length < (params.limit || 100) || data.length === 0) {
+          this.isLastPage = true;
         } else {
           this.isLastPage = false;
         }
-
-
       }
     },
-
-
-
 
     async cancelOrder(uuid) {
+      this.isLoading = true;
+      console.log(`[DEBUG] cancelOrder 시작! UUID: ${uuid}`);
       const authStore = useAuthStore();
-      const accessKey = authStore.accessKey;
-      const secretKey = authStore.secretKey;
-
-      if (!accessKey || !secretKey) {
-        this.orderErrorMessage = "Access Key와 Secret Key가 설정되지 않았습니다.";
-        return false; // 실패 시 false 리턴
+      const uid = authStore.user.uid;
+      
+      if (!uid) {
+        console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
+        this.orderErrorMessage = "등록되지 않은 uid!";
+        this.isLoading = false;
+        return false;
       }
-
-      const apiUrl = "https://api.bithumb.com/v1/order";
-      const query = `uuid=${uuid}`;
-      const queryHash = CryptoJS.SHA512(query).toString(CryptoJS.enc.Hex);
-
-      const payload = {
-        access_key: accessKey,
-        nonce: uuidv4(),
-        timestamp: Date.now(),
-        query_hash: queryHash,
-        query_hash_alg: "SHA512",
-      };
-
-      const header = { alg: "HS256", typ: "JWT" };
-      const jwtToken = KJUR.jws.JWS.sign("HS256", header, payload, secretKey);
-
-      const config = {
-        headers: {
-          Authorization: `Bearer ${jwtToken}`,
-        },
-      };
-
+      console.log('[DEBUG] UID 확인됨:', uid);
+      
       try {
-        const response = await axios.delete(`${apiUrl}?${query}`, config);
-        console.log("Cancel Order Response:", response.data);
-        this.orderErrorMessage = null;
-        return response.data; // 주문 취소 성공 시 데이터 리턴
-      } catch (error) {
-        console.error("Error:", error);
-        if (error.response) {
-          console.error("Error Response Status:", error.response.status);
-          console.error("Error Response Data:", error.response.data);
+        const functions = getFunctions();
+        // 타입 정의를 통해 반환값의 구조를 명시적으로 지정
+        const createAuthHeaderFromDbCall = httpsCallable<
+          { queryString?: string | null },
+          { authorization: string }
+        >(functions, 'createAuthHeaderFromDb');
+        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
+        
+        // 취소할 주문의 UUID를 queryString으로 변환
+        const query = `uuid=${uuid}`;
+        
+        // queryString 포함하여 호출
+        const authResult = await createAuthHeaderFromDbCall({
+          queryString: query
+        });
+        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
+        
+        // 생성된 인증 헤더로 주문 취소 요청
+        const config = {
+          headers: {
+            Authorization: authResult.data.authorization
+          }
+        };
+        const apiUrl = `https://api.bithumb.com/v1/order?${query}`;
+        
+        try {
+          console.log('[DEBUG] Bithumb API 주문 취소 요청 전..');
+          const response = await axios.delete(apiUrl, config);
+          console.log('[DEBUG] 주문 취소 성공! 응답 데이터:', response.data);
+          this.orderErrorMessage = null;
+          this.isLoading = false;
+          return response.data; // 주문 취소 성공 시 데이터 리턴
+          
+        } catch (error: any) {
+          console.error('[ERROR] Bithumb API 주문 취소 중 오류 발생:', error);
+          
+          // 오류 유형에 따른 세부 메시지 처리
+          if (error.response) {
+            console.error('[ERROR] 응답에서 에러 확인, 상태 코드:', error.response.status);
+            switch (error.response.status) {
+              case 401:
+                this.orderErrorMessage = "API 키 인증에 실패했습니다. 키를 다시 확인해주세요.";
+                break;
+              case 403:
+                this.orderErrorMessage = "접근 권한이 없습니다. API 키 설정을 확인해주세요.";
+                break;
+              case 400:
+                this.orderErrorMessage = "잘못된 요청입니다. UUID를 확인해주세요.";
+                break;
+              case 404:
+                this.orderErrorMessage = "해당 주문을 찾을 수 없습니다.";
+                break;
+              default:
+                this.orderErrorMessage = "주문 취소 중 오류가 발생했습니다.";
+            }
+          } else {
+            console.error('[ERROR] 응답 자체 없음! 네트워크 문제인가?:', error);
+            this.orderErrorMessage = "네트워크 오류 또는 서버 연결에 실패했습니다.";
+          }
+          
+          this.isLoading = false;
+          return false; // 실패 시 false 리턴
         }
-        this.orderErrorMessage = error.response?.data || "Failed to cancel order";
+        
+      } catch (error: any) {
+        // 인증 헤더 생성 실패
+        console.error('[ERROR] 인증 헤더 생성 과정에서 대참사 발생:', error);
+        this.orderErrorMessage = "주문을 취소할 수 없습니다.";
+        this.isLoading = false;
         return false; // 실패 시 false 리턴
       }
-    },
-
-
-    
+    }
   },
 });
