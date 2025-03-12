@@ -2,21 +2,33 @@
   <div>
     <!-- 필터 입력창 -->
     <div class="relative w-full items-center mb-4">
-    <Input v-model="filterQuery"  id="search" type="text" placeholder="Search..." class="pl-10" />
-    <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
-      <Search class="size-6 text-muted-foreground" />
-    </span>
-  </div>
+      <Input v-model="filterQuery" id="search" type="text" placeholder="Search..." class="pl-10" />
+      <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
+        <Search class="size-6 text-muted-foreground" />
+      </span>
+    </div>
 
-    <!-- 마켓 리스트 -->
-    <MarketListItem
-      v-for="market in filteredMarkets"
-      :key="market.market"
-      :data-id="market.market"
-      :market="market"
-      class="market"
-    >
-    </MarketListItem>
+    <!-- 마켓 리스트와 광고 -->
+    <template v-for="(market, index) in filteredMarkets" :key="market.market">
+      <!-- 마켓 아이템 -->
+      <MarketListItem
+        :data-id="market.market"
+        :market="market"
+        class="market"
+      />
+      
+      <!-- 광고 삽입 (10개 아이템마다) -->
+      <div v-if="index === 2" class="ad-container my-4">
+        <div v-if="isMounted">
+          <ins class="adsbygoogle"
+               style="display:block"
+               data-ad-format="fluid"
+               data-ad-layout-key="-fb+5w+4e-db+86"
+               data-ad-client="ca-pub-3125100873852926"
+               data-ad-slot="1012762984"></ins>
+        </div>
+      </div>
+    </template>
 
     <!-- 에러 메시지 -->
     <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
@@ -29,7 +41,11 @@ import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오
 import MarketListItem from "@/components/MarketListItem.vue";
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-vue-next";
-
+declare global {
+  interface Window {
+    adsbygoogle: any[];
+  }
+}
 // store 사용
 const marketStore = useMarketStore();
 
@@ -43,6 +59,8 @@ const filterQuery = ref('');
 // computed
 const markets = computed(() => marketStore.markets);
 const errorMessage = computed(() => marketStore.errorMessage);
+
+const isMounted = ref(false);
 
 // 필터링된 마켓 목록
 const filteredMarkets = computed(() => {
@@ -72,12 +90,20 @@ watch(filteredMarkets, () => {
     observer.value.disconnect(); // 기존 옵저버 종료
   }
   createObserver(); // 새로운 옵저버 생성
+  nextTick(() => {
+    initAds(); // 광고 초기화
+  });
 }, { immediate: true });
 
 // onMounted와 onBeforeUnmount로 생명 주기 메서드 처리
 onMounted(() => {
   createObserver();
   startPriceUpdate(); // 가격 갱신 시작
+  
+  isMounted.value = true;
+  nextTick(() => {
+    initAds(); // 광고 초기화
+  });
 });
 
 onBeforeUnmount(() => {
@@ -92,7 +118,6 @@ onBeforeUnmount(() => {
 // 인터벌 ID를 ref로 선언
 const intervalId = ref<NodeJS.Timeout | null>(null);
 
-
 // 가격 갱신
 function startPriceUpdate() {
   intervalId.value = setInterval(() => {
@@ -105,6 +130,17 @@ function startPriceUpdate() {
 // 가격 데이터 가져오기
 function fetchPriceData(markets: string[]) {
   marketStore.fetchPrice(markets);
+}
+
+// 광고 초기화
+function initAds() {
+  nextTick(() => {
+    // 광고가 이미 표시되었는지 확인
+    if (window.adsbygoogle && window.adsbygoogle.length === 0) {
+      // @ts-ignore
+      (window.adsbygoogle = window.adsbygoogle || []).push({});
+    }
+  });
 }
 
 // IntersectionObserver 생성
@@ -142,13 +178,8 @@ async function createObserver() {
   );
 
   // 새로운 filteredMarkets에 대해서만 옵저버를 설정
-  filteredMarkets.value.forEach((market) => {
-    const marketElement = document.querySelector(
-      `.market[data-id="${market.market}"]`
-    );
-    if (marketElement) {
-      observer.value.observe(marketElement);
-    }
+  document.querySelectorAll('.market[data-id]').forEach((marketElement) => {
+    observer.value?.observe(marketElement);
   });
 }
 </script>
@@ -157,29 +188,12 @@ async function createObserver() {
 .text-red-500 {
   color: red;
 }
-.bg-blue-500 {
-  background-color: #3b82f6;
+.my-4 {
+  margin-top: 1rem;
+  margin-bottom: 1rem;
 }
-.text-white {
-  color: white;
-}
-.py-2 {
-  padding-top: 0.5rem;
-  padding-bottom: 0.5rem;
-}
-.px-4 {
-  padding-left: 1rem;
-  padding-right: 1rem;
-}
-.rounded {
-  border-radius: 0.375rem;
-}
-.fff2 {
-  position: fixed;
-  display: block;
-  width: 400px;
-  background-color: antiquewhite;
-  top: 40px;
-  left: 0;
+.ad-container {
+  min-height: 100px;
+  width: 100%;
 }
 </style>
