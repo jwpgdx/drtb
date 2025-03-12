@@ -28,7 +28,6 @@ const backgroundImage =
 
 // Handle button click (e.g., navigate to another page)
 const onButtonClick = () => {
-  console.log("Button clicked!");
   // Perform your desired action here, such as `router.push('/start')`
 };
 </script>

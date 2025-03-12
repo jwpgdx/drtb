@@ -22,7 +22,6 @@ export const useOrderListStore = defineStore("orderListStore", {
     // 공통된 오더리스트 호출 함수
     async fetchOrderListCommon(params: OrderParams = {}) {
       this.isLoading = true;
-      console.log('[DEBUG] fetchOrderListCommon 시작! 파라미터:', params);
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
       
@@ -32,7 +31,6 @@ export const useOrderListStore = defineStore("orderListStore", {
         this.isLoading = false;
         return false;
       }
-      console.log('[DEBUG] UID 확인됨:', uid);
       
       try {
         const functions = getFunctions();
@@ -41,7 +39,6 @@ export const useOrderListStore = defineStore("orderListStore", {
           { queryString?: string | null },
           { authorization: string }
         >(functions, 'createAuthHeaderFromDb');
-        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
         
         // 파라미터를 queryString으로 변환
         const query = new URLSearchParams(params).toString();
@@ -50,7 +47,6 @@ export const useOrderListStore = defineStore("orderListStore", {
         const authResult = await createAuthHeaderFromDbCall({
           queryString: query
         });
-        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
         
         // 생성된 인증 헤더로 주문 목록 조회
         const config = {
@@ -61,9 +57,7 @@ export const useOrderListStore = defineStore("orderListStore", {
         const apiUrl = `https://api.bithumb.com/v1/orders?${query}`;
         
         try {
-          console.log('[DEBUG] Bithumb API 주문 목록 호출 전..');
           const response = await axios.get(apiUrl, config);
-          console.log('[DEBUG] 주문 목록 조회 성공! 응답 데이터:', response.data);
           this.isLoading = false;
           return response.data; // 성공 시 받아온 데이터 리턴
           
@@ -108,7 +102,6 @@ export const useOrderListStore = defineStore("orderListStore", {
     async fetchOrderList(params: OrderParams = {}) {
       this.page = 1;
       const updatedParams = { ...params, page: this.page };
-      console.log("[DEBUG] fetchOrderList 함수 호출됨");
       const data = await this.fetchOrderListCommon(updatedParams);
       if (data) {
         this.orderList = data;
@@ -124,7 +117,6 @@ export const useOrderListStore = defineStore("orderListStore", {
 
     // 오더리스트 추가로 불러오기
     async fetchMore(params: OrderParams = {}) {
-      console.log("[DEBUG] fetchMore 함수 호출됨, 현재 페이지:", this.page);
 
       // fetchMore일 때만 this.page 값을 덮어쓰기
       const updatedParams = { ...params, page: this.page };
@@ -149,7 +141,6 @@ export const useOrderListStore = defineStore("orderListStore", {
 
     async cancelOrder(uuid) {
       this.isLoading = true;
-      console.log(`[DEBUG] cancelOrder 시작! UUID: ${uuid}`);
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
       
@@ -159,7 +150,6 @@ export const useOrderListStore = defineStore("orderListStore", {
         this.isLoading = false;
         return false;
       }
-      console.log('[DEBUG] UID 확인됨:', uid);
       
       try {
         const functions = getFunctions();
@@ -168,7 +158,6 @@ export const useOrderListStore = defineStore("orderListStore", {
           { queryString?: string | null },
           { authorization: string }
         >(functions, 'createAuthHeaderFromDb');
-        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
         
         // 취소할 주문의 UUID를 queryString으로 변환
         const query = `uuid=${uuid}`;
@@ -177,7 +166,6 @@ export const useOrderListStore = defineStore("orderListStore", {
         const authResult = await createAuthHeaderFromDbCall({
           queryString: query
         });
-        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
         
         // 생성된 인증 헤더로 주문 취소 요청
         const config = {
@@ -188,9 +176,7 @@ export const useOrderListStore = defineStore("orderListStore", {
         const apiUrl = `https://api.bithumb.com/v1/order?${query}`;
         
         try {
-          console.log('[DEBUG] Bithumb API 주문 취소 요청 전..');
           const response = await axios.delete(apiUrl, config);
-          console.log('[DEBUG] 주문 취소 성공! 응답 데이터:', response.data);
           this.orderErrorMessage = null;
           this.isLoading = false;
           return response.data; // 주문 취소 성공 시 데이터 리턴

@@ -55,10 +55,6 @@ async function decryptApiKey(encryptedApiKey: string): Promise<string> {
 
     const [ivHex, saltHex, encrypted] = parts;
 
-    // 2. iv, salt, encrypted 데이터 생성 확인
-    console.log("DEBUG: ivHex:", ivHex);
-    console.log("DEBUG: saltHex:", saltHex);
-    console.log("DEBUG: encrypted:", encrypted);
 
     const iv = Buffer.from(ivHex, "hex");
     const salt = Buffer.from(saltHex, "hex");
@@ -77,10 +73,8 @@ async function decryptApiKey(encryptedApiKey: string): Promise<string> {
 
     // 6. 복호화 수행
     let decrypted = decipher.update(encrypted, "hex", "utf8");
-    console.log("DEBUG: update() 후 부분 복호화 결과:", decrypted);
 
     decrypted += decipher.final("utf8");
-    console.log("DEBUG: final() 후 최종 복호화 결과:", decrypted);
 
     return decrypted;
   } catch (error) {
@@ -104,14 +98,12 @@ export const saveApiKeys = functions.https.onCall(
   {secrets: [MY_ENCRYPTION_SECRET]}, // This is correct!
   async (request: functions.https.CallableRequest<ApiKeyData>) => {
     const data = request.data;
-
     if (!data || !data.accessKey || !data.secretKey) {
       throw new functions.https.HttpsError(
         "invalid-argument",
         "API 키가 누락되었습니다."
       );
     }
-
     // Check if auth context is available
     if (!request.auth?.uid) {
       throw new functions.https.HttpsError(
@@ -119,27 +111,23 @@ export const saveApiKeys = functions.https.onCall(
         "사용자가 인증되지 않았습니다."
       );
     }
-
     try {
       // 로그로 MY_ENCRYPTION_SECRET 확인
       const encryptionKey = MY_ENCRYPTION_SECRET;
-      console.log("DEBUG: MY_ENCRYPTION_SECRET:", encryptionKey); // 디버깅용 로그
-
+      if (!encryptionKey) {
+        throw new Error("Encryption key secret is not set.");
+      }
       const {accessKey, secretKey}: ApiKeyData = data;
-
       // API 키 암호화
       const encryptedAccessKey = await encryptApiKey(accessKey);
       const encryptedSecretKey = await encryptApiKey(secretKey);
 
-      console.log("DEBUG: 암호화된 accessKey:", encryptedAccessKey); // 디버깅용 로그
-      console.log("DEBUG: 암호화된 secretKey:", encryptedSecretKey); // 디버깅용 로그
-
-      await admin.firestore().collection("apiKeys").doc(request.auth.uid).set({
+      // users/{uid}/apiKeys 경로에 저장
+      await admin.firestore().collection("users").doc(request.auth.uid).collection("apiKeys").doc("keys").set({
         accessKey: encryptedAccessKey,
         secretKey: encryptedSecretKey,
         timestamp: admin.firestore.FieldValue.serverTimestamp(),
       });
-
       return {message: "API 키가 성공적으로 저장되었습니다."};
     } catch (error) {
       console.error("API 키 저장 실패:", error);
@@ -147,6 +135,8 @@ export const saveApiKeys = functions.https.onCall(
     }
   }
 );
+
+
 /**
  * Bithumb API 요청을 위한 인증 헤더를 생성합니다.
  * @param request
@@ -157,34 +147,18 @@ export const saveApiKeys = functions.https.onCall(
 
 async function getApiKeys(userId: string): Promise<ApiKeyData> {
   try {
-    console.log("🧐 getApiKeys 함수 호출됨. userId:", userId);
-
-    // Firestore에서 API 키 데이터 가져오기
-    const apiKeyDoc = await admin.firestore().collection("apiKeys").doc(userId).get();
-    console.log("🔍 API 키 문서 존재 여부:", apiKeyDoc.exists);
-
+    // users/{uid}/apiKeys 경로에서 API 키 데이터 가져오기
+    const apiKeyDoc = await admin.firestore().collection("users").doc(userId).collection("apiKeys").doc("keys").get();
     if (!apiKeyDoc.exists) {
-      console.log("❌ API 키 문서가 존재하지 않습니다.");
       throw new Error("API 키가 존재하지 않습니다.");
     }
-
     const data = apiKeyDoc.data();
-    console.log("📂 Firestore에서 가져온 데이터:", data);
-
     if (!data || !data.accessKey || !data.secretKey) {
-      console.log("❌ API 키 데이터가 불완전합니다. accessKey:", data?.accessKey, "secretKey:", data?.secretKey);
       throw new Error("저장된 API 키가 불완전합니다.");
     }
-
-    console.log("✅ API 키 데이터 정상적, 복호화 시작");
-
     // 복호화 로직
     const accessKey = await decryptApiKey(data.accessKey);
-    console.log("🔑 복호화된 accessKey:", accessKey);
-
     const secretKey = await decryptApiKey(data.secretKey);
-    console.log("🔑 복호화된 secretKey:", secretKey);
-
     return {accessKey, secretKey};
   } catch (error) {
     console.error("❌ API 키 조회 중 오류 발생:", error);
@@ -202,8 +176,6 @@ export const generateJwtToken = (
   secretKey: string,
   queryString?: string
 ): string => {
-  console.log("🔐 JWT 토큰 생성 시작");
-
   const payload: {
     access_key: string;
     nonce: string;
@@ -217,14 +189,13 @@ export const generateJwtToken = (
   };
 
   if (queryString) {
-    console.log("🔄 쿼리 스트링 해싱 시작");
     const hash = crypto.createHash("sha512");
     const queryHash = hash.update(queryString, "utf-8").digest("hex");
     payload.query_hash = queryHash;
     payload.query_hash_alg = "SHA512";
-    console.log("✅ 쿼리 해시 생성 완료:", queryHash);
   } else {
-    console.log("❓ 쿼리 스트링이 없습니다.");
+    payload.query_hash = undefined;
+    payload.query_hash_alg = undefined;
   }
 
   const header = {alg: "HS256", typ: "JWT"};
@@ -234,7 +205,6 @@ export const generateJwtToken = (
     JSON.stringify(payload),
     secretKey
   );
-  console.log("✅ JWT 생성 완료");
 
   return jwtToken;
 };
@@ -243,23 +213,17 @@ export const generateJwtToken = (
 export const createAuthHeaderFromDb = functions.https.onCall(
   {secrets: [MY_ENCRYPTION_SECRET]}, // 옵션 객체에 secrets 배열 포함
   async (request: functions.https.CallableRequest<{ queryString?: string }>) => {
-    console.log("🔥 함수 호출됨");
-
     const userId = request.auth?.uid;
     if (!userId) {
       console.error("❌ 인증되지 않은 사용자 접근");
       throw new functions.https.HttpsError("unauthenticated", "사용자가 인증되지 않았습니다.");
     }
-    console.log(`✅ 사용자 인증됨: ${userId}`);
 
     try {
       // API 키를 Firestore에서 가져옴
-      console.log("🔍 API 키 조회 시작");
       const {accessKey, secretKey} = await getApiKeys(userId);
-      console.log("✅ API 키 조회 완료");
 
       const {queryString} = request.data;
-      console.log(`📩 받은 쿼리 스트링: ${queryString || "없음"}`);
 
       const jwtToken = generateJwtToken(accessKey, secretKey, queryString);
 
@@ -299,8 +263,6 @@ export const createAuthHeader = functions.https.onCall(
  */
 export const deleteApiKeys = functions.https.onCall(
   async (request: functions.https.CallableRequest) => {
-    console.log("🗑️ API 키 삭제 함수 호출됨");
-
     // 사용자 인증 확인
     const userId = request.auth?.uid;
     if (!userId) {
@@ -310,24 +272,17 @@ export const deleteApiKeys = functions.https.onCall(
         "사용자가 인증되지 않았습니다."
       );
     }
-    console.log(`✅ 사용자 인증됨: ${userId}`);
-
     try {
-      // Firestore에서 API 키 문서 확인
-      const apiKeyDoc = await admin.firestore().collection("apiKeys").doc(userId).get();
-
+      // users/{uid}/apiKeys 경로에서 API 키 문서 확인
+      const apiKeyDoc = await admin.firestore().collection("users").doc(userId).collection("apiKeys").doc("keys").get();
       if (!apiKeyDoc.exists) {
-        console.log("⚠️ 삭제할 API 키 문서가 존재하지 않습니다.");
         throw new functions.https.HttpsError(
           "not-found",
           "삭제할 API 키가 존재하지 않습니다."
         );
       }
-
       // API 키 문서 삭제
-      await admin.firestore().collection("apiKeys").doc(userId).delete();
-      console.log(`✅ 사용자 ${userId}의 API 키가 성공적으로 삭제되었습니다.`);
-
+      await admin.firestore().collection("users").doc(userId).collection("apiKeys").doc("keys").delete();
       return {message: "API 키가 성공적으로 삭제되었습니다."};
     } catch (error) {
       console.error("❌ API 키 삭제 실패:", error);

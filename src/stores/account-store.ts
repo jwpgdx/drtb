@@ -26,7 +26,6 @@ export const useAccountStore = defineStore("accountStore", {
 
     async fetchAccountData() {
       this.isLoading = true;
-      console.log('[DEBUG] fetchAccountData 시작! 계정 정보 가져오기~');
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
       
@@ -35,7 +34,6 @@ export const useAccountStore = defineStore("accountStore", {
         this.accountErrorMessage = "등록되지 않은 uid!";
         return;
       }
-      console.log('[DEBUG] UID 확인됨:', uid);
     
       try {
         const functions = getFunctions();
@@ -44,13 +42,11 @@ export const useAccountStore = defineStore("accountStore", {
           { queryString?: string | null },
           { authorization: string }
         >(functions, 'createAuthHeaderFromDb');
-        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
     
         // 계정 조회를 위한 queryString 없이 호출
         const authResult = await createAuthHeaderFromDbCall({
           queryString: null
         });
-        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
     
         // 생성된 인증 헤더로 계정 정보 조회
         const config = {
@@ -61,9 +57,7 @@ export const useAccountStore = defineStore("accountStore", {
         const apiUrl = "https://api.bithumb.com/v1/accounts";
     
         try {
-          console.log('[DEBUG] Bithumb API 계정 정보 호출 전..');
           const response = await axios.get(apiUrl, config);
-          console.log('[DEBUG] 계정 정보 조회 성공! 응답 데이터:', response.data);
     
           // 계정 정보 조회 성공
           this.accountData = response.data;

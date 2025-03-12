@@ -102,7 +102,6 @@ export const useMarketStore = defineStore('marketStore', {
         const selectedMarket = this.markets.find((item) => item.market === market);
         if (selectedMarket) {
           this.orderMarket = merge({}, this.orderMarket, selectedMarket); // merge로 기존 값을 업데이트
-          console.log('setOrderMarket completed');
         } else {
           console.warn(`Market ${market} not found.`);
         }

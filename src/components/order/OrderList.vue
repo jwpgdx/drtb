@@ -89,6 +89,7 @@
 
 <script lang="ts" setup>
 import { useOrderListStore } from "@/stores/order-list-store";
+import { useOrderChanceStore } from "@/stores/order-chance-store";
 import { ref, onMounted, computed, watch } from "vue";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
@@ -110,6 +111,9 @@ import {
 import OrderListItem from "@/components/order/OrderListItem.vue";
 
 const orderListStore = useOrderListStore();
+const orderChanceStore = useOrderChanceStore();
+
+
 const orderList = computed(() => orderListStore.orderList);
 const isLastPage = computed(() => orderListStore.isLastPage);
 const orderErrorMessage = computed(() => orderListStore.orderErrorMessage);
@@ -154,6 +158,10 @@ watch([state, order_by], () => {
 
 const { toast } = useToast();
 
+const handleFetchOrderChance = () => {
+  orderChanceStore.fetchOrderChance(marketParam.value);
+};
+
 const cancelOrder = async (uuid: string) => {
   try {
     const result = await orderListStore.cancelOrder(uuid);
@@ -172,6 +180,7 @@ const cancelOrder = async (uuid: string) => {
         ),
       });
       fetchOrders();
+      handleFetchOrderChance();
     }
   } catch (error) {
     toast({

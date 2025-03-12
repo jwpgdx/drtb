@@ -59,7 +59,6 @@ export const useOrderChanceStore = defineStore("orderChanceStore", {
   actions: {
     async fetchOrderChance(market) {
       this.isLoading = true;
-      console.log(`[DEBUG] fetchOrderChance 시작! 마켓: ${market}`);
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
       
@@ -69,7 +68,6 @@ export const useOrderChanceStore = defineStore("orderChanceStore", {
         this.isLoading = false;
         return;
       }
-      console.log('[DEBUG] UID 확인됨:', uid);
     
       try {
         const functions = getFunctions();
@@ -78,14 +76,12 @@ export const useOrderChanceStore = defineStore("orderChanceStore", {
           { queryString?: string | null },
           { authorization: string }
         >(functions, 'createAuthHeaderFromDb');
-        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
     
         // 마켓 정보 포함하여 queryString 구성
         const queryString = `market=${market}`;
         const authResult = await createAuthHeaderFromDbCall({
           queryString: queryString
         });
-        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
     
         // 생성된 인증 헤더로 주문 기회 조회
         const config = {
@@ -96,9 +92,7 @@ export const useOrderChanceStore = defineStore("orderChanceStore", {
         const apiUrl = `https://api.bithumb.com/v1/orders/chance?${queryString}`;
     
         try {
-          console.log('[DEBUG] Bithumb API 주문 기회 정보 호출 전..');
           const response = await axios.get(apiUrl, config);
-          console.log('[DEBUG] 주문 기회 정보 조회 성공! 응답 데이터:', response.data);
     
           // 기존 orderChance와 응답 데이터 병합
           this.orderChance = merge(this.orderChance, response.data);
@@ -109,7 +103,6 @@ export const useOrderChanceStore = defineStore("orderChanceStore", {
           this.askAvgBuyPrice = this.orderChance.ask_account.avg_buy_price;
           this.orderChanceErrorMessage = null;
           this.isLoading = false;
-          console.log('[DEBUG] 최종 orderChance 데이터:', this.orderChance);
     
         } catch (error) {
           console.error('[ERROR] Bithumb API 주문 기회 조회 중 오류 발생:', error);

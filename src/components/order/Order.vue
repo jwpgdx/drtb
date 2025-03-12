@@ -101,7 +101,6 @@ const tabs = [
   { value: "orderList", label: "거래내역" },
 ];
 function handleOrderData(value) {
-  console.log("handleOrderData", value);
   orderStore.initOrderStore(value);
 }
 </script>

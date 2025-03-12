@@ -36,7 +36,6 @@ export const useApiStore = defineStore("apiStore", {
     },
     async fetchApiKeyStatus() {
       this.isLoading = true;
-      console.log('[DEBUG] fetchApiKeyStatus 시작! 에러라도 찰나의 기록 남기자~');
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
       if (!uid) {
@@ -45,7 +44,6 @@ export const useApiStore = defineStore("apiStore", {
         this.successMessage = null;
         return;
       }
-      console.log('[DEBUG] UID 확인됨:', uid);
 
       try {
         const functions = getFunctions();
@@ -54,13 +52,11 @@ export const useApiStore = defineStore("apiStore", {
           { queryString?: string | null },
           { authorization: string }
         >(functions, 'createAuthHeaderFromDb');
-        console.log('[DEBUG] Firebase 함수 호출 준비 완료. 이제 JWT 생성 가즈아!');
 
         // 키 검증을 위해 queryString을 null로 전달
         const authResult = await createAuthHeaderFromDbCall({
           queryString: null
         });
-        console.log('[DEBUG] 인증 헤더 생성 성공:', authResult);
 
         // 생성된 인증 헤더로 API 키 검증
         const config = {
@@ -71,9 +67,7 @@ export const useApiStore = defineStore("apiStore", {
         const apiUrl = "https://api.bithumb.com/v1/api_keys";
 
         try {
-          console.log('[DEBUG] Bithumb API 호출 전.. 이제 키 검증 돌입!');
           const response = await axios.get(apiUrl, config);
-          console.log('[DEBUG] API 키 검증 성공! 응답 데이터:', response.data);
 
           // API 키 검증 성공
           this.accessKey = response.data[0].access_key;
@@ -154,7 +148,6 @@ export const useApiStore = defineStore("apiStore", {
         this.accessKey = accessKey;
         this.secretKey = secretKey;
 
-        console.log("API Key List:", response.data);
         this.loadingMessage = 'API KEY 서버에 저장중';
 
         // API 키 검증 성공 후 Firestore에 저장 시도
@@ -178,7 +171,6 @@ export const useApiStore = defineStore("apiStore", {
         } else {
           this.errorMessage =
             error.response?.data?.error || "서버와의 통신 중 오류가 발생했습니다. Bithumb API Key의 허용 IP주소를 확인해 주세요.";
-          console.log("errorrr:", error);
         }
         console.error("Error:", error);
       }
@@ -199,7 +191,6 @@ export const useApiStore = defineStore("apiStore", {
     },
 
     async deleteApiKeys() {
-      console.log("✅ nextTick 이전전 상태:", this.accessKey, this.secretKey, this.expireAt, this.isAuthenticated);
 
       this.loading = true;
       this.error = null;
@@ -209,10 +200,8 @@ export const useApiStore = defineStore("apiStore", {
         const functions = getFunctions();
         const deleteApiKeysFunction = httpsCallable(functions, 'deleteApiKeys');
         await deleteApiKeysFunction();
-        console.log('삭제완료');
         this.successMessage = 'API 키가 삭제되었습니다.';
         this.resetApiKeyStatus();
-        console.log("✅ nextTick 이후 상태:", this.accessKey, this.secretKey, this.expireAt, this.isAuthenticated);
 
         return true;
       } catch (error: any) {
@@ -245,7 +234,6 @@ export const useApiStore = defineStore("apiStore", {
 
         this.successMessage = "API 키가 안전하게 저장되었습니다."; // 성공 메시지 업데이트 (검증 성공 메시지 덮어쓰기)
         this.errorMessage = null;
-        console.log("API keys saved to Firestore successfully.");
 
       } catch (error: any) {
         console.error("Error saving API keys to Firestore:", error);
