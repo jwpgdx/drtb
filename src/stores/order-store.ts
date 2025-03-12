@@ -394,168 +394,169 @@ export const useOrderStore = defineStore("orderStore", {
 
 
 
-// * 주문 내역을 데이터베이스에 저장하는 함수 (Users 하위 컬렉션 구조)
-async saveOrderToDatabase(apiResponse) {
-  const authStore = useAuthStore();
-  const uid = authStore.user.uid;
+    // * 주문 내역을 데이터베이스에 저장하는 함수 (Users 하위 컬렉션 구조)
+    async saveOrderToDatabase(apiResponse) {
+      const authStore = useAuthStore();
+      const uid = authStore.user.uid;
 
-  if (!uid) {
-    console.error('[ERROR] UID가 존재하지 않음! 데이터베이스 저장 불가');
-    return false;
-  }
-
-  try {
-    const db = getFirestore();
-    
-    // [수정된 부분] users/{uid}/orders 컬렉션 참조
-    const orderDocRef = doc(db, 'users', uid, 'orders', apiResponse.uuid);
-    
-    const orderData = {
-      ...apiResponse,
-      uid,
-    };
-    
-    await setDoc(orderDocRef, orderData);
-    
-    return true;
-  } catch (error) {
-    console.error('[ERROR] 데이터베이스 저장 중 오류 발생:', error);
-    return false;
-  }
-},
-
-// * 주문하기
-async createOrder() {
-  this.orderStatus = null;
-  this.orderResponse = null;
-  this.orderErrorMessage = null;
-
-  const authStore = useAuthStore();
-  const uid = authStore.user.uid;
-
-  if (!uid) {
-    console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
-    this.orderErrorMessage = "등록되지 않은 uid!";
-    return;
-  }
-
-  // 주문 데이터 준비
-  const requestBody = {
-    market: this.orderData.market,
-    side: this.orderData.side,
-    volume: this.orderData.volume.toString(),
-    price: this.orderData.price.toString(),
-    ord_type: this.orderData.ord_type,
-  };
-
-  // 쿼리 스트링 생성
-  const queryString = new URLSearchParams(requestBody).toString();
-
-
-  try {
-    const functions = getFunctions();
-    // 타입 정의를 통해 반환값의 구조를 명시적으로 지정
-    const createAuthHeaderFromDbCall = httpsCallable<
-      { queryString?: string | null },
-      { authorization: string }
-    >(functions, 'createAuthHeaderFromDb');
-
-    // 인증 헤더 생성
-    const authResult = await createAuthHeaderFromDbCall({
-      queryString: queryString
-    });
-
-    // 생성된 인증 헤더로 주문 요청
-    const config = {
-      headers: {
-        Authorization: authResult.data.authorization,
-        "Content-Type": "application/json"
+      if (!uid) {
+        console.error('[ERROR] UID가 존재하지 않음! 데이터베이스 저장 불가');
+        return false;
       }
-    };
-    const apiUrl = "https://api.bithumb.com/v1/orders";
 
-    try {
-      const response = await axios.post(apiUrl, requestBody, config);
+      try {
+        const db = getFirestore();
 
-      this.orderStatus = response.status.toString();
-      this.orderResponse = response.data;
+        // [수정된 부분] users/{uid}/orders 컬렉션 참조
+        const orderDocRef = doc(db, 'users', uid, 'orders', apiResponse.uuid);
+
+        const orderData = {
+          ...apiResponse,
+          uid,
+        };
+
+        await setDoc(orderDocRef, orderData);
+
+        return true;
+      } catch (error) {
+        console.error('[ERROR] 데이터베이스 저장 중 오류 발생:', error);
+        return false;
+      }
+    },
+
+    // * 주문하기
+    async createOrder() {
+      this.orderStatus = null;
+      this.orderResponse = null;
       this.orderErrorMessage = null;
 
-      // 주문');
-      // 주문 성공 시 데이터베이스에 주문 내역 저장
-      const apiResponse = response.data
-      
-      await this.saveOrderToDatabase(apiResponse);
+      const authStore = useAuthStore();
+      const uid = authStore.user.uid;
 
-    } catch (error) {
-      console.error('[ERROR] Bithumb API 주문 요청 중 오류 발생:', error);
-
-      // 오류 유형에 따른 세부 메시지 처리
-      if (error.response) {
-        console.error('[ERROR] 응답에서 에러 확인, 상태 코드:', error.response.status);
-        this.orderStatus = error.response?.data.error?.name?.toString() || "Error";
-        this.orderErrorMessage = error.response?.data.error?.message || "주문 처리 중 오류가 발생했습니다.";
-
-        switch (error.response.status) {
-          case 401:
-            this.orderErrorMessage = "API 키 인증에 실패했습니다. 키를 다시 확인해주세요.";
-            break;
-          case 403:
-            this.orderErrorMessage = "접근 권한이 없습니다. API 키 설정을 확인해주세요.";
-            break;
-          case 400:
-            this.orderErrorMessage = "잘못된 요청입니다. 주문 정보를 확인해주세요.";
-            break;
-          default:
-          // 이미 설정된 오류 메시지 사용
-        }
-      } else {
-        console.error('[ERROR] 응답 자체 없음! 네트워크 문제인가?:', error);
-        this.orderStatus = "NetworkError";
-        this.orderErrorMessage = "네트워크 오류 또는 서버 연결에 실패했습니다.";
+      if (!uid) {
+        console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
+        this.orderErrorMessage = "등록되지 않은 uid!";
+        return;
       }
-    }
-  } catch (error) {
-    // 인증 헤더 생성 실패
-    console.error('[ERROR] 인증 헤더 생성 과정에서 대참사 발생:', error);
-    this.orderStatus = "AuthError";
-    this.orderErrorMessage = "인증 처리 중 오류가 발생했습니다. 로그인 상태를 확인해주세요.";    
-  }
-},
+
+      // 주문 데이터 준비
+      const requestBody = {
+        market: this.orderData.market,
+        side: this.orderData.side,
+        volume: this.orderData.volume.toString(),
+        price: this.orderData.price.toString(),
+        ord_type: this.orderData.ord_type,
+      };
+
+      // 쿼리 스트링 생성
+      const queryString = new URLSearchParams(requestBody).toString();
+
+
+      try {
+        const functions = getFunctions();
+        // 타입 정의를 통해 반환값의 구조를 명시적으로 지정
+        const createAuthHeaderFromDbCall = httpsCallable<
+          { queryString?: string | null },
+          { authorization: string }
+        >(functions, 'createAuthHeaderFromDb');
+
+        // 인증 헤더 생성
+        const authResult = await createAuthHeaderFromDbCall({
+          queryString: queryString
+        });
+
+        // 생성된 인증 헤더로 주문 요청
+        const config = {
+          headers: {
+            Authorization: authResult.data.authorization,
+            "Content-Type": "application/json"
+          }
+        };
+        const apiUrl = "https://api.bithumb.com/v1/orders";
+
+        try {
+          const response = await axios.post(apiUrl, requestBody, config);
+
+          this.orderStatus = response.status.toString();
+          this.orderResponse = response.data;
+          this.orderErrorMessage = null;
+
+          // 주문');
+          // 주문 성공 시 데이터베이스에 주문 내역 저장
+          const apiResponse = response.data
+
+          await this.saveOrderToDatabase(apiResponse);
+
+        } catch (error) {
+          console.error('[ERROR] Bithumb API 주문 요청 중 오류 발생:', error);
+
+          // 오류 유형에 따른 세부 메시지 처리
+          if (error.response) {
+            console.error('[ERROR] 응답에서 에러 확인, 상태 코드:', error.response.status);
+            this.orderStatus = error.response?.data.error?.name?.toString() || "Error";
+            this.orderErrorMessage = error.response?.data.error?.message || "주문 처리 중 오류가 발생했습니다.";
+
+            switch (error.response.status) {
+              case 401:
+                this.orderErrorMessage = "API 키 인증에 실패했습니다. 키를 다시 확인해주세요.";
+                break;
+              case 403:
+                this.orderErrorMessage = "접근 권한이 없습니다. API 키 설정을 확인해주세요.";
+                break;
+              case 400:
+                this.orderErrorMessage = "잘못된 요청입니다. 주문 정보를 확인해주세요.";
+                break;
+              default:
+              // 이미 설정된 오류 메시지 사용
+            }
+          } else {
+            console.error('[ERROR] 응답 자체 없음! 네트워크 문제인가?:', error);
+            this.orderStatus = "NetworkError";
+            this.orderErrorMessage = "네트워크 오류 또는 서버 연결에 실패했습니다.";
+          }
+        }
+      } catch (error) {
+        // 인증 헤더 생성 실패
+        console.error('[ERROR] 인증 헤더 생성 과정에서 대참사 발생:', error);
+        this.orderStatus = "AuthError";
+        this.orderErrorMessage = "인증 처리 중 오류가 발생했습니다. 로그인 상태를 확인해주세요.";
+      }
+    },
 
 
 
-// * 사용자의 주문 이력 가져오기
-async fetchUserOrderHistory(limit = 10) {
-  const authStore = useAuthStore();
-  const uid = authStore.user.uid;
-  
-  if (!uid) {
-    console.error('[ERROR] UID가 존재하지 않음! 주문 이력 조회 불가');
-    return [];
-  }
-  
-  try {
-    const db = getFirestore();
-    const ordersRef = collection(db, `users/${uid}/orders`);
-    const q = query(ordersRef, orderBy("timestamp", "desc"), limit(limit));
-    
-    const querySnapshot = await getDocs(q);
-    const orders = [];
-    
-    querySnapshot.forEach((doc) => {
-      orders.push({
-        id: doc.id,
-        ...doc.data()
-      });
-    });
-    
-    return orders;
-  } catch (error) {
-    console.error('[ERROR] 주문 이력 조회 중 오류 발생:', error);
-    return [];
-  }
-},
+    // * 사용자의 주문 이력 가져오기
+    // * 사용자의 주문 이력 가져오기
+    async fetchUserOrderHistory(limitNumber = 10) { // Changed parameter name
+      const authStore = useAuthStore();
+      const uid = authStore.user.uid;
+
+      if (!uid) {
+        console.error('[ERROR] UID가 존재하지 않음! 주문 이력 조회 불가');
+        return [];
+      }
+
+      try {
+        const db = getFirestore();
+        const ordersRef = collection(db, `users/${uid}/orders`);
+        const q = query(ordersRef, orderBy("timestamp", "desc"), limit(limitNumber)); // Use renamed parameter
+
+        const querySnapshot = await getDocs(q);
+        const orders = [];
+
+        querySnapshot.forEach((doc) => {
+          orders.push({
+            id: doc.id,
+            ...doc.data()
+          });
+        });
+
+        return orders;
+      } catch (error) {
+        console.error('[ERROR] 주문 이력 조회 중 오류 발생:', error);
+        return [];
+      }
+    },
 
 
 
