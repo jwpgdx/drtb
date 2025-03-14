@@ -20,7 +20,7 @@
 -->
 
     <!-- 지갑 정보 -->
-    <div class="flex items-center bg-gray-50 p-4 rounded-lg">
+    <div v-if="isAuthenticated" class="flex items-center bg-gray-50 p-4 rounded-lg">
       <p v-if="isBid" class="text-xl font-semibold text-gray-600">
         주문가능 {{ formattedBidBalance }} (단위: {{ bidCurrency }})
       </p>
@@ -150,10 +150,6 @@
     <Drawer v-if="drawer" v-model:open="drawer">
       <DrawerContent>
         <div class="mx-auto w-full max-w-sm">
-          <DrawerHeader>
-            <DrawerTitle>Move Goal</DrawerTitle>
-            <DrawerDescription>Set your daily activity goal.</DrawerDescription>
-          </DrawerHeader>
           <div class="p-4 pb-0">
             <p>{{ orderData.ord_type === "limit" ? "지정가" : "시장가" }}</p>
             <p>거래 가격: {{ formattedPrice }}</p>

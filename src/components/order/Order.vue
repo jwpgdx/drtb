@@ -40,8 +40,7 @@
       <DrawerContent>
         <div class="mx-auto w-full max-w-sm">
           <DrawerHeader>
-            <DrawerTitle>Move Goal</DrawerTitle>
-            <DrawerDescription>Set your daily activity goal.</DrawerDescription>
+            <X @click="orderStore.closeTempOrder()" />
           </DrawerHeader>
           <OrderFormTemp />
         </div>
@@ -61,6 +60,7 @@ import OrderList from "@/components/order/OrderList.vue";
 import OrderForm from "@/components/order/OrderForm.vue";
 import OrderFormTemp from "@/components/order/OrderFormTemp.vue";
 import Auth404 from "@/components/Auth404.vue";
+import { X } from 'lucide-vue-next';
 
 import {
   Drawer,

@@ -27,7 +27,7 @@ import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast/use-toast";
-import { h } from "vue";
+import { h, computed } from "vue";
 import ToastAction from "@/components/ui/toast/ToastAction.vue";
 import { useApiStore } from "@/stores/api-store";
 
@@ -38,18 +38,21 @@ const apiStore = useApiStore();
 
 const { toast } = useToast();
 
+const isAuthenticated = computed(() => authStore.isAuthenticated);
+
 // Google 로그인 처리
 const handleGoogleLogin = async () => {
   try {
     const userCredential = await authStore.loginWithGoogle();
     const user = userCredential.user;
-    console.log('user', user);
     apiStore.fetchApiKeyStatus();
 
     // URL에 쿼리 스트링으로 ?redirect=/order/KRW-BTC 이런식으로 있잖아?
     // 그 값을 가져와서, 없으면 기본값 '/'로 리다이렉트~
-    const redirect = router.currentRoute.value.query.redirect || '/';
-    router.push(redirect as string);
+    const redirectRoute = router.currentRoute.value.query.redirect;
+    const redirectPath =
+      typeof redirectRoute === "string" ? redirectRoute : "/";
+    router.replace(redirectPath);
 
     toast({
       title: user.email,
@@ -63,9 +66,12 @@ const handleGoogleLogin = async () => {
       title: "Login Failed",
       description: "로그인에 실패했습니다. 다시 시도해 주세요.",
       variant: "destructive",
-      action: h(ToastAction, { altText: "Try again" }, { default: () => "Try again" }),
+      action: h(
+        ToastAction,
+        { altText: "Try again" },
+        { default: () => "Try again" }
+      ),
     });
   }
 };
-
 </script>

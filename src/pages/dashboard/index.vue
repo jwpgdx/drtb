@@ -7,12 +7,17 @@
 </template>
 
 <script lang="ts" setup>
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { Button } from "@/components/ui/button";
 
 const router = useRouter();
+const route = useRoute();
 
 const goToApikey = () => {
   router.replace("/dashboard/apikey");
+};
+
+const goToLogin = () => {
+  router.replace(`/login?redirect=${route.fullPath}`);
 };
 </script>

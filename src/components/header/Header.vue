@@ -18,7 +18,7 @@
           <h1 class="text-xl font-semibold">{{ marketName }}</h1>
         </div>
         <div v-else>
-          <h1 class="text-xl font-semibold">DRTB Beta</h1>
+          <h1 class="text-xl font-semibold" @click="goToHome">DRTB Beta</h1>
         </div>
         <ApiKey v-if="authStore.isAuthenticated" />
 
@@ -94,7 +94,7 @@
 </template>
 
 <script setup lang="ts">
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { computed } from "vue";
 import { Button } from "@/components/ui/button";
@@ -126,6 +126,7 @@ import Coin from "@/components/icons/Coin.vue"; // MD5 해시 생성용 라이�
 
 const authStore = useAuthStore();
 const router = useRouter();
+const route = useRoute();
 const { toast } = useToast();
 
 // 현재 경로와 관련된 계산 속성
@@ -147,6 +148,9 @@ const getMarketSymbol = (market: string): string => {
 };
 
 // 로그인 페이지로 이동
+const goToHome = () => {
+  router.push({ name: "Home" });
+  };
 const goToLogin = () => {
   router.push({ name: "Login" });
 };

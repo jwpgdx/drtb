@@ -1,4 +1,3 @@
-// router/index.ts
 import { createRouter, createWebHistory } from "vue-router";
 import HomePage from "@/pages/HomePage.vue";
 import LoginPage from "@/pages/LoginPage.vue";
@@ -12,45 +11,29 @@ import { useAuthStore } from "@/stores/auth-store";
 const routes = [
   { path: "/", name: "Home", component: HomePage },
   { path: "/login", name: "Login", component: LoginPage },
-  {
-    path: "/order/:market",
-    name: "Order",
-    component: OrderPage,
-    /*
-        beforeEnter: (to, from, next) => {
-          const authStore = useAuthStore();
-          if (!authStore.isAuthenticated) {
-            // 로그인되지 않으면 로그인 페이지로 이동, 현재 페이지 URL을 `redirect` 파라미터로 전달
-            next(`/login?redirect=${to.fullPath}`);
-          } else {
-            next();
-          }
-        },
-        */
+  { 
+    path: "/order/:market", 
+    name: "Order", 
+    component: OrderPage, 
+    meta: { requiresAuth: false } 
   },
-  {
-    path: "/dashboard",
-    name: "Dashboard",
-    component: DashboardPage,
-    beforeEnter: (to, from, next) => {
-      const authStore = useAuthStore();
-      if (!authStore.isAuthenticated) {
-        // 로그인되지 않으면 로그인 페이지로 이동, 현재 페이지 URL을 `redirect` 파라미터로 전달
-        next(`/login?redirect=${to.fullPath}`);
-      } else {
-        next();
-      }
-    },
+  { 
+    path: "/dashboard", 
+    name: "Dashboard", 
+    component: DashboardPage, 
+    meta: { requiresAuth: true } 
   },
-  {
-    path: "/dashboard/apikey",
-    name: "Apikey",
-    component: ApiKeyPage,
+  { 
+    path: "/dashboard/apikey", 
+    name: "Apikey", 
+    component: ApiKeyPage, 
+    meta: { requiresAuth: true } 
   },
-  {
-    path: "/dashboard/assets",
-    name: "Assets",
-    component: AssetsPage,
+  { 
+    path: "/dashboard/assets", 
+    name: "Assets", 
+    component: AssetsPage, 
+    meta: { requiresAuth: true } 
   },
 ];
 
@@ -59,6 +42,14 @@ const router = createRouter({
   routes,
 });
 
-
+// 전역 네비게이션 가드
+router.beforeEach((to, from, next) => {
+  const authStore = useAuthStore();
+  if (to.meta.requiresAuth && !authStore.isAuthenticated) {
+    next(`/login?redirect=${to.fullPath}`);
+  } else {
+    next();
+  }
+});
 
 export default router;
