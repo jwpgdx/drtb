@@ -86,9 +86,9 @@ export const useAirdropStore = defineStore("airdropStore", {
       const formData = new FormData();
       formData.append("file", file);
 
-      const res = await fetch("https://drtb.web.app/api/uploadImage", {
-        method: "POST",
-        body: formData,
+      const res = await fetch('/api/uploadImage', {
+        method: 'POST',
+        body: formData
       });
 
       if (!res.ok) {
