@@ -1,5 +1,5 @@
 <template>
-  <div class="flex flex-col bg-gray-800 text-white p-4 rounded-lg shadow-lg">
+  <div class="flex flex-col bg-zinc-800 p-4 rounded-lg shadow-lg">
     <div v-if="orderMarket" class="flex justify-between items-center">
       <!-- 가격과 코인 이름 -->
       <div class="flex flex-col">
@@ -7,10 +7,10 @@
           {{ formatAmount(Math.floor(orderMarket.trade_price)) }}
           KRW
         </span>
-        <span class="text-sm text-gray-400">{{
+        <span class="text-sm text-zinc-400">{{
           orderMarket.korean_name
         }}</span>
-        <span class="text-sm text-gray-300">{{
+        <span class="text-sm text-zinc-300">{{
           orderMarket.english_name
         }}</span>
       </div>
@@ -20,7 +20,7 @@
         v-if="orderMarket.change"
         :class="{
           'text-red-500': orderMarket.change === 'RISE',
-          'text-gray-500': orderMarket.change === 'EVEN',
+          'text-zinc-500': orderMarket.change === 'EVEN',
           'text-blue-500': orderMarket.change === 'FALL',
         }"
         class="flex items-center space-x-2"

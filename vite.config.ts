@@ -18,7 +18,7 @@ export default defineConfig({
     },
     preprocessorOptions: {
       scss: {
-        // additionalData: `@import "@/assets/styles/variables.scss";`, // 전역 SCSS 변수 추가
+        additionalData: `@use "@/assets/styles/mixins.scss" as *;`,
       },
     },
   },

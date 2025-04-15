@@ -1,5 +1,5 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg">
+  <div class="max-w-4xl mx-auto p-6  shadow-md rounded-lg">
     <!-- 보유자산 -->
     <p class="text-2xl font-semibold mb-4">보유 자산</p>
     <div
@@ -78,7 +78,7 @@ const profitRateClass = computed(() => {
   const rate = profitRate.value; // 수익률 값을 직접 가져옵니다.
   if (rate > 0) return "text-green-500"; // 플러스일 경우 녹색
   if (rate < 0) return "text-red-500"; // 마이너스일 경우 빨간색
-  return "text-gray-500"; // 0%일 경우 회색
+  return "text-zinc-500"; // 0%일 경우 회색
 });
 
 const formattedBidBalance = computed(() => formatTotal(bidBalance.value));

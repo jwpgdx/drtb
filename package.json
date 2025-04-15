@@ -9,9 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@egjs/flicking-plugins": "^4.7.1",
+    "@egjs/vue3-flicking": "^4.12.0",
     "@tanstack/vue-virtual": "^3.0.0",
     "@vue/runtime-core": "^3.3.0",
-    "@vueuse/core": "^12.4.0",
+    "@vueuse/core": "^12.8.2",
     "axios": "^1.7.9",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.0.0",

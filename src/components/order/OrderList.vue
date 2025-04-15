@@ -32,57 +32,49 @@
       </div>
     </div>
 
-    <!-- 주문 리스트 loading -->
-    <div v-if="isLoading">
-      <div class="flex items-center gap-2 justify-center p-8">
-        <LoaderCircle class="animate-spin h-5 w-5" />
-        <p class="text-lg text-gray-700">
-          주문 목록 가져오는 중
-        </p>
-      </div>
-    </div>
-
-    <!-- 주문 리스트 -->
-    <div v-else class="flex flex-col gap-2 mt-4">
-      <div
-        v-if="orderList.length === 0"
-        class="flex flex-col items-center justify-center bg-white p-8 rounded-3xl"
-      >
-        <img
-          src="https://i.pinimg.com/736x/d1/d5/83/d1d5831eebf5b143a37517fe18e49c60.jpg"
-          alt="404 이미지"
-          class="w-80 h-auto"
-        />
-        <div class="text-center">
-          <p class="text-lg font-semibold text-gray-700 mt-4">
-            주문 내역이 없습니다.
-          </p>
-        </div>
-      </div>
-
-      <div v-else>
-        <div v-for="order in orderList" :key="order.uuid">
-          <order-list-item :order="order">
-            <Button v-if="state === 'wait'" @click="cancelOrder(order.uuid)">
-              주문취소
-            </Button>
-          </order-list-item>
-        </div>
-      </div>
-    </div>
-
     <div v-if="orderErrorMessage">
-      <p class="text-red-500">에러: {{ orderErrorMessage }}</p>
+      <ErrorState image="auth" :content="orderErrorMessage"> </ErrorState>
     </div>
 
-    <!-- 더보기 버튼 -->
-    <div v-if="!isLastPage && orderList.length > 0" class="text-center">
-      <button
-        @click="fetchMore"
-        class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-md"
-      >
-        더보기
-      </button>
+    <div v-else>
+      <!-- 주문 리스트 loading -->
+      <div v-if="isLoading">
+        <div class="flex items-center gap-2 justify-center p-8">
+          <LoaderCircle class="animate-spin h-5 w-5" />
+          <p class="text-lg text-zinc-700">주문 목록 가져오는 중</p>
+        </div>
+      </div>
+
+      <!-- 주문 리스트 -->
+      <div v-else class="flex flex-col gap-2 mt-4">
+        <ErrorState
+          v-if="orderList.length === 0"
+          image="content"
+          title="주문 내역이 없습니다"
+          content="아직 진행 중인 주문이나 완료된 주문이 없습니다"
+        >
+        </ErrorState>
+
+        <div v-else>
+          <div v-for="order in orderList" :key="order.uuid">
+            <order-list-item :order="order">
+              <Button v-if="state === 'wait'" @click="cancelOrder(order.uuid)">
+                주문취소
+              </Button>
+            </order-list-item>
+          </div>
+        </div>
+      </div>
+
+      <!-- 더보기 버튼 -->
+      <div v-if="!isLastPage && orderList.length > 0" class="text-center">
+        <button
+          @click="fetchMore"
+          class="mt-4 px-6 py-2 bg-blue-500 text-white rounded-md"
+        >
+          더보기
+        </button>
+      </div>
     </div>
   </div>
 </template>
@@ -109,10 +101,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import OrderListItem from "@/components/order/OrderListItem.vue";
+import ErrorState from "@/components/ErrorState.vue";
 
 const orderListStore = useOrderListStore();
 const orderChanceStore = useOrderChanceStore();
-
 
 const orderList = computed(() => orderListStore.orderList);
 const isLastPage = computed(() => orderListStore.isLastPage);

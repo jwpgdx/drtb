@@ -1,0 +1,104 @@
+/*-- TITLE --*/
+.flicking {
+  position: relative;
+}
+
+/*-- COMMON --*/
+.flicking-viewport {
+  position: relative;
+  overflow: hidden;
+}
+.flicking-viewport.vertical {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.flicking-viewport.vertical > .flicking-camera {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: column;
+  flex-direction: column;
+}
+
+.flicking-viewport.flicking-hidden > .flicking-camera > * {
+  visibility: hidden;
+}
+
+.flicking-camera {
+  width: 100%;
+  height: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -ms-flex-direction: row;
+  flex-direction: row;
+  z-index: 1;
+  will-change: transform;
+}
+
+.flicking-camera > * {
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+
+.flicking-camera {
+
+}
+
+/*-- PAGINATION --*/
+.flicking-pagination {
+  margin-top: 24px;
+}
+.flicking-pagination-bullets {
+  display: flex;
+}
+.flicking-pagination-bullet {
+  flex: 1;
+  height: 2px;
+  background-color: gray;
+  opacity: 0.2;
+}
+.flicking-pagination-bullet-active {
+  opacity: 1;
+}
+
+/*-- ARROW --*/
+.flicking-arrow-prev,
+.flicking-arrow-next {
+  
+}
+.flicking .flicking-prev,
+.flicking .flicking-next {
+  position: absolute;
+  display: none;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+}
+.flicking .flicking-prev {
+  left: calc(16px / 2);
+}
+.flicking .flicking-next {
+  right: calc(16px / 2);
+}
+.flicking:hover .flicking-prev,
+.flicking:hover .flicking-next {
+  display: flex;
+}
+
+@media all and (max-width: 1023px) {
+  .flicking:hover .flicking-prev,
+  .flicking:hover .flicking-next {
+    display: none;
+  }
+}
+/*--- 모바일 ---*/
+@media all and (max-width: 479px) {
+}

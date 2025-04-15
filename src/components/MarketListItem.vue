@@ -1,20 +1,21 @@
+<!-- MarketListItem.vue -->
 <template>
   <div
     @click="goToOrderPage"
-    class="flex items-center p-4 cursor-pointer hover:bg-gray-100"
+    class="flex items-center h-16 px-4 rounded-sm cursor-pointer text-white hover:bg-zinc-900"
   >
     <!-- market.isVisible일 때만 이미지 로드 -->
-    <Coin :market="market.market" class="w-8 h-8 mr-4" />
+    <Coin :market="market.market" class="w-6 h-6 mr-4" />
 
     <div class="flex-1">
-      <p class="text-lg font-semibold">{{ market.korean_name }}</p>
-      <p class="text-sm text-gray-500">{{ market.market }}</p>
+      <p class="text-base">{{ market.korean_name }}</p>
+      <p class="text-xs text-zinc-500">{{ market.market }}</p>
     </div>
     <div class="flex items-center">
       <!-- 로딩 중일 때 돌아가는 애니메이션 -->
       <svg
         v-if="isLoading"
-        class="w-6 h-6 text-gray-500 animate-spin"
+        class="w-6 h-6 text-zinc-500 animate-spin"
         xmlns="http://www.w3.org/2000/svg"
         fill="none"
         viewBox="0 0 24 24"
@@ -25,13 +26,13 @@
       </svg>
 
       <!-- trade_price가 있으면 세자리마다 쉼표 추가 -->
-      <p v-else class="text-xl font-bold mr-2">
-        {{ market.trade_price ? market.trade_price.toLocaleString() : '-' }}
+      <p v-else class="text-base font-medium mr-2">
+        ₩ {{ market.trade_price ? market.trade_price.toLocaleString() : '-' }}
       </p>
       
       <p
         :class="[
-          'text-sm font-semibold',
+          'text-base w-20 text-right',
           priceChangeClass
         ]"
       >
@@ -84,7 +85,7 @@ const priceChangeClass = computed(() => {
     case "FALL":
       return "text-blue-500";
     default:
-      return "text-gray-500";
+      return "text-zinc-500";
   }
 });
 </script>

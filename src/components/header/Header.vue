@@ -1,127 +1,58 @@
 <template>
-  <header
-    class="fixed top-0 left-0 right-0 p-4 bg-blue-500 text-white shadow-md z-50"
-  >
-    <div class="flex items-center justify-between">
-      <!-- 이전으로 가기 버튼 -->
-      <move-left
-        class="w-6 h-6 mr-2 cursor-pointer"
-        v-if="!isMainPage"
-        @click="goBack"
-      />
+  <header>
+    <!-- 이전으로 가기 버튼 -->
+    <img
+      class="w-12 h-12 cursor-pointer "
+      src="/icons/arrow-left.webp"
+      v-if="layoutMeta.showBack"
+      @click="goBack"
+    />
 
-      <!-- 페이지별 헤더 내용 -->
-      <div v-if="!isLoginPage" class="flex items-center space-x-4">
-        <!-- OrderPage에서만 market 값 표시 -->
-        <div v-if="isOrderPage" class="flex items-center space-x-2">
-          <Coin :market="marketName" class="w-8 h-8 mr-4" />
-          <h1 class="text-xl font-semibold">{{ marketName }}</h1>
-        </div>
-        <div v-else>
-          <h1 class="text-xl font-semibold" @click="goToHome">DRTB Beta</h1>
-        </div>
-        <ApiKey v-if="authStore.isAuthenticated" />
+    <img
+      v-if="layoutMeta.showLogo"
+      class="w-auto h-10 lg:h-12 cursor-pointer "
+      src="/images/logo.webp"
+      @click="goToRouter('Home')"
+    />
 
-        <!-- 로그인/로그아웃 버튼 -->
-        <div class="flex space-x-2">
-          <Button v-if="!authStore.isAuthenticated" @click="goToLogin">
-            로그인
-          </Button>
-
-
-          <!-- 로그인된 경우 드롭다운 메뉴 표시 -->
-          <DropdownMenu v-if="authStore.isAuthenticated">
-            <DropdownMenuTrigger as-child>
-              <Button size="icon">
-                <User />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent class="w-56">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuGroup>
-                <DropdownMenuItem @click="goToDashboard">
-                  <User class="mr-2 h-4 w-4" />
-                  <span>내정보</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <TimerReset class="mr-2 h-4 w-4" />
-                  <span>로그인 연장</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem @click="goToApikey">
-                  <KeyRound class="mr-2 h-4 w-4" />
-                  <span>API키 관리</span>
-                </DropdownMenuItem>
-
-               
-                <DropdownMenuItem @click="goToAssets">
-                  <Coins class="mr-2 h-4 w-4" />
-                  <span>자산현황</span>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-
-              <DropdownMenuSeparator />
-
-              <DropdownMenuGroup>
-                <DropdownMenuItem>
-                  <Settings class="mr-2 h-4 w-4" />
-                  <span>설정</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem>
-                  <LifeBuoy class="mr-2 h-4 w-4" />
-                  <span>고객센터</span>
-                </DropdownMenuItem>
-              </DropdownMenuGroup>
-
-              <DropdownMenuSeparator />
-              <DropdownMenuItem @click="logout">
-                <LogOut class="mr-2 h-4 w-4" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          <!-- 타이머 표시 -->
-        </div>
+    <div v-if="!isLoginPage" class="flex items-center space-x-4">
+      <!-- OrderPage에서만 market 값 표시 -->
+      <div v-if="isOrderPage" class="flex items-center space-x-2">
+        <Coin :market="marketName" class="w-8 h-8 mr-4" />
+        <h1 class="text-xl font-semibold">{{ marketName }}</h1>
       </div>
     </div>
-  </header>
 
-  <!-- 본문 내용 -->
-  <main class="pt-16">
-    <!-- 페이지 콘텐츠 -->
-  </main>
+    <div v-if="!isLoginPage" class="flex gap-2 items-center">
+      <div
+        class="hidden lg:flex items-center h-12 gap-7 px-6 bg-black rounded-xl"
+      >
+        <button
+          v-for="(item, index) in menuItems"
+          :key="index"
+          class="text-sm"
+          @click="goToRouter(item.value)"
+        >
+          {{ item.label }}
+        </button>
+      </div>
+      <User />
+      <MobileMenu />
+    </div>
+
+    <!-- 페이지별 헤더 내용 -->
+  </header>
 </template>
 
 <script setup lang="ts">
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { computed } from "vue";
-import { Button } from "@/components/ui/button";
-import { MoveLeft } from "lucide-vue-next";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuShortcut,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Coins,
-  TimerReset,
-  LifeBuoy,
-  LogOut,
-  Settings,
-  User,KeyRound
-} from "lucide-vue-next";
-
 import { ToastAction } from "@/components/ui/toast";
 import { useToast } from "@/components/ui/toast/use-toast";
 import { h } from "vue";
-import ApiKey from "./ApiKey.vue";
+import MobileMenu from "./MobileMenu.vue";
+import User from "./User.vue";
 import Coin from "@/components/icons/Coin.vue"; // MD5 해시 생성용 라이브러리
 
 const authStore = useAuthStore();
@@ -129,7 +60,9 @@ const router = useRouter();
 const route = useRoute();
 const { toast } = useToast();
 
+
 // 현재 경로와 관련된 계산 속성
+const layoutMeta = computed(() => route.meta.layout || {});
 const isLoginPage = computed(() => router.currentRoute.value.path === "/login");
 const isMainPage = computed(() => router.currentRoute.value.path === "/");
 const isOrderPage = computed(() => router.currentRoute.value.name === "Order");
@@ -147,23 +80,16 @@ const getMarketSymbol = (market: string): string => {
   return market.replace("KRW-", "").toLowerCase() || "btc";
 };
 
+const menuItems = [
+  { value: "Orders", label: "거래소" },
+  { value: "Assets", label: "자산" },
+  { value: "Airdrop", label: "에어드랍" },
+  { value: "Support", label: "고객센터" },
+];
+
 // 로그인 페이지로 이동
-const goToHome = () => {
-  router.push({ name: "Home" });
-  };
-const goToLogin = () => {
-  router.push({ name: "Login" });
-};
-// 자산 현황 페이지로 이동
-const goToAssets = () => {
-  router.push({ name: "Assets" });
-};
-// 대시보드 페이지로 이동
-const goToDashboard = () => {
-  router.push({ name: "Dashboard" });
-};
-const goToApikey = () => {
-  router.push({ name: "Apikey" });
+const goToRouter = (val) => {
+  router.push({ name: val });
 };
 
 // 로그아웃 처리 함수
@@ -200,9 +126,26 @@ const goBack = () => {
 };
 </script>
 
-<style scoped>
-/* 본문 내용이 헤더에 가리지 않도록 padding 추가 */
-main {
-  padding-top: 4rem; /* 헤더 높이만큼 여백 추가 */
+<style lang="scss" scoped>
+header {
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  padding: 0 16px;
+  z-index: 1000;
+  color: white;
+  //grid-column-gap: 1rem;
+  //grid-template-columns: repeat(6, 1fr);
+  @include desktop {
+    padding: 0 32px;
+
+    //grid-column-gap: 1.5rem;
+    //grid-template-columns: repeat(12, 1fr);
+  }
 }
 </style>

@@ -7,7 +7,7 @@
         :class="{
           'text-blue-500 border-b-2 border-blue-500':
             orderData.side === tab.value,
-          'text-gray-500': orderData.side !== tab.value,
+          'text-zinc-500': orderData.side !== tab.value,
         }"
         class="py-2 px-4 focus:outline-none"
         @click="handleOrderData(tab.value)"
@@ -25,7 +25,23 @@
         :orderMarket="orderMarket"
       />
       <OrderList v-if="orderData.side === tabs[3].value && isAuthenticated" />
-      <Auth404 v-if="!isAuthenticated" />
+
+
+      <ErrorState
+        v-if="!isAuthenticated"
+        image="auth"
+        title="인증에 실패했습니다"
+        content="로그인하거나 계정 정보를 확인해주세요."
+      >
+      <template #action>
+        <button
+          class="px-4 border border-orange-500 text-orange-500 text-sm rounded-3xl h-8"
+          @click="goToLogin"
+        >
+          로그인하러 가기
+        </button>
+      </template>
+      </ErrorState>
     </div>
 
     <div
@@ -54,13 +70,14 @@ import { ref, onMounted, computed } from "vue";
 import { useOrderStore } from "@/stores/order-store";
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
 import { useAuthStore } from "@/stores/auth-store"; // Pinia store 가져오기
+import { useRouter } from "vue-router";
 
 import OrderAccount from "./OrderAccount.vue";
 import OrderList from "@/components/order/OrderList.vue";
 import OrderForm from "@/components/order/OrderForm.vue";
 import OrderFormTemp from "@/components/order/OrderFormTemp.vue";
-import Auth404 from "@/components/Auth404.vue";
-import { X } from 'lucide-vue-next';
+import ErrorState from "@/components/ErrorState.vue";
+import { X } from "lucide-vue-next";
 
 import {
   Drawer,
@@ -81,7 +98,7 @@ const isTempOrder = computed({
     }
   },
 });
-
+const router = useRouter();
 const orderStore = useOrderStore();
 const marketStore = useMarketStore();
 const authStore = useAuthStore();
@@ -103,4 +120,7 @@ const tabs = [
 function handleOrderData(value) {
   orderStore.initOrderStore(value);
 }
+const goToLogin = () => {
+  router.push({ name: "Login" });
+};
 </script>

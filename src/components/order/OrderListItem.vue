@@ -1,13 +1,13 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow-md space-y-4">
+  <div class="p-6 rounded-lg shadow-md space-y-4">
     <!-- 주문 사이드와 생성 날짜 -->
-    <div class="flex justify-between items-center text-sm text-gray-600">
+    <div class="flex justify-between items-center text-sm text-zinc-600">
       <p :class="getOrderStateClass(order.state)" class="text-base font-bold">
         {{ getOrderStateText(order.state) }}
       </p>
     </div>
 
-    <div class="flex justify-between items-center text-sm text-gray-600">
+    <div class="flex justify-between items-center text-sm text-zinc-600">
       <div :class="getOrderSideClass(order.side)" class="font-medium">
         {{ getOrderSideText(order.side) }}
       </div>
@@ -15,8 +15,8 @@
     </div>
     
     <!-- 마켓 -->
-    <div class="flex justify-between items-center text-sm text-gray-600">
-      <div class="font-medium text-gray-800">마켓</div>
+    <div class="flex justify-between items-center text-sm text-zinc-600">
+      <div class="font-medium text-zinc-800">마켓</div>
       <div><i
         :class="`cf cf-${
           order.market.replace('KRW-', '').toLowerCase() || 'btc'
@@ -25,26 +25,26 @@
     </div>
 
     <!-- 체결 가격 -->
-    <div class="flex justify-between items-center text-sm text-gray-600">
-      <div class="font-medium text-gray-800">체결가격</div>
+    <div class="flex justify-between items-center text-sm text-zinc-600">
+      <div class="font-medium text-zinc-800">체결가격</div>
       <div class="text-blue-500">{{ orderPrice }} KRW</div>
     </div>
 
     <!-- 체결 수량 -->
-    <div class="flex justify-between items-center text-sm text-gray-600">
-      <div class="font-medium text-gray-800">체결수량</div>
+    <div class="flex justify-between items-center text-sm text-zinc-600">
+      <div class="font-medium text-zinc-800">체결수량</div>
       <div>{{ order.volume }}</div>
     </div>
 
     <!-- 체결 금액 -->
-    <div class="flex justify-between items-center text-sm text-gray-600">
-      <div class="font-medium text-gray-800">체결금액</div>
+    <div class="flex justify-between items-center text-sm text-zinc-600">
+      <div class="font-medium text-zinc-800">체결금액</div>
       <div class="font-semibold text-blue-500">{{ orderAmount(order.price, order.volume) }} KRW</div>
     </div>
 
     <!-- 주문 유형 -->
-    <div class="flex justify-between items-center text-sm text-gray-600">
-      <div class="font-medium text-gray-800">주문 유형</div>
+    <div class="flex justify-between items-center text-sm text-zinc-600">
+      <div class="font-medium text-zinc-800">주문 유형</div>
       <div>{{ getOrderOrdTypeText(order.ord_type) }}</div>
     </div>
 
@@ -127,7 +127,7 @@ const getOrderSideClass = (side: string) => {
     case "ask":
       return "text-red-500";    // 매도는 빨간색
     default:
-      return "text-gray-600";   // 알 수 없는 상태는 회색
+      return "text-zinc-600";   // 알 수 없는 상태는 회색
   }
 };
 
@@ -151,9 +151,9 @@ const getOrderStateClass = (state: string) => {
     case "cancel":
       return "text-red-500";    // 주문 취소는 빨간색
     case "wait":
-      return "text-gray-500";   // 미채결은 회색
+      return "text-zinc-500";   // 미채결은 회색
     default:
-      return "text-gray-600";   // 알 수 없는 상태는 회색
+      return "text-zinc-600";   // 알 수 없는 상태는 회색
   }
 };
 </script>

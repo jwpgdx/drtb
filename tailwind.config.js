@@ -16,9 +16,14 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "2rem",
+      padding: "1rem",
       screens: {
-        "2xl": "1400px",
+        DEFAULT: '1024px', // 기본 max-width 1024px 설정
+        sm: '640px',
+        md: '768px',
+        lg: '1024px', // lg에서 1024px 고정
+        xl: '1024px',
+        '2xl': '1024px',
       },
     },
     extend: {

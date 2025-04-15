@@ -1,11 +1,15 @@
+@import "./css/flicking.css"; /* 폰트 선언 임포트 */
+@import "./css/fonts.css"; /* 폰트 선언 임포트 */
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 0 0% 5%;
+    --foreground: 0 0% 100%; /* 다크 모드: 흰색 글씨 */
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
@@ -19,11 +23,11 @@
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    --primary: 30 90% 50%; /* 선명한 오렌지 */
+    --primary-foreground: 30 100% 95%; /* 텍스트는 밝게 */
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 30 50% 30%; /* 어두운 브라운/딥 오렌지 */
+    --secondary-foreground: 30 100% 85%; /* 밝은 오렌지 텍스트 */
 
     --accent: 210 40% 96.1%;
     --accent-foreground: 222.2 47.4% 11.2%;
@@ -75,4 +79,13 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+* {
+  white-space: normal;
+  word-break: keep-all; /* 단어 단위로 개행 */
+  overflow-wrap: break-word; /* 줄바꿈 시 단어 유지 */
+}
+body {
+  font-family: 'pretendard', 'sans-serif';
 }

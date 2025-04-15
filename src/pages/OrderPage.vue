@@ -1,24 +1,10 @@
 <!-- @/pages/OrderPage.vue -->
 
 <template>
-  <div>
+  <div class="container">
     <OrderHeader />
-    <Tabs default-value="order">
-      <TabsList>
-        <TabsTrigger value="order">
-          <hand-coins class="w-6 h-6" />거래</TabsTrigger
-        >
-        <TabsTrigger value="chart"
-          ><chart-candlestick class="w-6 h-6" />차트</TabsTrigger
-        >
-      </TabsList>
-      <TabsContent value="order">
-        <Order />
-      </TabsContent>
-      <TabsContent value="chart">
-        <Error404 />
-      </TabsContent>
-    </Tabs>
+
+    <Order />
   </div>
 </template>
 
@@ -32,10 +18,6 @@ import { useAuthStore } from "@/stores/auth-store"; // Pinia store 가져오기
 import { useRoute } from "vue-router"; // vue-router의 useRoute 훅을 가져옴
 import OrderHeader from "@/components/order/OrderHeader.vue";
 import Order from "@/components/order/Order.vue";
-import Error404 from "@/components/Error404.vue";
-
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ChartCandlestick, HandCoins } from "lucide-vue-next";
 
 const marketStore = useMarketStore();
 const orderStore = useOrderStore();
@@ -44,7 +26,6 @@ const orderChanceStore = useOrderChanceStore();
 // 라우터 설정
 const route = useRoute();
 const marketParam = computed(() => route.params.market as string);
-
 
 // 인터벌 ID를 ref로 선언
 const intervalId = ref<NodeJS.Timeout | null>(null);

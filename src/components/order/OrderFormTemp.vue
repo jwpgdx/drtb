@@ -3,13 +3,13 @@
 <template>
    <div class="space-y-4">
     <!-- 탭 버튼들 -->
-    <div class="flex space-x-4 border-b border-gray-300">
+    <div class="flex space-x-4">
       <button
         :class="[
           'py-2 px-4 cursor-pointer w-1/3 text-center',
           activeTempOrderTab === 'volume'
             ? 'text-blue-600 font-semibold border-b-2 border-blue-600'
-            : 'hover:bg-gray-200 rounded'
+            : 'hover:bg-zinc-200 rounded'
         ]"
         @click="handleSetActiveTempOrderTab('volume')"
       >
@@ -20,7 +20,7 @@
           'py-2 px-4 cursor-pointer w-1/3 text-center',
           activeTempOrderTab === 'price'
             ? 'text-blue-600 font-semibold border-b-2 border-blue-600'
-            : 'hover:bg-gray-200 rounded'
+            : 'hover:bg-zinc-200 rounded'
         ]"
         @click="handleSetActiveTempOrderTab('price')"
       >
@@ -31,7 +31,7 @@
           'py-2 px-4 cursor-pointer w-1/3 text-center',
           activeTempOrderTab === 'total'
             ? 'text-blue-600 font-semibold border-b-2 border-blue-600'
-            : 'hover:bg-gray-200 rounded'
+            : 'hover:bg-zinc-200 rounded'
         ]"
         @click="handleSetActiveTempOrderTab('total')"
       >
@@ -40,14 +40,14 @@
     </div>
 
     <!-- 거래 정보 -->
-    <div class="bg-white p-4 rounded-md shadow-md">
-      <p class="text-gray-600 text-sm">거래 가격</p>
+    <div class=" p-4 rounded-md shadow-md">
+      <p class="text-zinc-600 text-sm">거래 가격</p>
       <p class="text-lg font-semibold">{{ formattedPrice }} (단위: {{ bidCurrency }})</p>
 
-      <p class="text-gray-600 text-sm mt-2">거래 수량</p>
+      <p class="text-zinc-600 text-sm mt-2">거래 수량</p>
       <p class="text-lg font-semibold">{{ tempOrderData.volume }} (단위: {{ askCurrency }})</p>
 
-      <p class="text-gray-600 text-sm mt-2">총액</p>
+      <p class="text-zinc-600 text-sm mt-2">총액</p>
       <p class="text-lg font-semibold">{{ formattedTotal }} (단위: {{ bidCurrency }})</p>
     </div>
 

@@ -17,6 +17,7 @@ interface AuthState {
   loadingMessage: string | null;
   errorMessage: string | null;
   successMessage: string | null;
+  hasApiKey: boolean | null;
 }
 
 export const useApiStore = defineStore("apiStore", {
@@ -29,17 +30,24 @@ export const useApiStore = defineStore("apiStore", {
     loadingMessage: null,
     errorMessage: null,
     successMessage: null,
+    hasApiKey: false,
   }),
   actions: {
     setLoading(val) {
       this.isLoading = val
     },
+
+
+
+
+
+
+
     async fetchApiKeyStatus() {
       this.isLoading = true;
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
       if (!uid) {
-        console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
         this.errorMessage = "등록되지 않은 uid!";
         this.successMessage = null;
         return;
@@ -57,7 +65,9 @@ export const useApiStore = defineStore("apiStore", {
         const authResult = await createAuthHeaderFromDbCall({
           queryString: null
         });
+        this.hasApiKey = true;
 
+        
         // 생성된 인증 헤더로 API 키 검증
         const config = {
           headers: {
@@ -98,20 +108,33 @@ export const useApiStore = defineStore("apiStore", {
                 this.errorMessage = "API 키 검증 중 오류가 발생했습니다.";
             }
           } else {
-            console.error('[ERROR] 응답 자체 없음! 네트워크 문제인가?:', error);
-            this.errorMessage = "네트워크 오류 또는 서버 연결에 실패했습니다.";
+            this.errorMessage = "API 키 검증 중 오류가 발생했습니다. 빗썸 API 허용된 IP를 확인해주세요.";
           }
         }
       } catch (error: any) {
         // 인증 헤더 생성 실패
-        console.error('[ERROR] 인증 헤더 생성 과정에서 대참사 발생:', error);
         this.isAuthenticated = false;
         this.isLoading = false;
-
-        this.errorMessage = "API 키 상222태를 확인할 수 없습니다.";
+        this.hasApiKey = false;
+        this.errorMessage = "API Key가 유효하지 않습니다. 거래를 위해 API 키를 등록하세요.";
         this.successMessage = null;
       }
     },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // 로그인 함수 및 API 키 검증
     async saveApiKey(accessKey: string, secretKey: string) {
       this.isLoading = true;
@@ -170,7 +193,7 @@ export const useApiStore = defineStore("apiStore", {
             "유효하지 않은 Access Key입니다. 올바른 키를 입력하세요.";
         } else {
           this.errorMessage =
-            error.response?.data?.error || "서버와의 통신 중 오류가 발생했습니다. Bithumb API Key의 허용 IP주소를 확인해 주세요.";
+            error.response?.data?.error || "API 키 검증 중 오류가 발생했습니다. 빗썸 API 허용된 IP를 확인해주세요.";
         }
         console.error("Error:", error);
       }

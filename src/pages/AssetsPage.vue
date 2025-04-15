@@ -4,9 +4,9 @@
       <div
         v-for="(account, index) in accountStore.accountData"
         :key="index"
-        class="bg-white rounded-lg shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300"
+        class=" rounded-lg shadow-lg p-6 hover:shadow-2xl transition-shadow duration-300"
       >
-        <h3 class="text-2xl font-bold mb-3 text-gray-800">
+        <h3 class="text-2xl font-bold mb-3 ">
           {{ account.currency }}
         </h3>
         <ul class="space-y-2">

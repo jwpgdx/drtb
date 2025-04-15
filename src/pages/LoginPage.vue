@@ -1,23 +1,32 @@
 <template>
-  <div class="grid w-full gap-4">
-    <div class="flex flex-col items-center justify-center w-full h-auto">
+  <div class="container">
+    <div
+      class="flex flex-col items-center justify-center w-full h-screen text-white"
+    >
       <img
-        src="https://i.pinimg.com/originals/64/05/eb/6405ebec3e689409a6cedc8b561cbb68.gif"
-        alt="Profile Edit"
-        class="max-w-72"
+        class="w-full max-w-xs md:max-w-md h-auto"
+        src="/images/illust-logo.webp"
       />
-      <div class="flex flex-col gap-y-1.5 text-center">
-        <h2 class="text-5xl leading-tight font-semibold tracking-tight">
-          Sign in with Google
-        </h2>
-        <p class="text-sm text-muted-foreground">
-          구글 계정으로 로그인해 주세요.
-        </p>
-      </div>
-    </div>
 
-    <div class="grid gap-4 py-4">
-      <Button size="lg" @click="handleGoogleLogin">Google Login</Button>
+      <div class="text-3xl font-semibold text-center">
+        Millions of songs.<br />Free on Spotify
+      </div>
+      <div class="h-8" />
+      <button
+        @click="handleGoogleLogin"
+        class="flex items-center justify-between w-full max-w-xs h-12 px-4 border rounded-3xl"
+      >
+        <img
+          src="https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-1024.png"
+          alt="Google G Logo"
+          class="w-5 h-5"
+        />
+
+        <span class="text-m">Continue with Google</span>
+        <span></span>
+      </button>
+      <div class="h-4" />
+      <span @click="handleGoogleLogin" class="text-sm">Log in</span>
     </div>
   </div>
 </template>

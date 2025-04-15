@@ -1,13 +1,6 @@
+<!-- MarketList.vue -->
 <template>
   <div>
-    <!-- 필터 입력창 -->
-    <div class="relative w-full items-center mb-4">
-      <Input v-model="filterQuery" id="search" type="text" placeholder="Search..." class="pl-10" />
-      <span class="absolute start-0 inset-y-0 flex items-center justify-center px-2">
-        <Search class="size-6 text-muted-foreground" />
-      </span>
-    </div>
-
     <!-- 마켓 리스트와 광고 -->
     <template v-for="(market, index) in filteredMarkets" :key="market.market">
       <!-- 마켓 아이템 -->
@@ -16,36 +9,35 @@
         :market="market"
         class="market"
       />
-      
-      <!-- 광고 삽입 (10개 아이템마다) -->
-      <div v-if="index === 2" class="ad-container my-4">
-        <div v-if="isMounted">
-          <ins class="adsbygoogle"
-               style="display:block"
-               data-ad-format="fluid"
-               data-ad-layout-key="-fb+5w+4e-db+86"
-               data-ad-client="ca-pub-3125100873852926"
-               data-ad-slot="1012762984"></ins>
-        </div>
-      </div>
     </template>
 
     <!-- 에러 메시지 -->
-    <p v-if="errorMessage" class="text-red-500">{{ errorMessage }}</p>
+    <ErrorState v-if="errorMessage" image="content" :content="errorMessage">
+      <template #action>
+        <button
+          class="px-4 border border-orange-500 text-orange-500 text-sm rounded-3xl h-8"
+          @click="handleRetry"
+        >
+          재시도
+        </button>
+      </template>
+    </ErrorState>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount, computed, watch, nextTick } from "vue";
+import {
+  ref,
+  onMounted,
+  onBeforeUnmount,
+  computed,
+  watch,
+  nextTick,
+} from "vue";
 import { useMarketStore } from "@/stores/market-store"; // Pinia store 가져오기
 import MarketListItem from "@/components/MarketListItem.vue";
-import { Input } from "@/components/ui/input";
-import { Search } from "lucide-vue-next";
-declare global {
-  interface Window {
-    adsbygoogle: any[];
-  }
-}
+import ErrorState from "@/components/ErrorState.vue";
+
 // store 사용
 const marketStore = useMarketStore();
 
@@ -53,8 +45,9 @@ const marketStore = useMarketStore();
 const observer = ref<IntersectionObserver | null>(null);
 const visibleMarkets = ref<string[]>([]);
 
-// 필터 입력값
-const filterQuery = ref('');
+const props = defineProps<{
+  filterQuery: string;
+}>();
 
 // computed
 const markets = computed(() => marketStore.markets);
@@ -64,11 +57,11 @@ const isMounted = ref(false);
 
 // 필터링된 마켓 목록
 const filteredMarkets = computed(() => {
-  if (!filterQuery.value) {
+  if (!props.filterQuery) {
     return markets.value;
   }
-  return markets.value.filter(market => {
-    const query = filterQuery.value.toLowerCase();
+  return markets.value.filter((market) => {
+    const query = props.filterQuery.toLowerCase();
     return (
       market.market.toLowerCase().includes(query) ||
       market.korean_name.toLowerCase().includes(query) ||
@@ -85,25 +78,23 @@ watch(visibleMarkets, (newVisibleMarkets) => {
 });
 
 // 화면에 보이는 마켓의 변경을 감지하고 옵저버를 다시 설정
-watch(filteredMarkets, () => {
-  if (observer.value) {
-    observer.value.disconnect(); // 기존 옵저버 종료
-  }
-  createObserver(); // 새로운 옵저버 생성
-  nextTick(() => {
-    initAds(); // 광고 초기화
-  });
-}, { immediate: true });
+watch(
+  filteredMarkets,
+  () => {
+    if (observer.value) {
+      observer.value.disconnect(); // 기존 옵저버 종료
+    }
+    createObserver(); // 새로운 옵저버 생성
+  },
+  { immediate: true }
+);
 
 // onMounted와 onBeforeUnmount로 생명 주기 메서드 처리
 onMounted(() => {
   createObserver();
   startPriceUpdate(); // 가격 갱신 시작
-  
+
   isMounted.value = true;
-  nextTick(() => {
-    initAds(); // 광고 초기화
-  });
 });
 
 onBeforeUnmount(() => {
@@ -130,17 +121,6 @@ function startPriceUpdate() {
 // 가격 데이터 가져오기
 function fetchPriceData(markets: string[]) {
   marketStore.fetchPrice(markets);
-}
-
-// 광고 초기화
-function initAds() {
-  nextTick(() => {
-    // 광고가 이미 표시되었는지 확인
-    if (window.adsbygoogle && window.adsbygoogle.length === 0) {
-      // @ts-ignore
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    }
-  });
 }
 
 // IntersectionObserver 생성
@@ -178,10 +158,25 @@ async function createObserver() {
   );
 
   // 새로운 filteredMarkets에 대해서만 옵저버를 설정
-  document.querySelectorAll('.market[data-id]').forEach((marketElement) => {
+  document.querySelectorAll(".market[data-id]").forEach((marketElement) => {
     observer.value?.observe(marketElement);
   });
 }
+
+const handleRetry = async () => {
+  // 에러 메시지 초기화
+  marketStore.$reset(); // 또는 marketStore.clearError() 같은 커스텀 액션 사용
+
+  // 마켓 데이터 다시 불러오기
+  try {
+    await marketStore.fetchMarkets(); // 마켓 리스트 재요청
+    if (visibleMarkets.value.length > 0) {
+      await fetchPriceData(visibleMarkets.value); // 가격 데이터 재요청
+    }
+  } catch (error) {
+    console.error("Retry failed:", error);
+  }
+};
 </script>
 
 <style scoped>

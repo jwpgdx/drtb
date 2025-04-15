@@ -1,18 +1,18 @@
 <template>
-  <div class="max-w-4xl mx-auto p-6 space-y-6 bg-white rounded-lg shadow-lg">
+  <div class="max-w-4xl mx-auto p-6 space-y-6">
     <!-- 주문 종류 -->
     <!--
-    <div class="bg-gray-100 p-4 rounded-lg">
+    <div class="bg-zinc-100 p-4 rounded-lg">
       <h2 class="text-xl font-semibold mb-4">주문 종류</h2>
       <RadioGroup v-model="orderData.ord_type">
         <div class="grid grid-cols-2 items-center gap-4">
           <div class="flex items-center space-x-2">
             <RadioGroupItem id="limit" value="limit" />
-            <Label for="limit" class="text-lg text-gray-700">지정</Label>
+            <Label for="limit" class="text-lg text-zinc-700">지정</Label>
           </div>
           <div class="flex items-center space-x-2">
             <RadioGroupItem id="price" value="price" />
-            <Label for="price" class="text-lg text-gray-700">시장</Label>
+            <Label for="price" class="text-lg text-zinc-700">시장</Label>
           </div>
         </div>
       </RadioGroup>
@@ -20,11 +20,11 @@
 -->
 
     <!-- 지갑 정보 -->
-    <div v-if="isAuthenticated" class="flex items-center bg-gray-50 p-4 rounded-lg">
-      <p v-if="isBid" class="text-xl font-semibold text-gray-600">
+    <div v-if="isAuthenticated" class="flex items-center  p-4 rounded-lg">
+      <p v-if="isBid" class="text-xl font-semibold text-zinc-600">
         주문가능 {{ formattedBidBalance }} (단위: {{ bidCurrency }})
       </p>
-      <p v-if="isAsk" class="text-xl font-semibold text-gray-600">
+      <p v-if="isAsk" class="text-xl font-semibold text-zinc-600">
         주문가능 {{ askBalance }} (단위: {{ askCurrency }})
       </p>
       <Button variant="ghost" @click="handleFetchOrderChance" :disabled="isLoading">
