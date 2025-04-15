@@ -8,7 +8,10 @@
     "outDir": "lib",                     // 컴파일된 파일이 저장될 디렉토리
     "sourceMap": true,                   // 디버깅을 위한 소스맵 생성
     "strict": true,                      // 엄격한 타입 검사
-    "target": "es2017"                   // ES2017로 트랜스파일링
+    "target": "es2017",                  // ES2017로 트랜스파일링
+    "skipLibCheck": true,
+    "noImplicitAny": false,              // busboy 모듈을 any 타입으로 처리
+    "typeRoots": ["./node_modules/@types", "./src/types"]
   },
   "compileOnSave": true,                 // 파일을 저장할 때마다 자동으로 컴파일합니다.
   "include": [
