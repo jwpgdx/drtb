@@ -12,7 +12,6 @@ import type {Request, Response} from "express";
 admin.initializeApp();
 
 // Firebase Secret Manager에서 환경 변수 가져오기
-// Firebase Secret Manager에서 환경 변수 가져오기
 const MY_ENCRYPTION_SECRET = defineSecret("MY_ENCRYPTION_SECRET");
 
 interface ApiKeyData {
