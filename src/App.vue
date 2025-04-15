@@ -8,6 +8,7 @@
     </div>
   </div>
 </template>
+
 <script setup lang="ts">
 import { onBeforeMount, computed } from "vue";
 import { useRoute } from "vue-router";
@@ -17,19 +18,26 @@ import Toaster from "@/components/ui/toast/Toaster.vue";
 
 const marketStore = useMarketStore();
 const route = useRoute();
-const layoutMeta = computed(() => route.meta.layout || {});
+
+// ✅ layout meta 타입 정의 추가
+interface LayoutMeta {
+  showMargin?: boolean;
+  showBack?: boolean;
+  showLogo?: boolean;
+}
+const layoutMeta = computed<LayoutMeta>(() => route.meta.layout as LayoutMeta || {});
 
 onBeforeMount(() => {
   marketStore.fetchMarkets();
 });
 </script>
+
 <style lang="scss" scoped>
 #app {
   background-color: #0c0c0c;
 }
 
 .router-view-wrapper {
-  margin: 0 auto; /* 가운데 정렬 */
- //overflow-x: hidden;
+  margin: 0 auto;
 }
 </style>

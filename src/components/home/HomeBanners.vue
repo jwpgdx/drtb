@@ -2,14 +2,14 @@
   <div class="relative w-full overflow-visible">
     <Flicking
       ref="flicking"
-      class="container relative w-full "
-      :options="{ 
-        moveType: 'snap', 
-        bound: true, 
+      class="container relative w-full"
+      :options="{
+        moveType: 'snap',
+        bound: true,
         align: 'center',
         circular: false,
         renderOnlyVisible: false,
-        defaultIndex: 0
+        defaultIndex: 0,
       }"
       :plugins="plugins"
     >
@@ -28,7 +28,7 @@
         <div class="flicking-pagination"></div>
       </template>
     </Flicking>
-    <div class='home-banners-gradient' />
+    <div class="home-banners-gradient" />
   </div>
 </template>
 
@@ -37,7 +37,6 @@ import { ref } from "vue";
 import Flicking from "@egjs/vue3-flicking";
 import { Arrow, Pagination } from "@egjs/flicking-plugins";
 import HomeBannerCard from "./HomeBannerCard.vue";
-import { ChevronLeft, ChevronRight } from "lucide-vue-next";
 
 const selectedIndex = ref(0);
 const plugins = ref([new Arrow(), new Pagination({ type: "bullet" })]);
@@ -72,16 +71,6 @@ const bannerCards = [
     image: new URL("@/assets/images/banners/chart.webp", import.meta.url).href,
   },
 ];
-
-const prevButtonClick = () => {
-  const flicking = document.querySelector(".flicking-arrow-prev");
-  flicking?.click();
-};
-
-const nextButtonClick = () => {
-  const flicking = document.querySelector(".flicking-arrow-next");
-  flicking?.click();
-};
 </script>
 
 <style>
