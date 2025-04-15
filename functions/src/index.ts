@@ -344,7 +344,7 @@ app.post("/uploadImage", async (req: Request, res: Response) => {
     }
   });
 
-  req.pipe(busboyInstance);
+  req.pipe(busboyInstance as unknown as NodeJS.WritableStream);
 });
 
 exports.api = functions.https.onRequest(app);
