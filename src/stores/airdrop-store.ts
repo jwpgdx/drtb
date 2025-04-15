@@ -5,8 +5,7 @@ import {
   getDocs,
   Timestamp,
 } from "firebase/firestore";
-import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { firestore, storage } from "@/firebase";
+import { firestore } from "@/firebase";
 
 export interface AirdropItem {
   id?: string;
@@ -84,9 +83,20 @@ export const useAirdropStore = defineStore("airdropStore", {
     },
 
     async uploadImage(file: File): Promise<string> {
-      const fileRef = storageRef(storage, `airdrops/${file.name}`);
-      await uploadBytes(fileRef, file);
-      return await getDownloadURL(fileRef);
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("https://drtb.web.app/api/uploadImage", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("이미지 업로드 실패");
+      }
+
+      const { url } = await res.json();
+      return url;
     },
   },
 });

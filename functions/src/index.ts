@@ -4,6 +4,10 @@ import * as crypto from "crypto";
 import {KJUR} from "jsrsasign";
 import {v4 as uuidv4} from "uuid";
 import {defineSecret} from "firebase-functions/params";
+import express from "express";
+import cors from "cors";
+import busboy from "busboy";
+import type {Request, Response} from "express";
 
 admin.initializeApp();
 
@@ -296,3 +300,52 @@ export const deleteApiKeys = functions.https.onCall(
     }
   }
 );
+
+
+const app = express();
+app.use(cors({origin: true}));
+
+app.post("/uploadImage", async (req: Request, res: Response) => {
+  // 여기서 new 키워드를 추가하여 ESLint 오류 해결
+  const busboyInstance = busboy({headers: req.headers});
+  const fileData: { buffer: Buffer; filename: string } = {
+    buffer: Buffer.alloc(0),
+    filename: "",
+  };
+
+  busboyInstance.on("file", (fieldname: string, file: NodeJS.ReadableStream, filename: { filename: string }) => {
+    fileData.filename = filename.filename;
+
+    file.on("data", (data: Buffer) => {
+      fileData.buffer = Buffer.concat([fileData.buffer, data]);
+    });
+  });
+
+  busboyInstance.on("finish", async () => {
+    try {
+      const bucket = admin.storage().bucket();
+      const file = bucket.file(`airdrops/${fileData.filename}`);
+
+      await file.save(fileData.buffer, {
+        metadata: {
+          contentType: "image/webp", // 필요시 contentType 자동 감지 로직도 가능
+        },
+      });
+
+      const [url] = await file.getSignedUrl({
+        action: "read",
+        expires: "03-01-2030",
+      });
+
+      res.set("Access-Control-Allow-Origin", "*");
+      return res.status(200).json({url});
+    } catch (err) {
+      res.set("Access-Control-Allow-Origin", "*"); // 에러 응답에도 필요할 수 있음
+      return res.status(500).json({error: "이미지 업로드 실패"});
+    }
+  });
+
+  req.pipe(busboyInstance);
+});
+
+exports.api = functions.https.onRequest(app);
