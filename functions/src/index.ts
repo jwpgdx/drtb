@@ -312,8 +312,10 @@ app.post("/uploadImage", async (req: Request, res: Response) => {
     filename: "",
   };
 
-  busboyInstance.on("file", (fieldname: string, file: NodeJS.ReadableStream, filename: { filename: string }) => {
-    fileData.filename = filename.filename;
+  busboyInstance.on("file", (fieldname: string, file: NodeJS.ReadableStream, filename: string | undefined) => {
+    if (!filename) return;
+
+    fileData.filename = filename;
 
     file.on("data", (data: Buffer) => {
       fileData.buffer = Buffer.concat([fileData.buffer, data]);
