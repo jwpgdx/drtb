@@ -10,7 +10,7 @@ import {
   Timestamp
 } from 'firebase/firestore'
 
-import { firestore } from '@/firebase.ts' // 이 경로는 실제 위치에 맞게 조정
+import { firestore } from '@/firebase'
 import { useAuthStore } from './auth-store'
 
 export const useQuestionStore = defineStore('questionStore', {

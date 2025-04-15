@@ -17,7 +17,7 @@
     </div>
 
     <div class="relative max-h-[500px] overflow-y-hidden">
-      <MarketList class="container" />
+      <MarketList class="container" :filterQuery="''" />
 
       <div class="container market-list-container">
         <div class="market-list-button-container">

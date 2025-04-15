@@ -17,9 +17,9 @@ import { ChevronRight } from "lucide-vue-next";
 
 defineProps<{
   image: string;
-  title: string;
+  title?: string;
   content: string;
-  buttonLabel: string;
+  buttonLabel?: string; // 
 }>();
 </script>
 

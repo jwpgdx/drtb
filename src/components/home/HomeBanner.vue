@@ -20,12 +20,19 @@
     />
   </div>
 </template>
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+const router = useRouter();
 
+const goToAirdrop = () => {
+  router.push({ name: "Airdrop" });
+};
+</script>
 <style>
 :root {
-  --color-start: #e4ae4e;   /* yellow-400 */
-  --color-via: #eb7832;     /* amber-400 */
-  --color-end: #dd9b90;     /* red-500 */
+  --color-start: #e4ae4e; /* yellow-400 */
+  --color-via: #eb7832; /* amber-400 */
+  --color-end: #dd9b90; /* red-500 */
 }
 
 .gradient-bg {
@@ -39,9 +46,15 @@
 }
 
 @keyframes gradient {
-  0% { background-position: 100% 0%; }
-  50% { background-position: 0% 100%; }
-  100% { background-position: 100% 0%; }
+  0% {
+    background-position: 100% 0%;
+  }
+  50% {
+    background-position: 0% 100%;
+  }
+  100% {
+    background-position: 100% 0%;
+  }
 }
 
 .animate-gradient {
