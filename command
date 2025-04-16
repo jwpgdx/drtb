@@ -33,7 +33,7 @@ npm run lint -- --fix
 firebase deploy --only functions 
 <- root에서 실행.
 firebase deploy --only functions --debug
-
+firebase deploy --only hosting,functions
 
 
 Github

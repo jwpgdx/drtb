@@ -1,7 +1,7 @@
 import { initializeApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-import { getStorage } from "firebase/storage"; // ✅ 추가
+import { getStorage } from "firebase/storage";
 
 // Firebase 설정 객체
 const firebaseConfig = {

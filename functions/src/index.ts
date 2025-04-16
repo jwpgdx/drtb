@@ -4,13 +4,10 @@ import * as crypto from "crypto";
 import {KJUR} from "jsrsasign";
 import {v4 as uuidv4} from "uuid";
 import {defineSecret} from "firebase-functions/params";
-import express from "express";
-import cors from "cors";
-import busboy from "busboy";
-import type {Request, Response} from "express";
 
 admin.initializeApp();
 
+// Firebase Secret Manager에서 환경 변수 가져오기
 // Firebase Secret Manager에서 환경 변수 가져오기
 const MY_ENCRYPTION_SECRET = defineSecret("MY_ENCRYPTION_SECRET");
 
@@ -300,53 +297,93 @@ export const deleteApiKeys = functions.https.onCall(
   }
 );
 
+/**
+ * 이미지 파일을 Firebase Storage에 업로드하기 위한 HTTP 함수
+ */
 
-const app = express();
-app.use(cors({origin: true}));
+/**
+ * 에어드랍 이미지 업로드를 위한 편의 함수 (특정 폴더로 업로드)
+ */
+export const uploadAirdropImage = functions.https.onCall(
+  async (request: functions.https.CallableRequest<{
+    imageBase64: string;
+    filename: string;
+  }>) => {
+    // 사용자 인증 확인
+    if (!request.auth?.uid) {
+      throw new functions.https.HttpsError(
+        "unauthenticated",
+        "사용자가 인증되지 않았습니다."
+      );
+    }
 
-app.post("/uploadImage", async (req: Request, res: Response) => {
-  // 여기서 new 키워드를 추가하여 ESLint 오류 해결
-  const busboyInstance = busboy({headers: req.headers});
-  const fileData: { buffer: Buffer; filename: string } = {
-    buffer: Buffer.alloc(0),
-    filename: "",
-  };
+    const {imageBase64, filename} = request.data;
 
-  busboyInstance.on("file", (fieldname: string, file: NodeJS.ReadableStream, filename: string | undefined) => {
-    if (!filename) return;
+    if (!imageBase64 || !filename) {
+      throw new functions.https.HttpsError(
+        "invalid-argument",
+        "이미지 데이터와 파일명이 필요합니다."
+      );
+    }
 
-    fileData.filename = filename;
-
-    file.on("data", (data: Buffer) => {
-      fileData.buffer = Buffer.concat([fileData.buffer, data]);
-    });
-  });
-
-  busboyInstance.on("finish", async () => {
     try {
-      const bucket = admin.storage().bucket();
-      const file = bucket.file(`airdrops/${fileData.filename}`);
+      // Base64 이미지 데이터 추출 (data:image/jpeg;base64,/9j/4AAQ... 형식 처리)
+      const matches = imageBase64.match(/^data:([A-Za-z-+/]+);base64,(.+)$/);
 
-      await file.save(fileData.buffer, {
+      if (!matches || matches.length !== 3) {
+        throw new functions.https.HttpsError(
+          "invalid-argument",
+          "올바른 Base64 이미지 형식이 아닙니다."
+        );
+      }
+
+      const contentType = matches[1];
+      const base64Data = matches[2];
+      const imageBuffer = Buffer.from(base64Data, "base64");
+
+      // 파일명 정리 (안전한 파일명 생성)
+      const safeFilename = filename.replace(/[^a-zA-Z0-9_\-.]/g, "_");
+      const uniqueFilename = `${safeFilename}`;
+
+      // Storage에 저장할 경로
+      const destination = `airdrop/${uniqueFilename}`;
+
+      // Firebase Storage에 업로드
+      const bucket = admin.storage().bucket();
+      const file = bucket.file(destination);
+
+      await file.save(imageBuffer, {
         metadata: {
-          contentType: "image/webp", // 필요시 contentType 자동 감지 로직도 가능
+          contentType,
+          metadata: {
+            uploadedBy: request.auth.uid,
+            uploadTimestamp: Date.now().toString(),
+          },
         },
       });
 
-      const [url] = await file.getSignedUrl({
-        action: "read",
-        expires: "03-01-2030",
-      });
+      // 파일 공개 설정
+      await file.makePublic();
 
-      res.set("Access-Control-Allow-Origin", "*");
-      return res.status(200).json({url});
-    } catch (err) {
-      res.set("Access-Control-Allow-Origin", "*"); // 에러 응답에도 필요할 수 있음
-      return res.status(500).json({error: "이미지 업로드 실패"});
+      // 공개 URL 반환
+      const publicUrl = `https://storage.googleapis.com/${bucket.name}/${destination}`;
+
+      return {
+        success: true,
+        fileUrl: publicUrl,
+        metadata: {
+          filename: uniqueFilename,
+          contentType,
+          size: imageBuffer.length,
+        },
+      };
+    } catch (error) {
+      console.error("⚠️ 에어드랍 이미지 업로드 실패:", error);
+      throw new functions.https.HttpsError(
+        "internal",
+        "이미지 업로드에 실패했습니다.",
+        error instanceof Error ? error.message : undefined
+      );
     }
-  });
-
-  req.pipe(busboyInstance as unknown as NodeJS.WritableStream);
-});
-
-exports.api = functions.https.onRequest(app);
+  }
+);
