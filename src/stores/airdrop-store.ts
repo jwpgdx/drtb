@@ -17,7 +17,7 @@ export interface AirdropItem {
   startAt: Timestamp;
   endAt: Timestamp;
   createdAt: Timestamp;
-  status?: "scheduled" | "ongoing" | "ended";
+  status?: "scheduled" | "ongoing" | "ended" | "urgent"; 
 }
 
 export const useAirdropStore = defineStore("airdropStore", {
@@ -33,7 +33,14 @@ export const useAirdropStore = defineStore("airdropStore", {
         .filter((item) => item.endAt.toDate().getTime() >= now)
         .map((item) => {
           const start = item.startAt.toDate().getTime();
-          const status = now < start ? "scheduled" : "ongoing";
+          const urgentTime = item.endAt.toDate().getTime() - 1000 * 60 * 60 * 24;
+    
+          const status: AirdropItem["status"] = now < start
+            ? "scheduled"
+            : now >= urgentTime
+            ? "urgent"
+            : "ongoing";
+    
           return { ...item, status };
         })
         .sort((a, b) => a.startAt.toDate().getTime() - b.startAt.toDate().getTime());
@@ -43,7 +50,10 @@ export const useAirdropStore = defineStore("airdropStore", {
       const now = Date.now();
       return state.airdrops
         .filter((item) => item.endAt.toDate().getTime() < now)
-        .map((item) => ({ ...item, status: "ended" }));
+        .map((item) => {
+          const status: AirdropItem["status"] = "ended";
+          return { ...item, status };
+        });
     },
   },
 
