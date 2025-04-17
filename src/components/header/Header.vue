@@ -3,7 +3,7 @@
     <!-- 이전으로 가기 버튼 -->
     <img
       class="w-12 h-12 cursor-pointer"
-      src="/icons/arrow-left.webp"
+      src="/images/icon-arrow-left.webp"
       v-if="layoutMeta.showBack"
       @click="goBack"
     />
@@ -11,8 +11,8 @@
     <!-- 로고 -->
     <img
       v-if="layoutMeta.showLogo"
-      class="w-auto h-10 lg:h-12 cursor-pointer"
-      src="/images/logo.webp"
+      class="w-auto h-10 lg:h-12 cursor-pointer text-white"
+      src="/images/icon-logo.svg"
       @click="goToRouter('Home')"
     />
 

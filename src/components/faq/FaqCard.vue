@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-3">
       <div class="flex items-center gap-2">
         <component :is="icon" class="size-5" />
-        <h3 class="text-lg font-medium text-white">{{ title }}</h3>
+        <h3 class="text-lg font-semibold text-white">{{ title }}</h3>
       </div>
       <p class="text-sm text-zinc-400 mr-2">{{ content }}</p>
     </div>

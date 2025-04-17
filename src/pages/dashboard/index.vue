@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="text-3xl md:text-4xl font-medium">대시보드</h1>
+    <h1 class="text-3xl md:text-4xl font-semibold">대시보드</h1>
     <div class="h-12" />
     <User />
     <div class="h-12" />
@@ -15,19 +15,19 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 m-auto">
       <DashboardCard
-        image="/icons/apikey.webp"
+        image="/images/icon-apikey.webp"
         title="API 키 관리"
         :content="computedContent"
         @click="goToApikey"
       />
       <DashboardCard
-        image="/icons/assets.webp"
+        image="/images/icon-assets.webp"
         title="자산 관리"
         content="보유한 암호화폐 자산을 한눈에 확인할 수 있습니다."
         @click="handleButtonClick"
       />
       <DashboardCard
-        image="/icons/inout.webp"
+        image="/images/icon-inout.webp"
         title="거래 내역"
         content="API를 통해 수집된 거래 기록을 확인할 수 있습니다."
         @click="handleButtonClick"
@@ -35,7 +35,7 @@
       <DashboardCard
         :icon="ScrollText"
         title="1:1 문의 내역"
-        image="/icons/faq.webp"
+        image="/images/icon-faq.webp"
         content="문의한 내용과 답변을 확인할 수 있습니다."
         @click="handleButtonClick"
       />

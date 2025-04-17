@@ -12,7 +12,7 @@
     <div class="h-12 lg:h-24" />
 
 
-    <div class="text-2xl lg:text-3xl  text-center font-medium m-12">
+    <div class="text-2xl lg:text-3xl  text-center font-semibold m-12">
       오늘의 시세를 확인해 보세요
     </div>
 
@@ -21,7 +21,7 @@
 
       <div class="container market-list-container">
         <div class="market-list-button-container">
-          <router-link to="/market" class="market-list-button">
+          <router-link style="z-index: 10;" to="/order" class="market-list-button">
             전체 시세 보기
           </router-link>
         </div>
@@ -30,7 +30,7 @@
     <div class="h-12 lg:h-24" />
 
 
-    <div class="text-2xl lg:text-3xl text-center font-medium m-12">FAQ</div>
+    <div class="text-2xl lg:text-3xl text-center font-semibold m-12">FAQ</div>
     <div class="container">
       <Faq />
     </div>
@@ -66,6 +66,7 @@ import Faq from "@/components/faq/Faq.vue";
 }
 
 .market-list-button-container {
+  pointer-events: auto;
   position: absolute;
   display: flex;
   justify-content: center;

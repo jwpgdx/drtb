@@ -22,7 +22,7 @@
       <div class="flex-1 flex justify-center items-center">
         <img
           class="w-full max-w-xs md:max-w-md h-auto"
-          src="/images/illust-logo.webp"
+          src="/images/banner-main.webp"
         />
       </div>
     </div>

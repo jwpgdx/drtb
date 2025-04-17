@@ -45,30 +45,27 @@ const bannerCards = [
   {
     title: "거래소 이동 지원금",
     content: "빗썸으로 이동하면 최소 100만원",
-    image: new URL("@/assets/images/banners/bithumb.webp", import.meta.url)
-      .href,
+    image: "bithumb",
   },
   {
     title: "빗썸 멤버십",
     content: "등급별로 쌓이는 포인트, 리워드 혜택을 확인하세요",
-    image: new URL("@/assets/images/banners/key.webp", import.meta.url).href,
+    image: "key",
   },
   {
     title: "빗썸 10주년 기념",
     content: "국내 최저 수수료 최고의 멤버십 혜택",
-    image: new URL("@/assets/images/banners/bitcoin.webp", import.meta.url)
-      .href,
+    image: "trade",
   },
   {
     title: "웰컴 미션",
     content: "신규회원이라면? 미션 달성하고 2만원 받기",
-    image: new URL("@/assets/images/banners/airdrop.webp", import.meta.url)
-      .href,
+    image: "airdrop",
   },
   {
     title: "NFT 이벤트",
     content: "한정판 NFT 발행! 선착순 100명 한정",
-    image: new URL("@/assets/images/banners/chart.webp", import.meta.url).href,
+    image: "chart",
   },
 ];
 </script>

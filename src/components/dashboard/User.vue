@@ -2,7 +2,7 @@
   <div class="user">
     <!-- 유저 프로필 이미지 -->
     <img
-      :src="authStore.user?.photoURL || '/icons/smile-white.webp'"
+      :src="authStore.user?.photoURL || '/images/icon-smile-white.webp'"
       alt="User Profile"
       class="size-8 rounded-full object-cover border border-white/20"
     />

@@ -13,7 +13,7 @@
       <p class="mt-2 whitespace-pre-wrap">{{ question.content }}</p>
 
       <div v-if="question.response" class="mt-4 bg-green-50 p-3 rounded">
-        <div class="text-sm font-medium text-green-700">운영자 답변</div>
+        <div class="text-sm font-semibold text-green-700">운영자 답변</div>
         <div class="text-zinc-700 whitespace-pre-wrap">
           {{ question.response }}
         </div>

@@ -1,5 +1,5 @@
 <template>
-   <div class="w-full py-12">
+   <div class="w-full lg:py-12 ">
     <Airdrop/>
    </div>
   </template>

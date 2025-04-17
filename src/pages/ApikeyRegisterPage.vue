@@ -18,7 +18,7 @@
     >
       <div class="api-card text-sm text-zinc-400">
         <div>
-          <label for="first_name" class="block mb-1 text-[13px] font-medium"
+          <label for="first_name" class="block mb-1 text-[13px] font-semibold"
             >Access Key</label
           >
           <input
@@ -30,7 +30,7 @@
           />
         </div>
         <div>
-          <label for="first_name" class="block mb-1 text-[13px] font-medium"
+          <label for="first_name" class="block mb-1 text-[13px] font-semibold"
             >Secret Key</label
           >
           <input
@@ -53,7 +53,7 @@
                 required
               />
             </div>
-            <label for="remember" class="ms-2 font-medium"
+            <label for="remember" class="ms-2 font-semibold"
               >I agree with the
               <a
                 href="#"
@@ -93,10 +93,10 @@
     <div class="flex flex-col items-center text-[13px] mt-2">
       <div>
         반드시
-        <span class="font-medium">출금 권한 없는 키</span>를 사용하세요.
+        <span class="font-semibold">출금 권한 없는 키</span>를 사용하세요.
       </div>
       <div>
-        <span class="font-medium">공용 PC/모바일</span>에서는 사용을 금지합니다.
+        <span class="font-semibold">공용 PC/모바일</span>에서는 사용을 금지합니다.
       </div>
     </div>
     <!-- 로딩 메시지 표시 및 슬라이드 업 애니메이션 적용 -->

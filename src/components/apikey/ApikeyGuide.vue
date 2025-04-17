@@ -15,7 +15,7 @@
           class="w-full h-auto object-contain rounded-sm my-8"
         />
 
-        <div class="text-xl lg:text-2xl font-medium">
+        <div class="text-xl lg:text-2xl font-semibold">
           빗썸 API 페이지 접속하기
         </div>
         <div class="text-zinc-400 text-[15px] mt-2">
@@ -32,7 +32,7 @@
           :src="`/public/images/apikey-guide-0${step}.webp`"
           class="w-full h-auto object-contain rounded-sm my-8"
         />
-        <div class="text-xl lg:text-2xl font-medium">API 접근 권한 설정</div>
+        <div class="text-xl lg:text-2xl font-semibold">API 접근 권한 설정</div>
         <div class="text-zinc-400 text-[15px] mt-2">
           API 키를 생성할 때는 <span class="text-white">API 2.0</span>을
           선택하고,<br />
@@ -65,7 +65,7 @@
           class="w-full h-auto object-contain rounded-sm my-8"
         />
 
-        <div class="text-xl lg:text-2xl font-medium">IP 주소 등록하기</div>
+        <div class="text-xl lg:text-2xl font-semibold">IP 주소 등록하기</div>
         <div class="text-zinc-400 text-[15px] mt-2">
           API 키를 안전하게 사용하기 위해 <strong>허용된 IP 주소</strong>를
           반드시 등록해야 합니다. 등록한 IP 주소에서만 해당 API 키를 사용할 수
@@ -122,7 +122,7 @@
           class="w-full h-auto object-contain rounded-sm my-8"
         />
 
-        <div class="text-xl lg:text-2xl font-medium">
+        <div class="text-xl lg:text-2xl font-semibold">
           약관에 동의하고 발급받기
         </div>
         <div class="text-zinc-400 text-[15px] mt-2">
@@ -139,7 +139,7 @@
           class="w-full h-auto object-contain rounded-sm my-8"
         />
 
-        <div class="text-xl lg:text-2xl font-medium">
+        <div class="text-xl lg:text-2xl font-semibold">
           Access Key & Secret Key 발급하기
         </div>
         <div class="text-zinc-400 text-[15px] mt-2">

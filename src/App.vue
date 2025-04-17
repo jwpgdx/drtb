@@ -2,7 +2,7 @@
   <div vaul-drawer-wrapper id="app" class="min-h-screen">
     <Toaster />
     <Header />
-    <div class="h-32 lg:h-32" v-if="layoutMeta.showMargin" />
+    <div class="h-20 lg:h-32" v-if="layoutMeta.showMargin" />
     <div class="router-view-wrapper">
       <RouterView />
     </div>

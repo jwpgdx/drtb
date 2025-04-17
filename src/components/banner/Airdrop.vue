@@ -26,7 +26,7 @@
     <img
       src="/images/banner-airdrop.webp"
       alt="에어드랍 코인 이미지"
-      class="w-72 h-72 mx-auto"
+      class="w-64 lg:w-72 h-auto mx-auto"
     />
   </div>
 </template>

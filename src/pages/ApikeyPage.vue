@@ -18,7 +18,7 @@
     </ErrorState>
 
     <div v-if="hasApiKey" class="h-12 lg:h-14" />
-    <div v-if="hasApiKey" class="text-3xl lg:text-4xl font-medium">
+    <div v-if="hasApiKey" class="text-3xl lg:text-4xl font-semibold">
       API 키 관리
     </div>
     <div v-if="hasApiKey" class="h-12 lg:h-24" />

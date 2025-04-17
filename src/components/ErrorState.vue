@@ -3,14 +3,12 @@
     class="flex flex-col items-center justify-center p-6 text-center animate-fadeIn"
   >
     <div class="h-6" />
-    <div class="w-48 h-auto mb-2 relative">
       <img
-        :src="`/public/images/error-${image}.webp`"
-        :alt="title"
-        class="w-full h-full object-contain"
+      :src="`/images/error-${image}.webp`"
+      :alt="title"
+        class="w-56 h-auto mb-2 relative object-contain"
       />
-    </div>
-    <h2 class="text-lg font-medium text-white mb-2">{{ title }}</h2>
+    <h2 class="text-lg font-semibold text-white mb-2">{{ title }}</h2>
     <p class="text-zinc-400 text-sm max-w-md">{{ content }}</p>
     <div class="h-8" />
     <!--

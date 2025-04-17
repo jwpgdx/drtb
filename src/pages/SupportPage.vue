@@ -1,8 +1,13 @@
 <template>
   <div class="container">
+    <img
+      src="/images/page-support.webp"
+      alt="에어드랍 코인 이미지"
+      class="w-64 lg:w-72 h-auto mx-auto"
+    />
     <!-- 텍스트 컨텐츠 -->
     <div class="w-full flex flex-col items-center gap-6 text-center">
-      <h1 class="text-3xl md:text-4xl font-medium">How can we help?</h1>
+      <h1 class="text-3xl md:text-4xl font-semibold">How can we help?</h1>
       <h1 class="text-xl max-w-[90%] lg:max-w-[60%] text-zinc-400">
         Get in touch with our sales and support teams for demos, onboarding
         support, or product questions.

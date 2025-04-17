@@ -5,7 +5,7 @@
     >
       <img
         class="w-full max-w-xs md:max-w-md h-auto"
-        src="/images/illust-logo.webp"
+        src="/images/image-login.webp"
       />
 
       <div class="text-3xl font-semibold text-center">

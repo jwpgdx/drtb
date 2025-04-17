@@ -12,6 +12,8 @@ import QuestionAdminPage from "@/pages/QuestionAdminPage.vue";
 
 import AssetsPage from "@/pages/AssetsPage.vue";
 import AirdropPage from "@/pages/AirdropPage.vue";
+import AirdropFormPage from '@/pages/AirdropFormPage.vue';
+
 import SupportPage from "@/pages/SupportPage.vue";
 
 import { useAuthStore } from "@/stores/auth-store";
@@ -134,7 +136,33 @@ const routes = [
         showLogo: false,
         showMargin: true,
       },
-
+    }
+  },
+  {
+    path: "/airdrop/add",
+    name: 'AirdropAdd',
+    component: AirdropFormPage,
+    meta: {
+      requiresAuth: true,
+      layout: {
+        showBack: true,
+        showLogo: false,
+        showMargin: true,
+      },
+    }
+  },
+  {
+    path: '/airdrop/edit/:id',
+    name: 'AirdropEdit',
+    component: AirdropFormPage,
+    props: true,
+    meta: {
+      requiresAuth: true,
+      layout: {
+        showBack: true,
+        showLogo: false,
+        showMargin: true,
+      },
     }
   },
   {

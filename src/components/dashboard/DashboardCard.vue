@@ -3,7 +3,7 @@
     <div class="flex flex-col gap-2">
       <div class="flex items-center gap-2">
         <img :src="image" class="size-7" alt="" />
-        <h3 class="text-base font-medium text-white">{{ title }}</h3>
+        <h3 class="text-base font-semibold text-white">{{ title }}</h3>
         <ChevronRight class="ml-auto size-5" />
       </div>
       <p class="text-sm ml-9 mr-7 text-zinc-400">{{ content }}</p>

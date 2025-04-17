@@ -8,7 +8,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 5%;
+    --background: 210 8% 4%;
     --foreground: 0 0% 100%; /* 다크 모드: 흰색 글씨 */
 
     --muted: 210 40% 96.1%;

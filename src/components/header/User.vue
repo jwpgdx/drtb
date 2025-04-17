@@ -24,7 +24,7 @@
     >
       <img
         :src="
-          isMenuOpen ? '/icons/smile-orange.webp' : '/icons/smile-white.webp'
+          isMenuOpen ? '/images/icon-smile-orange.webp' : '/images/icon-smile-white.webp'
         "
         alt="User Profile"
         class="w-8 h-8 rounded-full object-cover"

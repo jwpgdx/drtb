@@ -7,7 +7,7 @@
           <button
             @click="activeTab = 'market'"
             :class="[
-              'py-2 px-2 font-medium focus:outline-none',
+              'py-2 px-2 font-semibold focus:outline-none',
               activeTab === 'market'
                 ? 'border-b-2 border-orange-500 text-white'
                 : 'text-zinc-500 hover:text-zinc-700',
@@ -18,7 +18,7 @@
           <button
             @click="activeTab = 'favorite'"
             :class="[
-              'py-2 px-2 font-medium focus:outline-none',
+              'py-2 px-2 font-semibold focus:outline-none',
               activeTab === 'favorite'
                 ? 'border-b-2 border-orange-500 text-white'
                 : 'text-zinc-500 hover:text-zinc-700',
