@@ -26,7 +26,9 @@
           종료
         </button>
       </div>
+      <!-- admin만 등록버튼 표시 -->
       <button
+        v-if="authStore.isAdmin"
         @click="goToAdd"
         class="bg-orange-600 text-white px-4 py-1.5 rounded text-sm"
       >
@@ -36,10 +38,20 @@
 
     <!-- 카드 목록 -->
     <div class="space-y-6">
-      <div class="grid grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <ErrorState
+          class="col-span-3"
+          v-if="filteredList.length === 0"
+          image="content"
+          title="진행중인 이벤트가 없습니다."
+          content="새로운 이벤트가 곧 열릴 예정입니다!"
+          />
+
         <div v-for="item in filteredList" :key="item.id" class="relative group">
           <AirdropCard :item="item" />
+          <!-- admin만 수정/삭제 버튼 표시 -->
           <div
+            v-if="authStore.isAdmin"
             class="absolute top-2 right-2 hidden group-hover:flex flex-col gap-1"
           >
             <button
@@ -65,10 +77,13 @@
 import { ref, computed, onMounted } from "vue";
 import { useRouter } from "vue-router";
 import { useAirdropStore } from "@/stores/airdrop-store";
+import { useAuthStore } from "@/stores/auth-store"; // auth store 추가
 import AirdropCard from "@/components/airdrop/AirdropCard.vue";
+import ErrorState from "@/components/ErrorState.vue";
 
 const router = useRouter();
 const store = useAirdropStore();
+const authStore = useAuthStore(); // auth store 사용
 const tab = ref<"ongoing" | "ended">("ongoing");
 
 const filteredList = computed(() => {

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex flex-col gap-2 bg-black rounded-lg border border-zinc-800 min-h-[360px] overflow-hidden px-6"
+    class="flex flex-col gap-2 bg-black rounded-lg border border-zinc-800 min-h-[360px] overflow-hidden px-6 cursor-pointer"
   >
     <div
       v-if="item.status === 'scheduled'"
@@ -40,7 +40,7 @@
     <img
       :src="item.imageUrl"
       alt="에어드랍 이미지"
-      class="absolute bottom-0 right-0 m-auto w-[80%] mr-2 mb-[1px] rounded-lg h-auto z-0"
+      class="absolute bottom-0 right-0 m-auto w-[70%] mr-2 mb-[1px] rounded-lg h-auto z-0"
     />
   </div>
 </template>
