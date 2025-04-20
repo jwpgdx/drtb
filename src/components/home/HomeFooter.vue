@@ -1,9 +1,11 @@
 <template>
   <div class="container">
     <div
-      class="flex py-12 px-4 lg:px-0 flex-col lg:flex-row items-start gap-8 lg:items-center justify-between w-full"
+      class="flex w-full flex-col items-start justify-between gap-8 px-4 py-12 lg:flex-row lg:items-center lg:px-0"
     >
-      <div class="text-4xl">Plan the present. Build the future.</div>
+      <div class="font-semibold text-4xl">
+        Plan the present. Build the future.
+      </div>
       <div class="flex gap-2">
         <div class="gradient-content">
           <button class="gradient-button">Get Started</button>

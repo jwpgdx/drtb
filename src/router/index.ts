@@ -13,6 +13,8 @@ import QuestionAdminPage from "@/pages/QuestionAdminPage.vue";
 import AssetsPage from "@/pages/AssetsPage.vue";
 import AirdropPage from "@/pages/AirdropPage.vue";
 import AirdropFormPage from '@/pages/AirdropFormPage.vue';
+import AirdropDetailPage from '@/pages/AirdropDetailPage.vue';
+
 
 import SupportPage from "@/pages/SupportPage.vue";
 
@@ -132,12 +134,27 @@ const routes = [
     meta: {
       requiresAuth: false,
       layout: {
+        showBack: false,
+        showLogo: true,
+        showMargin: true,
+      },
+    }
+  },
+  {
+    path: '/airdrop/:id',
+    name: 'AirdropDetail',
+    component: AirdropDetailPage,
+    meta: {
+      requiresAuth: false,
+      layout: {
         showBack: true,
         showLogo: false,
         showMargin: true,
       },
     }
   },
+
+
   {
     path: "/airdrop/add",
     name: 'AirdropAdd',

@@ -40,7 +40,7 @@
     <img
       :src="item.imageUrl"
       alt="에어드랍 이미지"
-      class="absolute bottom-0 right-0 m-auto w-[70%] mr-2 mb-[1px] rounded-lg h-auto z-0"
+      class="absolute bottom-0 right-0 m-auto w-[60%] lg:w-[70%] mr-2 mb-[1px] rounded-lg h-auto z-0"
     />
   </div>
 </template>

@@ -6,7 +6,7 @@
       <img
       :src="`/images/error-${image}.webp`"
       :alt="title"
-        class="w-56 h-auto mb-2 relative object-contain"
+        class="w-56 lg:w-64 h-auto mb-2 relative object-contain"
       />
     <h2 class="text-lg font-semibold text-white mb-2">{{ title }}</h2>
     <p class="text-zinc-400 text-sm max-w-md">{{ content }}</p>

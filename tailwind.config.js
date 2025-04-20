@@ -16,7 +16,7 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: "1rem",
+      padding: "1.5rem  ",
       screens: {
         DEFAULT: '1024px', // 기본 max-width 1024px 설정
         sm: '640px',

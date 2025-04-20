@@ -26,6 +26,8 @@
     "lottie-web": "^5.12.2",
     "lucide-vue-next": "^0.471.0",
     "pinia": "^2.3.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-tailwindcss": "^0.6.11",
     "radix-vue": "^1.9.12",
     "reka-ui": "^1.0.0-alpha.8",
     "tailwind-merge": "^2.6.0",

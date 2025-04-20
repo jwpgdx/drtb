@@ -50,32 +50,32 @@ const bannerCards = [
   {
     title: "빗썸 멤버십",
     content: "등급별로 쌓이는 포인트, 리워드 혜택을 확인하세요",
-    image: "key",
+    image: "bitcoin",
   },
   {
     title: "빗썸 10주년 기념",
     content: "국내 최저 수수료 최고의 멤버십 혜택",
-    image: "trade",
+    image: "chart",
   },
   {
     title: "웰컴 미션",
     content: "신규회원이라면? 미션 달성하고 2만원 받기",
-    image: "airdrop",
+    image: "date",
   },
   {
     title: "NFT 이벤트",
     content: "한정판 NFT 발행! 선착순 100명 한정",
-    image: "chart",
+    image: "security",
   },
 ];
 </script>
 
 <style>
 .swiper-pagination-bullet {
-  @apply w-2 h-2 bg-zinc-300 opacity-100 m-2;
+  @apply m-2 h-2 w-2 bg-zinc-300 opacity-100;
 }
 .swiper-pagination-bullet-active {
-  @apply bg-orange-500 scale-125;
+  @apply scale-125 bg-orange-500;
 }
 
 /* 필요시 네비게이션 버튼의 활성 상태도 추가 */

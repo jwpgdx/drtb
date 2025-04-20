@@ -7,6 +7,11 @@ import {
   Timestamp,
   doc,
   deleteDoc,
+  query,
+  orderBy,
+  limit,
+  startAfter,
+  where, getDoc
 } from "firebase/firestore";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { firestore } from "@/firebase";
@@ -25,37 +30,68 @@ export interface AirdropItem {
 
 export const useAirdropStore = defineStore("airdropStore", {
   state: () => ({
-    airdrops: [] as AirdropItem[],
+    ongoingAirdrops: [] as AirdropItem[],
+    endedAirdrops: [] as AirdropItem[],
     isUploading: false,
+    ongoingLast: null as any,
+    endedLast: null as any,
+    hasMoreOngoing: true,
+    hasMoreEnded: true,
   }),
 
-  getters: {
-    ongoingWithScheduled: (state): AirdropItem[] => {
-      const now = Date.now();
-      return [...state.airdrops]
-        .filter((item) => item.endAt.toDate().getTime() >= now)
-        .map((item) => {
-          const start = item.startAt.toDate().getTime();
-          const status: AirdropItem["status"] = now < start ? "scheduled" : "ongoing";
-          return { ...item, status };
-        })
-        .sort((a, b) => a.startAt.toDate().getTime() - b.startAt.toDate().getTime());
-    },
-    ended: (state): AirdropItem[] => {
-      const now = Date.now();
-      return state.airdrops
-        .filter((item) => item.endAt.toDate().getTime() < now)
-        .map((item) => ({ ...item, status: "ended" }));
-    },
-  },
-
   actions: {
-    async fetchAirdrops() {
-      const snapshot = await getDocs(collection(firestore, "airdrops"));
-      this.airdrops = snapshot.docs.map((doc) => ({
+    async fetchOngoingAirdrops(limitCount = 6, nextPage = false) {
+      const now = Timestamp.now();
+      let q = query(
+        collection(firestore, "airdrops"),
+        where("endAt", ">=", now),
+        orderBy("endAt", "asc"),
+        limit(limitCount)
+      );
+      if (nextPage && this.ongoingLast) {
+        q = query(q, startAfter(this.ongoingLast), limit(limitCount));
+      }
+      const snapshot = await getDocs(q);
+      const docs = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       })) as AirdropItem[];
+
+      if (nextPage) {
+        this.ongoingAirdrops.push(...docs);
+      } else {
+        this.ongoingAirdrops = docs;
+      }
+
+      this.ongoingLast = snapshot.docs[snapshot.docs.length - 1] || null;
+      this.hasMoreOngoing = snapshot.docs.length === limitCount;
+    },
+
+    async fetchEndedAirdrops(limitCount = 6, nextPage = false) {
+      const now = Timestamp.now();
+      let q = query(
+        collection(firestore, "airdrops"),
+        where("endAt", "<", now),
+        orderBy("endAt", "desc"),
+        limit(limitCount)
+      );
+      if (nextPage && this.endedLast) {
+        q = query(q, startAfter(this.endedLast), limit(limitCount));
+      }
+      const snapshot = await getDocs(q);
+      const docs = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      })) as AirdropItem[];
+
+      if (nextPage) {
+        this.endedAirdrops.push(...docs);
+      } else {
+        this.endedAirdrops = docs;
+      }
+
+      this.endedLast = snapshot.docs[snapshot.docs.length - 1] || null;
+      this.hasMoreEnded = snapshot.docs.length === limitCount;
     },
 
     async uploadImageWithBase64(file: File, market: string): Promise<string> {
@@ -101,7 +137,7 @@ export const useAirdropStore = defineStore("airdropStore", {
         endAt: Timestamp.fromDate(new Date(payload.endAt)),
         createdAt: Timestamp.now(),
       });
-      await this.fetchAirdrops();
+      await this.fetchOngoingAirdrops();
     },
 
     async updateAirdrop(payload: {
@@ -131,18 +167,36 @@ export const useAirdropStore = defineStore("airdropStore", {
       if (imageUrl) updateData.imageUrl = imageUrl;
 
       await updateDoc(docRef, updateData);
-      await this.fetchAirdrops();
+      await this.fetchOngoingAirdrops();
     },
 
     async deleteAirdrop(id: string) {
       try {
         await deleteDoc(doc(firestore, "airdrops", id));
-        await this.fetchAirdrops();
+        await this.fetchOngoingAirdrops();
       } catch (error) {
         console.error("삭제 실패:", error);
         throw error;
       }
+    },
+
+    async fetchAirdropById(id: string): Promise<AirdropItem | null> {
+      try {
+        const docRef = doc(firestore, "airdrops", id);
+        const snapshot = await getDoc(docRef);
+
+        if (!snapshot.exists()) {
+          return null;
+        }
+
+        return {
+          id: snapshot.id,
+          ...snapshot.data(),
+        } as AirdropItem;
+      } catch (error) {
+        console.error("에어드롭 상세 조회 실패:", error);
+        throw error;
+      }
     }
-    
   },
 });

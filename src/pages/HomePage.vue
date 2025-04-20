@@ -4,24 +4,30 @@
     <div class="h-12 lg:h-24" />
     <HomeBanners />
     <div class="h-12 lg:h-24" />
+    <HomeContents />
+    <div class="h-12 lg:h-24" />
+    <HomeBanner />
 
-    <div class="container">
-      <HomeBanner />
-    </div>
+   
 
     <div class="h-12 lg:h-24" />
 
+    <div class="h-12 lg:h-24" />
 
-    <div class="text-2xl lg:text-3xl  text-center font-semibold m-12">
+    <div class="m-12 text-center text-2xl font-semibold lg:text-3xl">
       오늘의 시세를 확인해 보세요
     </div>
 
     <div class="relative max-h-[500px] overflow-y-hidden">
       <MarketList class="container" :filterQuery="''" />
 
-      <div class="container market-list-container">
+      <div class="market-list-container container">
         <div class="market-list-button-container">
-          <router-link style="z-index: 10;" to="/order" class="market-list-button">
+          <router-link
+            style="z-index: 10"
+            to="/order"
+            class="market-list-button"
+          >
             전체 시세 보기
           </router-link>
         </div>
@@ -29,8 +35,7 @@
     </div>
     <div class="h-12 lg:h-24" />
 
-
-    <div class="text-2xl lg:text-3xl text-center font-semibold m-12">FAQ</div>
+    <div class="m-12 text-center text-2xl font-semibold lg:text-3xl">FAQ</div>
     <div class="container">
       <Faq />
     </div>
@@ -46,6 +51,7 @@ import HomeBanner from "@/components/home/HomeBanner.vue"; // MarketList 컴포�
 import HomeBanners from "@/components/home/HomeBanners.vue"; // MarketList 컴포넌트 추가
 import HomeFooter from "@/components/home/HomeFooter.vue"; // MarketList 컴포넌트 추가
 import Faq from "@/components/faq/Faq.vue";
+import HomeContents from "@/components/home/HomeContents.vue"; // MarketList 컴포넌트 추가
 </script>
 
 <style lang="scss" scoped>

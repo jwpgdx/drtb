@@ -2,41 +2,32 @@
 <template>
   <div
     @click="goToOrderPage"
-    class="flex items-center h-16 px-4 rounded-sm cursor-pointer text-white hover:bg-zinc-900"
+    class="flex h-16 cursor-pointer items-center rounded-sm text-white hover:bg-zinc-900 px-4"
   >
     <!-- market.isVisible일 때만 이미지 로드 -->
-    <Coin :market="market.market" class="w-6 h-6 mr-4" />
+    <Coin :market="market.market" class="mr-3 size-5 lg:mr-4 lg:size-6" />
 
     <div class="flex-1">
-      <p class="text-base">{{ market.korean_name }}</p>
+      <p class="text-[15px] lg:text-base">{{ market.korean_name }}</p>
       <p class="text-xs text-zinc-500">{{ market.market }}</p>
     </div>
     <div class="flex items-center">
-      <!-- 로딩 중일 때 돌아가는 애니메이션 -->
-      <svg
-        v-if="isLoading"
-        class="w-6 h-6 text-zinc-500 animate-spin"
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-      >
-        <circle cx="12" cy="12" r="10" stroke-width="4" class="opacity-25" />
-        <path stroke-linecap="round" stroke-linejoin="round" d="M4 12a8 8 0 1116 0A8 8 0 014 12z" class="opacity-75" />
-      </svg>
+      <p v-if="isLoading" class="mr-2 text-base font-medium">-</p>
 
       <!-- trade_price가 있으면 세자리마다 쉼표 추가 -->
-      <p v-else class="text-base font-medium mr-2">
-        ₩ {{ market.trade_price ? market.trade_price.toLocaleString() : '-' }}
+      <p v-else class="mr-2 text-[15px] font-medium lg:text-base">
+        ₩ {{ market.trade_price ? market.trade_price.toLocaleString() : "-" }}
       </p>
-      
+
       <p
         :class="[
-          'text-base w-20 text-right',
-          priceChangeClass
+          'min-w-16 text-right text-[15px] lg:min-w-20 lg:text-base',
+          priceChangeClass,
         ]"
       >
-        {{ market.priceChangePercent !== null ? market.priceChangePercent : '-' }}%
+        {{
+          market.priceChangePercent !== null ? market.priceChangePercent : "-"
+        }}%
       </p>
     </div>
   </div>
@@ -67,7 +58,10 @@ const isLoading = ref(true);
 
 // 데이터가 들어오면 로딩 종료
 watchEffect(() => {
-  if (props.market.trade_price !== null && props.market.priceChangePercent !== null) {
+  if (
+    props.market.trade_price !== null &&
+    props.market.priceChangePercent !== null
+  ) {
     isLoading.value = false;
   }
 });

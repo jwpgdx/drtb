@@ -1,23 +1,24 @@
 <template>
-  <div
-    @click="goToAirdrop"
-    class="flex flex-row items-center gap-8 rounded-md py-4 px-6 lg:px-8 relative overflow-hidden gradient-bg animate-gradient"
-  >
-    <!-- 기존 컨텐츠 유지 -->
-    <div class="flex-1">
-      <h1 class="text-xl font-semibold mb-2 text-black">
-        <span class="text-orange-600">LIVE</span> 에어드랍 목록
-      </h1>
-      <p class="text-sm text-zinc-800 opacity-90">
-        지금 진행 중인 모든 에어드랍 이벤트를 확인하세요!<br />
-      </p>
+  <div class="container">
+    <div
+      @click="goToAirdrop"
+      class="relative flex min-h-24 flex-row items-center gap-8 overflow-visible rounded-md bg-black px-4 py-6 lg:px-8"
+    >
+      <!-- 기존 컨텐츠 유지 -->
+      <div class="z-10 max-w-[50%]">
+        <h1 class="mb-2 text-xl font-semibold">
+          <span class="text-orange-600">LIVE</span> 에어드랍 목록
+        </h1>
+        <p class="text-sm text-zinc-400">
+          지금 진행 중인 모든 에어드랍 이벤트를 확인하세요!
+        </p>
+      </div>
+      <img
+        src="/images/home-banner-airdrop.webp"
+        alt="에어드랍 코인 이미지"
+        class="absolute bottom-0 right-2 h-44 w-auto lg:right-4 lg:h-52"
+      />
     </div>
-
-    <img
-      src="/images/banner-airdrop.webp"
-      alt="에어드랍 코인 이미지"
-      class="w-24 h-24 mx-auto"
-    />
   </div>
 </template>
 <script setup lang="ts">
