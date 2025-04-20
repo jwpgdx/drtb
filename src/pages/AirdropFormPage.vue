@@ -34,7 +34,7 @@
         class="input"
         required
       />
-      endAt: {{ formData.endAt }}<br/>
+      endAt: {{ formData.endAt }}<br />
       <button type="submit" class="rounded bg-orange-600 px-4 py-2 text-white">
         {{ isEditMode ? "수정하기" : "등록하기" }}
       </button>
@@ -62,7 +62,7 @@ const formData = ref({
   startAt: "",
   endAt: "",
 });
-
+/*
 onMounted(async () => {
   if (id) {
     if (!airdropStore.airdrops.length) await airdropStore.fetchAirdrops();
@@ -80,7 +80,7 @@ onMounted(async () => {
     }
   }
 });
-
+*/
 const handleFileChange = (event: Event) => {
   const target = event.target as HTMLInputElement;
   if (target.files && target.files.length > 0) {
