@@ -1,12 +1,12 @@
 <template>
   <div
-    class="flex flex-col items-center justify-center p-6 text-center animate-fadeIn"
+    class="flex flex-col items-center justify-center p-6 text-center "
   >
     <div class="h-6" />
       <img
       :src="`/images/error-${image}.webp`"
       :alt="title"
-        class="w-56 lg:w-64 h-auto mb-2 relative object-contain"
+        class="w-56 lg:w-64 h-auto  relative object-contain animate-fadeIn"
       />
     <h2 class="text-lg font-semibold text-white mb-2">{{ title }}</h2>
     <p class="text-zinc-400 text-sm max-w-md">{{ content }}</p>

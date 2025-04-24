@@ -1,6 +1,5 @@
 <template>
   <div vaul-drawer-wrapper id="app" class="min-h-screen">
-    <Toaster />
     <Header />
     <div class="h-20 lg:h-32" v-if="layoutMeta.showMargin" />
     <div class="router-view-wrapper">
@@ -14,7 +13,6 @@ import { onBeforeMount, computed } from "vue";
 import { useRoute } from "vue-router";
 import { useMarketStore } from "@/stores/market-store";
 import Header from "@/components/header/Header.vue";
-import Toaster from "@/components/ui/toast/Toaster.vue";
 
 const marketStore = useMarketStore();
 const route = useRoute();

@@ -32,14 +32,52 @@ export const useAirdropStore = defineStore("airdropStore", {
   state: () => ({
     ongoingAirdrops: [] as AirdropItem[],
     endedAirdrops: [] as AirdropItem[],
-    isUploading: false,
-    ongoingLast: null as any,
-    endedLast: null as any,
+    allAirdrops: [] as AirdropItem[],
+    ongoingLast: null,
+    endedLast: null,
+    allLast: null,
     hasMoreOngoing: true,
     hasMoreEnded: true,
+    hasMoreAll: true,
   }),
 
   actions: {
+    async fetchAllAirdrops(limitCount = 6, nextPage = false) {
+      const now = Timestamp.now();
+    
+      let q = query(
+        collection(firestore, "airdrops"),
+        orderBy("endAt", "desc"),
+        limit(limitCount)
+      );
+    
+      if (nextPage && this.allLast) {
+        q = query(q, startAfter(this.allLast), limit(limitCount));
+      }
+    
+      const snapshot = await getDocs(q);
+    
+      const docs = snapshot.docs.map((doc) => {
+        const data = doc.data() as AirdropItem;
+        const status: AirdropItem["status"] =
+          data.endAt.toMillis() >= now.toMillis() ? "ongoing" : "ended";
+    
+        return {
+          id: doc.id,
+          ...data,
+          status,
+        };
+      });
+    
+      if (nextPage) {
+        this.allAirdrops.push(...docs);
+      } else {
+        this.allAirdrops = docs;
+      }
+    
+      this.allLast = snapshot.docs.at(-1) || null;
+      this.hasMoreAll = snapshot.docs.length === limitCount;
+    },
     async fetchOngoingAirdrops(limitCount = 6, nextPage = false) {
       const now = Timestamp.now();
       let q = query(
@@ -48,22 +86,26 @@ export const useAirdropStore = defineStore("airdropStore", {
         orderBy("endAt", "asc"),
         limit(limitCount)
       );
+    
       if (nextPage && this.ongoingLast) {
         q = query(q, startAfter(this.ongoingLast), limit(limitCount));
       }
+    
       const snapshot = await getDocs(q);
+    
       const docs = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
+        status: "ongoing",
       })) as AirdropItem[];
-
+    
       if (nextPage) {
         this.ongoingAirdrops.push(...docs);
       } else {
         this.ongoingAirdrops = docs;
       }
-
-      this.ongoingLast = snapshot.docs[snapshot.docs.length - 1] || null;
+    
+      this.ongoingLast = snapshot.docs.at(-1) || null;
       this.hasMoreOngoing = snapshot.docs.length === limitCount;
     },
 
@@ -75,24 +117,28 @@ export const useAirdropStore = defineStore("airdropStore", {
         orderBy("endAt", "desc"),
         limit(limitCount)
       );
+    
       if (nextPage && this.endedLast) {
         q = query(q, startAfter(this.endedLast), limit(limitCount));
       }
+    
       const snapshot = await getDocs(q);
+    
       const docs = snapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
+        status: "ended",
       })) as AirdropItem[];
-
+    
       if (nextPage) {
         this.endedAirdrops.push(...docs);
       } else {
         this.endedAirdrops = docs;
       }
-
-      this.endedLast = snapshot.docs[snapshot.docs.length - 1] || null;
+    
+      this.endedLast = snapshot.docs.at(-1) || null;
       this.hasMoreEnded = snapshot.docs.length === limitCount;
-    },
+    },    
 
     async uploadImageWithBase64(file: File, market: string): Promise<string> {
       if (!file) throw new Error("파일이 없습니다.");

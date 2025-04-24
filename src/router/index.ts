@@ -9,6 +9,8 @@ import ApikeyRegisterPage from "@/pages/ApikeyRegisterPage.vue";
 import QuestionPage from "@/pages/QuestionPage.vue";
 import QuestionAdminPage from "@/pages/QuestionAdminPage.vue";
 
+import HistoryPage from "@/pages/HistoryPage.vue";
+
 
 import AssetsPage from "@/pages/AssetsPage.vue";
 import AirdropPage from "@/pages/AirdropPage.vue";
@@ -19,6 +21,7 @@ import AirdropDetailPage from '@/pages/AirdropDetailPage.vue';
 import SupportPage from "@/pages/SupportPage.vue";
 
 import { useAuthStore } from "@/stores/auth-store";
+import { toast } from "vue3-toastify";
 
 const routes = [
   {
@@ -88,7 +91,20 @@ const routes = [
     }
   },
   {
-    path: "/dashboard/apikey",
+    path: "/history",
+    name: "History",
+    component: HistoryPage,
+    meta: {
+      requiresAuth: true,
+      layout: {
+        showBack: false,
+        showLogo: true,
+        showMargin: true,
+      },
+    }
+  },
+  {
+    path: "/apikey",
     name: "Apikey",
     component: ApikeyPage,
     meta: {
@@ -101,7 +117,7 @@ const routes = [
     }
   },
   {
-    path: "/dashboard/apikey/register",
+    path: "/apikey/register",
     name: "ApikeyRegister",
     component: ApikeyRegisterPage,
     meta: {
@@ -114,7 +130,7 @@ const routes = [
     }
   },
   {
-    path: "/dashboard/assets",
+    path: "/assets",
     name: "Assets",
     component: AssetsPage,
     meta: {
@@ -233,6 +249,7 @@ router.beforeEach((to, from, next) => {
   const authStore = useAuthStore();
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next(`/login?redirect=${to.fullPath}`);
+    toast("로그인이 필요한 서비스입니다.");
   } else {
     next();
   }

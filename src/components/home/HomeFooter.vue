@@ -3,12 +3,12 @@
     <div
       class="flex w-full flex-col items-start justify-between gap-8 px-4 py-12 lg:flex-row lg:items-center lg:px-0"
     >
-      <div class="font-semibold text-4xl">
-        Plan the present. Build the future.
+      <div class="font-semibold text-3xl">
+        간편한 비트코인 거래, DRTB에서
       </div>
       <div class="flex gap-2">
         <div class="gradient-content">
-          <button class="gradient-button">Get Started</button>
+          <button class="gradient-button">지금 시작하기</button>
           <div class="gradient-glow"></div>
         </div>
       </div>
@@ -21,8 +21,8 @@
 <style lang="scss" scoped>
 .gradient-content {
   position: relative;
-  height: 40px;
-  width: 120px;
+  height: 44px;
+  width: 128px;
   border-radius: 24px;
 }
 .gradient-button {

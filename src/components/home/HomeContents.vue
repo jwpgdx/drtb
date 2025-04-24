@@ -23,11 +23,11 @@ const homeContents = [
     image: "security",
   },
   {
-    tag: "공정한 거래 환경",
-    title: "투명한 데이터 공개",
+    tag: "실시간 주문 체결",
+    title: "실시간 체결, 빠른 반응",
     content:
-      "입출금 내역, 주문 기록, 수수료 정책까지 모든 데이터를 사용자에게 투명하게 공개합니다.",
-    image: "transparency",
+      "시장가/지정가 주문을 원하는 타이밍에 바로 실행. 거래 속도에서 차이가 납니다.",
+    image: "trade",
   },
 ];
 </script>

@@ -5,7 +5,7 @@
       class="relative flex min-h-24 flex-row items-center gap-8 overflow-visible rounded-md bg-black px-4 py-6 lg:px-8"
     >
       <!-- 기존 컨텐츠 유지 -->
-      <div class="z-10 max-w-[50%]">
+      <div class="z-10 max-w-[60%]">
         <h1 class="mb-2 text-xl font-semibold">
           <span class="text-orange-600">LIVE</span> 에어드랍 목록
         </h1>

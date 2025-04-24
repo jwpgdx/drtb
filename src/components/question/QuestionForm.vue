@@ -27,6 +27,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useQuestionStore } from "@/stores/question-store";
+import { toast } from "vue3-toastify";
 
 const content = ref("");
 const store = useQuestionStore();
@@ -36,7 +37,7 @@ const handleSubmit = async () => {
 
   await store.submitQuestion(content.value);
   content.value = "";
-  alert("문의가 등록되었습니다.");
+  toast("문의가 등록되었습니다.");
   // ✅ 등록 후 목록 다시 불러오기
   await store.fetchMyQuestions();
 };

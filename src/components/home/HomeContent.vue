@@ -1,5 +1,5 @@
 <template>
-  <div class="lg:py-30 grid grid-cols-1 gap-6 py-8 md:grid-cols-12">
+  <div class="lg:py-30 grid grid-cols-1 gap-6 py-8 lg:grid-cols-12">
     <div
       class="relative my-auto flex aspect-square items-center lg:col-start-1 lg:col-end-7 lg:row-start-1"
     >

@@ -7,14 +7,14 @@
     />
     <!-- 텍스트 컨텐츠 -->
     <div class="w-full flex flex-col items-center gap-6 text-center">
-      <h1 class="text-3xl md:text-4xl font-semibold">How can we help?</h1>
+      <h1 class="text-3xl lg:text-4xl font-semibold">How can we help?</h1>
       <h1 class="text-xl max-w-[90%] lg:max-w-[60%] text-zinc-400">
         Get in touch with our sales and support teams for demos, onboarding
         support, or product questions.
       </h1>
     </div>
     <div class="h-12 lg:h-24" />
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-8  m-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8  m-auto">
       <FaqCard
         :icon="Mail"
         title="제휴 & 제안"
@@ -32,7 +32,7 @@
     </div>
     <div class="h-12 lg:h-24" />
 
-    <h1 class="text-xl md:text-xl font-bold mb-8 px-4">FAQ</h1>
+    <h1 class="text-xl lg:text-xl font-bold mb-8 px-4">FAQ</h1>
     <Faq />
   </div>
 </template>

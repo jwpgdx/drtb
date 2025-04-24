@@ -1,9 +1,9 @@
 <template>
-  <div class="md:hidden">
+  <div class="lg:hidden">
     <!-- 햄버거 버튼 (SVG 사용) -->
     <button
       @click="toggleMenu"
-      class="relative p-2 z-[51] focus:outline-none text-white"
+      class="relative z-[51] p-2 text-white focus:outline-none"
       aria-label="메뉴 열기"
     >
       <svg
@@ -46,8 +46,8 @@
     <div
       class="fixed inset-0 z-50 transition-opacity duration-300"
       :class="{
-        'opacity-100 pointer-events-auto': isOpen,
-        'opacity-0 pointer-events-none': !isOpen,
+        'pointer-events-auto opacity-100': isOpen,
+        'pointer-events-none opacity-0': !isOpen,
       }"
       @click="closeMenu"
     >
@@ -56,7 +56,7 @@
 
       <!-- 메뉴 내용 -->
       <div
-        class="absolute top-0 left-0 h-full w-64 bg-black shadow-lg transform transition-transform duration-300"
+        class="absolute left-0 top-0 h-full w-64 transform bg-black shadow-lg transition-transform duration-300"
         :class="{ 'translate-x-0': isOpen, '-translate-x-full': !isOpen }"
         @click.stop
       >
@@ -78,11 +78,11 @@
                     'bg-zinc-900 text-orange-600': isActive,
                     'text-white hover:bg-zinc-950': !isActive,
                   }"
-                  class="flex items-center px-4 py-3 rounded-md transition-colors"
+                  class="flex items-center rounded-md px-4 py-3 transition-colors"
                 >
                   <component
-                    :is="item.iconComponent"
-                    class="w-5 h-5 mr-3"
+                    :is="item.icon"
+                    class="mr-3 h-5 w-5"
                     :class="{
                       'text-orange-500': isActive,
                       'text-zinc-400': !isActive,
@@ -91,7 +91,7 @@
                   <span>{{ item.label }}</span>
                   <span
                     v-if="isActive"
-                    class="ml-auto w-1.5 h-1.5 bg-orange-500 rounded-full"
+                    class="ml-auto h-1.5 w-1.5 rounded-full bg-orange-500"
                   ></span>
                 </a>
               </router-link>
@@ -103,30 +103,17 @@
   </div>
 </template>
 
-<script setup>
-import { useRouter, useRoute } from "vue-router";
+<script setup lang="ts">
+import { useRouter } from "vue-router";
+import { ref, computed } from "vue";
+import { useHeaderStore } from "@/stores/header-store";
 
-import { ref } from "vue";
-import {
-  Coins as CoinsIcon,
-  TimerReset as TimerResetIcon,
-  LifeBuoy as LifeBuoyIcon,
-  LogOut as LogOutIcon,
-  Settings as SettingsIcon,
-  User as UserIcon,
-  KeyRound as KeyRoundIcon,
-} from "lucide-vue-next";
+const headerStore = useHeaderStore();
+const menuItems = computed(() => headerStore.menuItems);
 
 const router = useRouter();
-const route = useRoute();
 
 const isOpen = ref(false);
-const menuItems = [
-  { value: "Orders", iconComponent: CoinsIcon, label: "거래소" },
-  { value: "Assets", iconComponent: TimerResetIcon, label: "자산" },
-  { value: "Airdrop", iconComponent: LifeBuoyIcon, label: "에어드랍" },
-  { value: "Support", iconComponent: LifeBuoyIcon, label: "고객센터" },
-];
 
 const toggleMenu = () => {
   isOpen.value = !isOpen.value;

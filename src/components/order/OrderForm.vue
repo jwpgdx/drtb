@@ -201,10 +201,8 @@ import {
 import { useRouter, useRoute } from "vue-router";
 
 import OrderRatio from "@/components/order/OrderRatio.vue";
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/toast/use-toast";
+import { toast } from "vue3-toastify";
 import { h } from "vue";
-const { toast } = useToast();
 
 const orderStore = useOrderStore();
 const orderChanceStore = useOrderChanceStore();
@@ -260,20 +258,7 @@ const drawer = ref(false);
 
 const openDrawer = () => {
   if (orderData.value?.volume === "0") {
-    toast({
-      title: "경고",
-      description: "주문수량을 입력해주세요.",
-      variant: "destructive", // 에러 스타일
-      action: h(
-        ToastAction,
-        {
-          altText: "확인",
-        },
-        {
-          default: () => "확인",
-        }
-      ),
-    });
+    toast("주문수량을 입력해주세요.");
     return; // 수량이 0이면 Drawer를 열지 않음
   }
   drawer.value = true;
@@ -294,16 +279,9 @@ const handleCreateOrder = () => {
     handleFetchOrderChance();
 
     if (orderStore.orderErrorMessage) {
-      toast({
-        title: "주문 실패",
-        description: orderStore.orderErrorMessage,
-        variant: "destructive",
-      });
+      toast(orderStore.orderErrorMessage);
     } else {
-      toast({
-        title: "주문 성공",
-        description: "주문이 성공적으로 접수되었습니다.",
-      });
+      toast("주문이 성공적으로 접수되었습니다.");
     }
   });
 };

@@ -4,7 +4,7 @@ import { useAuthStore } from "@/stores/auth-store"; // authStore 가져오기
 import { useMarketStore } from "@/stores/market-store"; // marketStore 가져오기
 import { useOrderChanceStore } from "@/stores/order-chance-store"; // accountStore 가져오기
 import { getFunctions, httpsCallable } from "firebase/functions";
-import { getFirestore, collection, setDoc, doc, query, orderBy, limit, getDocs, serverTimestamp } from "firebase/firestore"; // Firestore 추가
+import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs, Timestamp } from "firebase/firestore"; // Firestore 추가
 
 export const useOrderStore = defineStore("orderStore", {
   state: () => ({
@@ -398,25 +398,29 @@ export const useOrderStore = defineStore("orderStore", {
     async saveOrderToDatabase(apiResponse) {
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
-
+    
       if (!uid) {
         console.error('[ERROR] UID가 존재하지 않음! 데이터베이스 저장 불가');
         return false;
       }
-
+    
       try {
         const db = getFirestore();
-
-        // [수정된 부분] users/{uid}/orders 컬렉션 참조
-        const orderDocRef = doc(db, 'users', uid, 'orders', apiResponse.uuid);
-
+    
+        const timestamp =
+          apiResponse.created_at
+            ? Timestamp.fromDate(new Date(apiResponse.created_at))
+            : Timestamp.now();
+    
         const orderData = {
           ...apiResponse,
           uid,
+          timestamp,
         };
-
-        await setDoc(orderDocRef, orderData);
-
+    
+        // ✅ 문서 ID 자동 생성
+        await addDoc(collection(db, 'users', uid, 'orders'), orderData);
+    
         return true;
       } catch (error) {
         console.error('[ERROR] 데이터베이스 저장 중 오류 발생:', error);
@@ -484,7 +488,7 @@ export const useOrderStore = defineStore("orderStore", {
           // 주문');
           // 주문 성공 시 데이터베이스에 주문 내역 저장
           const apiResponse = response.data
-
+          console.log('1. apiResponse:', apiResponse);
           await this.saveOrderToDatabase(apiResponse);
 
         } catch (error) {

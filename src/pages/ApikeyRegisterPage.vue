@@ -107,8 +107,9 @@
 
 <script lang="ts" setup>
 import { ref, computed, defineAsyncComponent } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useApiStore } from "@/stores/api-store";
-import { useToast } from "@/components/ui/toast/use-toast";
+import { toast } from "vue3-toastify";
 import { LoaderCircle, ExternalLink, CircleHelp } from "lucide-vue-next";
 import VDialog from "@/v-components/v-dialog.vue";
 
@@ -117,6 +118,7 @@ const isLoading = computed(() => apiStore.isLoading);
 const loadingMessage = computed(() => apiStore.loadingMessage);
 const errorMessage = computed(() => apiStore.errorMessage);
 const successMessage = computed(() => apiStore.successMessage);
+const router = useRouter();
 
 const dialog = ref(false);
 const handleClickEvent = () => {
@@ -129,7 +131,6 @@ const formData = ref({
 });
 
 const agreeToTerms = ref(false);
-const { toast } = useToast();
 
 async function handleSubmit() {
   try {
@@ -138,25 +139,15 @@ async function handleSubmit() {
       formData.value.secretKey
     );
     if (errorMessage.value) {
-      toast({
-        title: "API Key 저장 실패",
-        description:
-          errorMessage.value || "API Key 저장 중 오류가 발생했습니다.",
-        variant: "destructive",
-      });
+      console.log('errorMessage', errorMessage.value);
+      toast(errorMessage.value || "API Key 저장 중 오류가 발생했습니다.");
     } else if (successMessage.value) {
-      toast({
-        title: "API Key 저장 성공",
-        description: successMessage.value,
-        variant: "default",
-      });
+      toast(successMessage.value);
+      router.push({ name: 'Apikey' });
     }
   } catch (error: any) {
-    toast({
-      title: "API Key 저장 실패",
-      description: error.message || "API Key 저장 중 오류가 발생했습니다.",
-      variant: "destructive",
-    });
+    console.log('catcherrorMessage', error.message);
+    toast(error.message || "API Key 저장 중 오류가 발생했습니다.");
   } finally {
     await apiStore.fetchApiKeyStatus();
   }

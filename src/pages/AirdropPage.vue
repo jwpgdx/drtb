@@ -1,8 +1,20 @@
 <template>
   <div class="container">
+    <Banner />
     <!-- 탭 + 등록버튼 -->
     <div class="relative mb-6 flex h-10 w-full items-center justify-between">
       <div class="flex gap-4 text-base lg:gap-6">
+        <button
+          @click="tab = 'all'"
+          :class="[
+            'px-2 py-2 font-medium focus:outline-none',
+            tab === 'all'
+              ? 'border-b-2 border-orange-500 text-white'
+              : 'text-zinc-500 hover:text-zinc-700',
+          ]"
+        >
+          전체
+        </button>
         <button
           @click="tab = 'ongoing'"
           :class="[
@@ -40,8 +52,8 @@
       <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <ErrorState
           class="col-span-3"
-          v-if="filteredList.length === 0"
-          image="coin"
+          v-if="filteredList.length === 0 && !isFetching"
+          image="airdrop"
           title="이벤트가 없습니다."
           content="새로운 이벤트가 곧 열릴 예정입니다!"
         />
@@ -75,26 +87,8 @@
 
       <!-- 로딩 스피너 -->
       <div class="mt-6 flex items-center justify-center" v-if="isFetching">
-        <svg
-          class="h-6 w-6 animate-spin text-orange-500"
-          xmlns="http://www.w3.org/2000/svg"
-          fill="none"
-          viewBox="0 0 24 24"
-        >
-          <circle
-            class="opacity-25"
-            cx="12"
-            cy="12"
-            r="10"
-            stroke="currentColor"
-            stroke-width="4"
-          />
-          <path
-            class="opacity-75"
-            fill="currentColor"
-            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-          />
-        </svg>
+        <!-- v-if="isFetching" -->
+        <LoaderCircle class="size-6 animate-spin text-orange-500" />
       </div>
 
       <!-- 감지용 div -->
@@ -109,16 +103,20 @@ import { useIntersectionObserver } from "@vueuse/core";
 import { useRouter } from "vue-router";
 import { useAirdropStore } from "@/stores/airdrop-store";
 import { useAuthStore } from "@/stores/auth-store";
+import { LoaderCircle } from "lucide-vue-next";
+import Banner from "@/components/banner/Banner.vue";
 import AirdropCard from "@/components/airdrop/AirdropCard.vue";
 import ErrorState from "@/components/ErrorState.vue";
 
 const router = useRouter();
 const store = useAirdropStore();
 const authStore = useAuthStore();
-const tab = ref<"ongoing" | "ended">("ongoing");
+const tab = ref<"all" | "ongoing" | "ended">("all");
 
 const filteredList = computed(() => {
-  return tab.value === "ongoing" ? store.ongoingAirdrops : store.endedAirdrops;
+  if (tab.value === "ongoing") return store.ongoingAirdrops;
+  if (tab.value === "ended") return store.endedAirdrops;
+  return store.allAirdrops;
 });
 
 const loadTrigger = ref<HTMLElement | null>(null);
@@ -128,8 +126,10 @@ const isFetching = ref(false);
 watchEffect(() => {
   if (tab.value === "ongoing") {
     store.fetchOngoingAirdrops(6, false);
-  } else {
+  } else if (tab.value === "ended") {
     store.fetchEndedAirdrops(6, false);
+  } else if (tab.value === "all") {
+    store.fetchAllAirdrops(6, false);
   }
 });
 
@@ -147,6 +147,10 @@ useIntersectionObserver(
       });
     } else if (tab.value === "ended" && store.hasMoreEnded) {
       store.fetchEndedAirdrops(6, true).finally(() => {
+        isFetching.value = false;
+      });
+    } else if (tab.value === "all" && store.hasMoreAll) {
+      store.fetchAllAirdrops(6, true).finally(() => {
         isFetching.value = false;
       });
     } else {

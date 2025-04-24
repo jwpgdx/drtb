@@ -18,23 +18,17 @@ export const useAccountStore = defineStore("accountStore", {
   }),
 
   actions: {
-
-
-
-
-
-
     async fetchAccountData() {
       this.isLoading = true;
       const authStore = useAuthStore();
       const uid = authStore.user.uid;
-      
+
       if (!uid) {
         console.error('[ERROR] UID가 존재하지 않음! 인증 불가~');
         this.accountErrorMessage = "등록되지 않은 uid!";
         return;
       }
-    
+
       try {
         const functions = getFunctions();
         // 타입 정의를 통해 반환값의 구조를 명시적으로 지정
@@ -42,12 +36,12 @@ export const useAccountStore = defineStore("accountStore", {
           { queryString?: string | null },
           { authorization: string }
         >(functions, 'createAuthHeaderFromDb');
-    
+
         // 계정 조회를 위한 queryString 없이 호출
         const authResult = await createAuthHeaderFromDbCall({
           queryString: null
         });
-    
+
         // 생성된 인증 헤더로 계정 정보 조회
         const config = {
           headers: {
@@ -55,24 +49,24 @@ export const useAccountStore = defineStore("accountStore", {
           }
         };
         const apiUrl = "https://api.bithumb.com/v1/accounts";
-    
+
         try {
           const response = await axios.get(apiUrl, config);
-    
+
           // 계정 정보 조회 성공
           this.accountData = response.data;
           this.accountErrorMessage = null;
           this.accountStatus = response.status.toString();
           this.formatKrwBalance(this.accountData);
           this.isLoading = false;
-    
+
         } catch (error: any) {
           console.error('[ERROR] Bithumb API 계정 조회 중 오류 발생:', error);
           // 계정 정보 조회 실패
           this.isLoading = false;
           this.accountData = null;
           this.accountStatus = error.response?.status.toString() || "No response";
-    
+
           // 오류 유형에 따른 세부 메시지 처리
           if (error.response) {
             console.error('[ERROR] 응답에서 에러 확인, 상태 코드:', error.response.status);
@@ -151,7 +145,7 @@ export const useAccountStore = defineStore("accountStore", {
 
 
 
-    
+
 
   },
 });

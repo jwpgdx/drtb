@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <h1 class="text-3xl md:text-4xl font-semibold">대시보드</h1>
+    <h1 class="text-3xl lg:text-4xl font-semibold">대시보드</h1>
     <div class="h-12" />
     <User />
     <div class="h-12" />
@@ -13,7 +13,7 @@
       <div class="h-8" />
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-8 m-auto">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-8 m-auto">
       <DashboardCard
         image="/images/icon-apikey.webp"
         title="API 키 관리"
@@ -24,13 +24,13 @@
         image="/images/icon-assets.webp"
         title="자산 관리"
         content="보유한 암호화폐 자산을 한눈에 확인할 수 있습니다."
-        @click="handleButtonClick"
+        @click="goToAssets"
       />
       <DashboardCard
-        image="/images/icon-inout.webp"
+        image="/images/icon-history.webp"
         title="거래 내역"
         content="API를 통해 수집된 거래 기록을 확인할 수 있습니다."
-        @click="handleButtonClick"
+        @click="goToHistory"
       />
       <DashboardCard
         :icon="ScrollText"
@@ -62,10 +62,17 @@ const apiStore = useApiStore();
 const goToApikey = () => {
   router.push({ name: 'Apikey' });
 };
-
+const goToAssets = () => {
+  router.push({ name: 'Assets' });
+};
+const goToHistory = () => {
+  router.push({ name: 'History' });
+};
 const goToLogin = () => {
   router.replace(`/login?redirect=${route.fullPath}`);
 };
+
+
 
 const computedContent = computed(() => {
   if (!apiStore.isAuthenticated && apiStore.errorMessage) {
@@ -76,6 +83,7 @@ const computedContent = computed(() => {
     return "거래를 위해 API 키를 등록하세요.";
   }
 });
+
 const handleButtonClick = () => {
   alert("버튼 클릭됨!");
 };

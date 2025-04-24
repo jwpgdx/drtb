@@ -5,12 +5,12 @@
     <!-- 데스크탑 + 로그인 X -->
     <div
       v-if="!authStore.isAuthenticated"
-      class="hidden lg:flex items-center h-12 gap-6 pl-6 pr-2 bg-black rounded-xl"
+      class="hidden h-12 items-center gap-6 rounded-xl bg-black pl-6 pr-2 lg:flex"
     >
       <button @click="goToLogin" class="text-sm">로그인</button>
       <button
         @click="goToLogin"
-        class="text-sm text-black bg-white rounded-sm h-8 px-3"
+        class="h-8 rounded-sm bg-white px-3 text-sm text-black"
       >
         회원가입
       </button>
@@ -19,22 +19,22 @@
     <button
       v-if="authStore.isAuthenticated"
       @click="toggleMenu"
-      class="flex items-center justify-end w-16 lg:w-8 focus:outline-none"
+      class="flex size-10 items-center justify-center rounded-full focus:outline-none"
       ref="profileRef"
     >
       <img
         :src="
-          isMenuOpen ? '/images/icon-smile-orange.webp' : '/images/icon-smile-white.webp'
+          isMenuOpen ? '/images/icon-my-on.webp' : '/images/icon-my-off.webp'
         "
         alt="User Profile"
-        class="w-8 h-8 rounded-full object-cover"
+        class="size-10 object-cover"
       />
     </button>
     <!-- 모바일 + 로그인 X -->
     <button
       v-if="!authStore.isAuthenticated"
       @click="goToLogin"
-      class="lg:hidden text-sm text-black bg-white rounded-sm w-16 h-8 px-3"
+      class="h-8 w-16 rounded-sm bg-white px-3 text-sm text-black lg:hidden"
     >
       로그인
     </button>
@@ -43,30 +43,40 @@
     <div
       v-if="isMenuOpen"
       ref="menuRef"
-      class="absolute right-0 mt-4 w-48 bg-zinc-900 rounded-md shadow-lg z-50 p-2 overflow-hidden"
+      class="dropdown-menu absolute right-0 z-50 mt-2 min-w-48 rounded-md bg-zinc-800 px-2 py-2 shadow-lg lg:min-w-56"
     >
       <!-- 사용자 정보 섹션 -->
-      <div class="py-2 px-3">
-        <p class="text-xs text-white">
-          {{ authStore.user?.displayName || "사용자" }}
-        </p>
-        <p class="text-xs text-zinc-400">
-          {{ authStore.user?.email || "" }}
-        </p>
+      <div class="flex items-center gap-2 border-b border-zinc-700 px-2 py-2">
+        <div class="size-8 overflow-hidden rounded-full bg-orange-600">
+          <img
+            src="/images/icon-user-thumb.webp"
+            class="h-auto w-full object-cover"
+          />
+        </div>
+
+        <div class="text-xs">
+          <p class="">
+            {{ authStore.user?.displayName || "사용자" }}
+          </p>
+          <p class="text-xs text-zinc-400">
+            {{ authStore.user?.email || "" }}
+          </p>
+        </div>
       </div>
 
       <!-- 메뉴 항목 -->
+
+      <ApiKey />
       <div class="py-2">
-        <ApiKey />
         <button
           @click="goToDashboard"
-          class="block px-3 py-2 text-white text-[13px]"
+          class="block w-full rounded-sm px-3 py-2 text-left text-[13px] text-white hover:bg-zinc-900"
         >
           대시보드
         </button>
         <button
           @click="handleLogout"
-          class="w-full text-left px-3 py-2 text-white text-[13px]"
+          class="w-full rounded-sm px-3 py-2 text-left text-[13px] text-white hover:bg-zinc-900"
         >
           로그아웃
         </button>
@@ -127,3 +137,16 @@ const goToLogin = () => {
   isMenuOpen.value = false;
 };
 </script>
+<style scoped>
+.dropdown-menu::before {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 16px;
+  width: 12px;
+  height: 12px;
+  background-color: #27272a; /* bg-zinc-800 */
+  transform: rotate(45deg);
+  z-index: -1;
+}
+</style>

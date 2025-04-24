@@ -4,7 +4,7 @@
       class="flex flex-col items-center justify-center w-full h-screen text-white"
     >
       <img
-        class="w-full max-w-xs md:max-w-md h-auto"
+        class="w-full max-w-xs lg:max-w-md h-auto"
         src="/images/image-login.webp"
       />
 
@@ -35,18 +35,14 @@
 import { useRouter } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/toast/use-toast";
+import { toast } from "vue3-toastify";
 import { h, computed } from "vue";
-import ToastAction from "@/components/ui/toast/ToastAction.vue";
 import { useApiStore } from "@/stores/api-store";
 
 // Store와 router 가져오기
 const router = useRouter();
 const authStore = useAuthStore();
 const apiStore = useApiStore();
-
-const { toast } = useToast();
-
 const isAuthenticated = computed(() => authStore.isAuthenticated);
 
 // Google 로그인 처리
@@ -62,25 +58,9 @@ const handleGoogleLogin = async () => {
     const redirectPath =
       typeof redirectRoute === "string" ? redirectRoute : "/";
     router.replace(redirectPath);
-
-    toast({
-      title: user.email,
-      description: "구글 계정으로 성공적으로 로그인했습니다.",
-      variant: "default",
-      action: h(ToastAction, { altText: "확인" }, { default: () => "확인" }),
-    });
+    toast("구글 계정으로 성공적으로 로그인했습니다.");
   } catch (error) {
-    console.log("Google login error:", error);
-    toast({
-      title: "Login Failed",
-      description: "로그인에 실패했습니다. 다시 시도해 주세요.",
-      variant: "destructive",
-      action: h(
-        ToastAction,
-        { altText: "Try again" },
-        { default: () => "Try again" }
-      ),
-    });
+    toast("로그인에 실패했습니다. 다시 시도해 주세요.");
   }
 };
 </script>

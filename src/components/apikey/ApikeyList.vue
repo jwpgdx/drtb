@@ -1,41 +1,50 @@
 <template>
   <div class="flex flex-col">
-    <div class="relative grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-white">
+    <div
+      class="relative grid grid-cols-1 gap-4 text-sm text-white lg:grid-cols-4"
+    >
       <!-- Access Key -->
-      <div class="flex flex-col">
-        <span class="text-zinc-500 text-xs mb-2">Access Key</span>
-        {{ accessKey ? accessKey : "-" }}
+      <div class="flex flex-col lg:col-span-2">
+        <span class="mb-2 text-xs text-zinc-500">Access Key</span>
+        <div class="py-2">{{ accessKey ? accessKey : "-" }}</div>
       </div>
 
       <!-- Expire Date -->
       <div class="flex flex-col">
-        <span class="text-zinc-500 text-xs mb-2">만료일</span>
-        <span>{{ formattedExpireAt ? formattedExpireAt : "-" }}</span>
+        <span class="mb-2 text-xs text-zinc-500">만료일</span>
+        <div class="py-2">
+          {{ formattedExpireAt ? formattedExpireAt : "-" }}
+        </div>
       </div>
 
       <!-- 인증상태 + 에러메시지 -->
       <div class="flex flex-col">
-        <span class="text-zinc-500 text-xs mb-2">인증상태</span>
-        <span :class="isAuthenticated ? 'text-green-500' : 'text-red-500'">
+        <span class="mb-2 text-xs text-zinc-500">인증상태</span>
+        <div
+          class="py-2"
+          :class="isAuthenticated ? 'text-green-500' : 'text-red-500'"
+        >
           {{ isAuthenticated ? "정상" : "비정상" }}
-        </span>
+        </div>
 
         <p
           v-if="!isAuthenticated && errorMessage"
-          class="text-red-500 text-xs mt-1"
+          class="mt-1 text-xs text-red-500"
         >
           {{ errorMessage }}
         </p>
       </div>
-      <div class="absolute hidden lg:block top-0 left-0 w-full h-5 border-b-[1px] border-zinc-800 "/>
+      <div
+        class="absolute left-0 top-0 hidden h-5 w-full border-b-[1px] border-zinc-800 lg:block"
+      />
     </div>
 
     <!-- ✅ 삭제 버튼은 아래쪽에 따로 배치 -->
-    <div class="flex w-full flex-col items-center gap-2 mt-24">
+    <div class="mt-24 flex w-full flex-col items-center gap-2">
       <button
         @click="deleteApiKey"
         :disabled="isDeleting"
-        class="max-w-sm flex w-full items-center justify-center h-12 px-4 gap-2 border border-orange-600 text-orange-600 rounded-full text-[13px]"
+        class="flex h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full border border-orange-600 px-4 text-[13px] text-orange-600"
       >
         <LoaderCircle
           v-if="isDeleting"
@@ -47,7 +56,7 @@
       <button
         @click="deleteApiKey"
         :disabled="isDeleting"
-        class="max-w-sm flex w-full items-center justify-center h-12 px-4 gap-2 bg-orange-600 text-black rounded-full text-[13px]"
+        class="flex h-12 w-full max-w-sm items-center justify-center gap-2 rounded-full bg-orange-600 px-4 text-[13px] text-black"
       >
         빗썸 api 바로가기
       </button>
@@ -59,14 +68,12 @@
 import { computed, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useApiStore } from "@/stores/api-store";
-import { useToast } from "@/components/ui/toast/use-toast";
+import { toast } from "vue3-toastify";
 import { h } from "vue";
-import ToastAction from "@/components/ui/toast/ToastAction.vue";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { LoaderCircle } from "lucide-vue-next";
 
 const apiStore = useApiStore();
-const { toast } = useToast();
 const isDeleting = ref(false);
 const router = useRouter();
 const route = useRoute();
@@ -95,29 +102,13 @@ const deleteApiKey = async () => {
     isDeleting.value = true;
     await apiStore.deleteApiKeys();
     // 성공 토스트 표시
-    toast({
-      title: "API 키 삭제 완료",
-      description: "API 키가 성공적으로 삭제되었습니다.",
-      variant: "default",
-      action: h(ToastAction, { altText: "확인" }, { default: () => "확인" }),
-    });
+    toast("API 키가 성공적으로 삭제되었습니다.");
     router.push({ name: "Apikey" });
   } catch (error: any) {
     console.error("API 키 삭제 실패:", error);
 
     // 실패 토스트 표시
-    toast({
-      title: "API 키 삭제 실패",
-      description: error.message || "API 키 삭제 중 오류가 발생했습니다.",
-      variant: "destructive",
-      action: h(
-        ToastAction,
-        {
-          altText: "다시 시도",
-        },
-        () => "다시 시도"
-      ),
-    });
+    toast(error.message || "API 키 삭제 중 오류가 발생했습니다.");
   } finally {
     isDeleting.value = false;
   }

@@ -1,17 +1,10 @@
 <template>
-  <header>
-    <!-- 이전으로 가기 버튼 -->
-    <img
-      class="w-12 h-12 cursor-pointer"
-      src="/images/icon-arrow-left.webp"
-      v-if="layoutMeta.showBack"
-      @click="goBack"
-    />
-
+  <header class="container">
+    <ArrowLeft class="size-6 cursor-pointer" v-if="layoutMeta.showBack" @click="goBack" />
     <!-- 로고 -->
     <img
       v-if="layoutMeta.showLogo"
-      class="w-auto h-10 lg:h-12 cursor-pointer text-white"
+      class="h-10 w-auto cursor-pointer text-white lg:h-12"
       src="/images/icon-logo.svg"
       @click="goToRouter('Home')"
     />
@@ -19,15 +12,15 @@
     <!-- 페이지 정보 -->
     <div v-if="!isLoginPage" class="flex items-center space-x-4">
       <div v-if="isOrderPage" class="flex items-center space-x-2">
-        <Coin :market="marketName" class="w-8 h-8 mr-4" />
+        <Coin :market="marketName" class="mr-4 h-8 w-8" />
         <h1 class="text-xl font-semibold">{{ marketName }}</h1>
       </div>
     </div>
 
     <!-- 메뉴 -->
-    <div v-if="!isLoginPage" class="flex gap-2 items-center">
+    <div v-if="!isLoginPage" class="flex items-center gap-2">
       <div
-        class="hidden lg:flex items-center h-12 gap-7 px-6 bg-black rounded-xl"
+        class="hidden h-12 items-center gap-7 rounded-xl bg-black px-6 lg:flex"
       >
         <button
           v-for="(item, index) in menuItems"
@@ -47,18 +40,21 @@
 <script setup lang="ts">
 import { useRouter, useRoute } from "vue-router";
 import { useAuthStore } from "@/stores/auth-store";
+import { useHeaderStore } from "@/stores/header-store";
 import { computed } from "vue";
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/toast/use-toast";
+import { toast } from "vue3-toastify";
 import { h } from "vue";
+import { ArrowLeft } from 'lucide-vue-next';
+
 import MobileMenu from "./MobileMenu.vue";
 import User from "./User.vue";
 import Coin from "@/components/icons/Coin.vue";
+const headerStore = useHeaderStore();
+const menuItems = computed(() => headerStore.menuItems);
 
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
-const { toast } = useToast();
 
 // 🔧 layoutMeta 타입 명시
 interface LayoutMeta {
@@ -67,7 +63,7 @@ interface LayoutMeta {
   showMargin?: boolean;
 }
 const layoutMeta = computed<LayoutMeta>(
-  () => (route.meta.layout as LayoutMeta) || {}
+  () => (route.meta.layout as LayoutMeta) || {},
 );
 
 const isLoginPage = computed(() => router.currentRoute.value.path === "/login");
@@ -78,13 +74,6 @@ const marketName = computed(() => {
   return Array.isArray(market) ? market[0] : market || "";
 });
 
-const menuItems = [
-  { value: "Orders", label: "거래소" },
-  { value: "Assets", label: "자산" },
-  { value: "Airdrop", label: "에어드랍" },
-  { value: "Support", label: "고객센터" },
-];
-
 const goToRouter = (val: string) => {
   router.push({ name: val });
 };
@@ -92,12 +81,7 @@ const goToRouter = (val: string) => {
 const logout = () => {
   authStore.logout();
   router.push("/");
-  toast({
-    title: "Logged out",
-    description: "성공적으로 로그아웃되었습니다.",
-    variant: "default",
-    action: h(ToastAction, { altText: "확인" }, { default: () => "확인" }),
-  });
+  toast("성공적으로 로그아웃되었습니다.");
 };
 
 const goBack = () => {
@@ -120,12 +104,7 @@ header {
   left: 0;
   right: 0;
   height: 56px;
-  padding: 0 16px;
   z-index: 1000;
   color: white;
-
-  @include desktop {
-    padding: 0 32px;
-  }
 }
 </style>

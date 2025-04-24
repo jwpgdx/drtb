@@ -3,7 +3,7 @@
     <div class="relative flex flex-col lg:flex-row gap-8 lg:gap-16 justify-between">
       <!-- 왼쪽: 제목/설명 -->
       <div class="relative flex flex-col gap-4 w-full lg:w-[30%]">
-        <h1 class="text-3xl md:text-4xl font-semibold">궁금한 점이 있으신가요?</h1>
+        <h1 class="text-3xl lg:text-4xl font-semibold">궁금한 점이 있으신가요?</h1>
         <div class="text-[15px] text-zinc-200">
           서비스 이용 중 불편 사항이나 문의가 있다면 언제든지 알려주세요.
           피드백도 언제든 환영합니다.

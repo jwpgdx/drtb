@@ -8,6 +8,9 @@
 
 @layer base {
   :root {
+    --toastify-color-dark: #000;
+    --toastify-text-color-dark: #fff;
+    --toastify-toast-min-height: 56px;
     --background: 210 8% 4%;
     --foreground: 0 0% 100%; /* 다크 모드: 흰색 글씨 */
 
@@ -89,3 +92,42 @@
 body {
   font-family: 'pretendard', 'sans-serif';
 }
+.Toastify__toast-container--top-center {
+  left: 50%;
+  top: 4em;
+  transform: translateX(-50%);
+  max-width: calc(100% - 2rem);
+  width: fit-content;
+}
+
+.Toastify__toast-body {
+  padding: 6px 8px;
+}
+.Toastify__progress-bar {
+  /* display: none !important; */
+  bottom: 0;
+  height: 0px;
+  left: 0;
+  opacity: .7;
+  position: absolute;
+  transform-origin: left;
+  width: 100%;
+  z-index: var(--toastify-z-index);
+}
+
+.toast-content {
+  font-size: 14px;
+}
+.Toastify__close-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0!important;
+}
+@media only screen and (max-width: 480px) {
+  .Toastify__toast-container {
+  }
+}
+

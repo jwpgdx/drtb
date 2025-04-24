@@ -59,7 +59,7 @@
           <div v-for="order in orderList" :key="order.uuid">
             <order-list-item :order="order">
               <Button v-if="state === 'wait'" @click="cancelOrder(order.uuid)">
-                주문취소
+                주문22취소
               </Button>
             </order-list-item>
           </div>
@@ -86,8 +86,7 @@ import { ref, onMounted, computed, watch } from "vue";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { ToastAction } from "@/components/ui/toast";
-import { useToast } from "@/components/ui/toast/use-toast";
+import { toast } from "vue3-toastify";
 import { h } from "vue";
 import { useRoute } from "vue-router";
 import { LoaderCircle } from "lucide-vue-next";
@@ -148,47 +147,23 @@ watch([state, order_by], () => {
   fetchOrders();
 });
 
-const { toast } = useToast();
 
 const handleFetchOrderChance = () => {
   orderChanceStore.fetchOrderChance(marketParam.value);
 };
 
 const cancelOrder = async (uuid: string) => {
+  
   try {
+    console.log('cancelOrder', uuid)
     const result = await orderListStore.cancelOrder(uuid);
     if (result) {
-      toast({
-        title: "주문 취소 성공",
-        description: `주문 ${uuid}이(가) 취소되었습니다.`,
-        action: h(
-          ToastAction,
-          {
-            altText: "닫기",
-          },
-          {
-            default: () => "닫기",
-          }
-        ),
-      });
+      toast(`주문 ${uuid}이(가) 취소되었습니다.`);
       fetchOrders();
       handleFetchOrderChance();
     }
   } catch (error) {
-    toast({
-      title: "주문 취소 실패",
-      description: `주문 ${uuid} 취소에 실패했습니다.`,
-      variant: "destructive",
-      action: h(
-        ToastAction,
-        {
-          altText: "다시 시도",
-        },
-        {
-          default: () => "다시 시도",
-        }
-      ),
-    });
+    toast(`주문 ${uuid} 취소에 실패했습니다.`);
   }
 };
 </script>
