@@ -8,9 +8,9 @@
 
 @layer base {
   :root {
-    --toastify-color-dark: #000;
-    --toastify-text-color-dark: #fff;
-    --toastify-toast-min-height: 56px;
+    --toastify-color-dark: #fff;
+    --toastify-text-color-dark: #000;
+    --toastify-toast-min-height: 48px;
     --background: 210 8% 4%;
     --foreground: 0 0% 100%; /* 다크 모드: 흰색 글씨 */
 
@@ -90,11 +90,11 @@
   overflow-wrap: break-word; /* 줄바꿈 시 단어 유지 */
 }
 body {
-  font-family: 'pretendard', 'sans-serif';
+  font-family: 'SamsungOneKorean', 'sans-serif';
 }
-.Toastify__toast-container--top-center {
+.Toastify__toast-container--bottom-center {
   left: 50%;
-  top: 4em;
+  bottom: 4em;
   transform: translateX(-50%);
   max-width: calc(100% - 2rem);
   width: fit-content;

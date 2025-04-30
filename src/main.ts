@@ -12,7 +12,7 @@ const app = createApp(App);
 app.use(createPinia()); // Pinia 등록
 app.use(Vue3Toastify, {
     theme: "dark",
-    position: "top-center",
+    position: "bottom-center",
     autoClose: 2000,
     toastClassName: 'text-sm rounded-md',
     hideProgressBar: false,

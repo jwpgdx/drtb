@@ -7,7 +7,7 @@
       <!-- 기존 컨텐츠 유지 -->
       <div class="z-10 max-w-[60%]">
         <h1 class="mb-2 text-xl font-semibold">
-          <span class="text-orange-600">LIVE</span> 에어드랍 목록
+          <span class="text-orange-600">LIVE</span> 에어드랍 이벤트
         </h1>
         <p class="text-sm text-zinc-400">
           지금 진행 중인 모든 에어드랍 이벤트를 확인하세요!

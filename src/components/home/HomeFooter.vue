@@ -3,8 +3,8 @@
     <div
       class="flex w-full flex-col items-start justify-between gap-8 px-4 py-12 lg:flex-row lg:items-center lg:px-0"
     >
-      <div class="font-semibold text-3xl">
-        간편한 비트코인 거래, DRTB에서
+      <div class="footer-text ">
+        Join the BITFFY. Get the drop.
       </div>
       <div class="flex gap-2">
         <div class="gradient-content">
@@ -71,5 +71,11 @@
   100% {
     background-position: 200% 50%;
   }
+}
+.footer-text {
+  font-family: "SamsungSharpSans", sans-serif;
+  font-weight: 700;
+  @apply text-3xl;
+  
 }
 </style>

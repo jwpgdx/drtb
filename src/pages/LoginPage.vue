@@ -1,25 +1,25 @@
 <template>
   <div class="container">
     <div
-      class="flex flex-col items-center justify-center w-full h-screen text-white"
+      class="flex h-screen w-full flex-col items-center justify-center text-white"
     >
       <img
-        class="w-full max-w-xs lg:max-w-md h-auto"
+        class="h-auto w-full max-w-xs lg:max-w-md"
         src="/images/image-login.webp"
       />
 
-      <div class="text-3xl font-semibold text-center">
-        Millions of songs.<br />Free on Spotify
+      <div class="login-text">
+        Explore crypto galaxies.<br />Start on BITFFY
       </div>
       <div class="h-8" />
       <button
         @click="handleGoogleLogin"
-        class="flex items-center justify-between w-full max-w-xs h-12 px-4 border rounded-3xl"
+        class="flex h-12 w-full max-w-xs items-center justify-between rounded-3xl border px-4"
       >
         <img
           src="https://cdn4.iconfinder.com/data/icons/logos-brands-7/512/google_logo-google_icongoogle-1024.png"
           alt="Google G Logo"
-          class="w-5 h-5"
+          class="h-5 w-5"
         />
 
         <span class="text-m">Continue with Google</span>
@@ -64,3 +64,9 @@ const handleGoogleLogin = async () => {
   }
 };
 </script>
+<style lang="scss" scoped>
+.login-text {
+  font-family: "SamsungSharpSans", sans-serif;
+  @apply text-center text-3xl font-bold;
+}
+</style>

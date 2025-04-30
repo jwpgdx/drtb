@@ -2,7 +2,7 @@
 <template>
   <div
     @click="goToOrderPage"
-    class="flex h-16 cursor-pointer items-center rounded-sm text-white hover:bg-zinc-900 px-4"
+    class="flex h-16 cursor-pointer items-center rounded-sm px-4 text-white hover:bg-zinc-900"
   >
     <!-- market.isVisible일 때만 이미지 로드 -->
     <Coin :market="market.market" class="mr-3 size-5 lg:mr-4 lg:size-6" />
@@ -11,11 +11,11 @@
       <p class="text-[15px] lg:text-base">{{ market.korean_name }}</p>
       <p class="text-xs text-zinc-500">{{ market.market }}</p>
     </div>
-    <div class="flex items-center">
-      <p v-if="isLoading" class="mr-2 text-base font-medium">-</p>
+    <div class="number-text flex items-center">
+      <p v-if="isLoading" class="mr-2 text-base">-</p>
 
       <!-- trade_price가 있으면 세자리마다 쉼표 추가 -->
-      <p v-else class="mr-2 text-[15px] font-medium lg:text-base">
+      <p v-else class="mr-2 text-[15px] lg:text-base">
         ₩ {{ market.trade_price ? market.trade_price.toLocaleString() : "-" }}
       </p>
 
@@ -87,5 +87,9 @@ const priceChangeClass = computed(() => {
 <style scoped>
 .coin-icon {
   font-size: 2rem;
+}
+.number-text {
+  font-family: "SamsungSharpSans", sans-serif;
+  font-weight: 500;
 }
 </style>
